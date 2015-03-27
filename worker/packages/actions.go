@@ -7,6 +7,7 @@ import (
 	"github.com/iron-io/ironcli/httpclient"
 )
 
+// a code
 type code struct {
 	ID              string `json:"id"`
 	ProjID          string `json:"project_id"`
@@ -16,6 +17,17 @@ type code struct {
 	Rev             int    `json:"rev"`
 	LatestHistoryID string `json:"latest_history_id"`
 	LatestChange    int    `json:"latest_change"`
+}
+
+// a revision
+type rev struct {
+	ID       string `json:"id"`
+	CodeID   string `json:"code_id"`
+	ProjID   string `json:"project_id"`
+	Rev      int    `json:"rev"`
+	Runtime  string `json:"runtime"`
+	Name     string `json:"name"`
+	FileName string `json:"file_name"`
 }
 
 func list(g *common.GlobalFlags) {
@@ -52,16 +64,6 @@ func del(g *common.GlobalFlags) {
 
 func download(g *common.GlobalFlags) {
 	fmt.Println("TODO")
-}
-
-type rev struct {
-	ID       string `json:"id"`
-	CodeID   string `json:"code_id"`
-	ProjID   string `json:"project_id"`
-	Rev      int    `json:"rev"`
-	Runtime  string `json:"runtime"`
-	Name     string `json:"name"`
-	FileName string `json:"file_name"`
 }
 
 func listrevs(g *common.GlobalFlags) {
