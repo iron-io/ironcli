@@ -81,7 +81,7 @@ func init() {
 	}
 }
 
-func main() {
+func main_old() {
 	flag.Parse()
 
 	if *helpFlag || *hFlag {

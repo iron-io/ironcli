@@ -11,6 +11,11 @@
 			"Rev": "2bcd11f863d540a1b190dc03b6c4f634c6ae91d4"
 		},
 		{
+			"ImportPath": "github.com/iron-io/go/vendored/github.com/arschles/assert",
+			"Comment": "ironmq-3.1.10-491-g1a45b4e",
+			"Rev": "1a45b4e7be09417d584fceb8f18d682bff1c9564"
+		},
+		{
 			"ImportPath": "github.com/iron-io/iron_go/api",
 			"Rev": "8d5ea7380ea1a94626e6a1d22fa81fc0329081db"
 		},

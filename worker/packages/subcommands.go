@@ -1,6 +1,9 @@
 package packages
 
-import "github.com/iron-io/ironcli/Godeps/_workspace/src/github.com/codegangsta/cli"
+import (
+	"github.com/iron-io/ironcli/Godeps/_workspace/src/github.com/codegangsta/cli"
+	"github.com/iron-io/ironcli/common"
+)
 
 // cli.Command{
 // 	Name:    "logs",
@@ -53,53 +56,69 @@ import "github.com/iron-io/ironcli/Godeps/_workspace/src/github.com/codegangsta/
 // 	cli.StringFlag{Name: "stack", Value: "default", Usage: "the stack to run your codes in"},
 // }
 
-var SubCommands = []cli.Command{
-	[]cli.Command{
+var Subcommands = []cli.Command{
+	cli.Command{
 		Name:    "list",
 		Aliases: []string{"ls"},
 		Usage:   "List code packages",
-		Action:  list,
+		Action:  common.WithGlobalFlags(list),
 	},
-	[]cli.Command{
+	cli.Command{
 		Name:    "upload",
 		Aliases: []string{"u"},
 		Usage:   "Upload or update a code package",
-		Action:  upload,
+		Action:  common.WithGlobalFlags(upload),
 	},
-	[]cli.Command{
+	cli.Command{
 		Name:    "info",
 		Aliases: []string{"i"},
 		Usage:   "Get info about a code package",
-		Action:  info,
+		Flags: []cli.Flag{
+			cli.StringFlag{Name: "codeid", Usage: "the code ID to get info about"},
+		},
+		Action: common.WithGlobalFlags(info),
 	},
-	[]cli.Command{
+	cli.Command{
 		Name:    "delete",
 		Aliases: []string{"d"},
 		Usage:   "Delete a code package",
-		Action:  del,
+		Flags: []cli.Flag{
+			cli.StringFlag{Name: "codeid", Usage: "the code ID to delete"},
+		},
+		Action: common.WithGlobalFlags(del),
 	},
-	[]cli.Command{
+	cli.Command{
 		Name:    "download",
 		Aliases: []string{"dl"},
 		Usage:   "Download a code package",
-		Action:  download,
+		Action:  common.WithGlobalFlags(download),
 	},
-	[]cli.Command{
+	cli.Command{
 		Name:    "listrevs",
 		Aliases: []string{"lsr"},
 		Usage:   "List Code Package Revisions",
-		Action:  listrevs,
+		Flags: []cli.Flag{
+			cli.IntFlag{Name: "page", Value: 0, Usage: "the page of revisions to get. max 100"},
+			cli.IntFlag{Name: "perpage", Value: 30, Usage: "the max number of revs to get per page. max 100"},
+		},
+		Action: common.WithGlobalFlags(listrevs),
 	},
-	[]cli.Command{
+	cli.Command{
 		Name:    "pause",
 		Aliases: []string{"p"},
 		Usage:   "Pause Task Queue for Code Package",
-		Action:  pause,
+		Flags: []cli.Flag{
+			cli.StringFlag{Name: "codeid", Usage: "the ID of the code to pause"},
+		},
+		Action: common.WithGlobalFlags(pause),
 	},
-	[]cli.Command{
+	cli.Command{
 		Name:    "resume",
 		Aliases: []string{"r"},
 		Usage:   "Resume Paused Task Queue for Code Package",
-		Action:  resume,
+		Flags: []cli.Flag{
+			cli.StringFlag{Name: "codeid", Usage: "the ID of the code to resume"},
+		},
+		Action: common.WithGlobalFlags(resume),
 	},
 }

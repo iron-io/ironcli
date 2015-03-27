@@ -8,15 +8,10 @@ import (
 	"mime/multipart"
 	"net/http"
 
-	"github.com/iron-io/ironcli/Godeps/_workspace/src/github.com/codegangsta/cli"
 	"github.com/iron-io/ironcli/Godeps/_workspace/src/github.com/iron-io/iron_go/api"
 	"github.com/iron-io/ironcli/Godeps/_workspace/src/github.com/iron-io/iron_go/worker"
 	"github.com/iron-io/ironcli/Godeps/_workspace/src/gopkg.in/inconshreveable/log15.v2"
 )
-
-func upload(c *cli.Context) {
-
-}
 
 // create code package (zip) from parsed .worker info
 func pushCodes(zipName, command string, w *worker.Worker, args worker.Code) (id string, err error) {

@@ -1,41 +1,44 @@
 package main
 
 import (
+	"fmt"
 	"os"
 
 	"github.com/iron-io/ironcli/Godeps/_workspace/src/github.com/codegangsta/cli"
+	"github.com/iron-io/ironcli/common"
 	"github.com/iron-io/ironcli/mq"
 	"github.com/iron-io/ironcli/worker"
 )
 
 func main() {
 	app := cli.NewApp()
-	app.Name = "iron CLI"
+	app.Name = "iron"
 	app.Usage = "CLI app to access Iron.io APIs"
+	app.Version = Version
 	app.Flags = []cli.Flag{
-		cli.StringFlag{
-			Name:   "version,v",
-			Value:  "",
+		cli.IntFlag{
+			Name:   common.Version,
 			Usage:  "the API version to use",
-			EnvVar: "IRON_API_VERSION",
+			Value:  common.InvalidVersion,
+			EnvVar: common.VersionEnv,
 		},
 		cli.StringFlag{
-			Name:   "token,t",
+			Name:   fmt.Sprintf("%s,%s", common.Token, common.TokenShort),
 			Value:  "",
 			Usage:  "the OAuth token to use",
-			EnvVar: "IRON_OAUTH_TOKEN",
+			EnvVar: common.TokenEnv,
 		},
 		cli.StringFlag{
-			Name:   "project,p",
+			Name:   fmt.Sprintf("%s,%s", common.ProjectID, common.ProjectIDShort),
 			Value:  "",
 			Usage:  "the project ID. your OAuth token must be authorized to access the project",
-			EnvVar: "IRON_PROJECT_ID",
+			EnvVar: common.ProjectIDEnv,
 		},
 		cli.StringFlag{
-			Name:   "environment,env",
+			Name:   fmt.Sprintf("%s,%s", common.Host, common.HostShort),
 			Value:  "",
-			Usage:  "specify a specific dev environment",
-			EnvVar: "IRON_ENVIRONMENT",
+			Usage:  "the host to use",
+			EnvVar: common.HostEnv,
 		},
 	}
 	app.Commands = []cli.Command{
@@ -43,13 +46,13 @@ func main() {
 			Name:        "worker",
 			Aliases:     []string{"w"},
 			Usage:       "IronWorker base command",
-			SubCommands: worker.SubCommands,
+			Subcommands: worker.Subcommands,
 		},
 		cli.Command{
 			Name:        "queue",
 			Aliases:     []string{"mq"},
 			Usage:       "IronMQ base command",
-			SubCommands: mq.SubCommands,
+			Subcommands: mq.Subcommands,
 		},
 	}
 	app.Run(os.Args)
