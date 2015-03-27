@@ -16,4 +16,6 @@ const (
 	Host      = "host"
 	HostShort = "hst"
 	HostEnv   = "IRON_API_HOST"
+
+	VersionNum = "0.0.5"
 )

@@ -12,9 +12,9 @@ import (
 
 func main() {
 	app := cli.NewApp()
-	app.Name = "iron"
+	app.Name = "ironcli"
 	app.Usage = "CLI app to access Iron.io APIs"
-	app.Version = Version
+	app.Version = common.VersionNum
 	app.Flags = []cli.Flag{
 		cli.IntFlag{
 			Name:   common.Version,
@@ -45,13 +45,13 @@ func main() {
 		cli.Command{
 			Name:        "worker",
 			Aliases:     []string{"w"},
-			Usage:       "IronWorker base command",
+			Usage:       "IronWorker commands",
 			Subcommands: worker.Subcommands,
 		},
 		cli.Command{
 			Name:        "queue",
 			Aliases:     []string{"mq"},
-			Usage:       "IronMQ base command",
+			Usage:       "IronMQ commands",
 			Subcommands: mq.Subcommands,
 		},
 	}
