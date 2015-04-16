@@ -8,8 +8,8 @@ import (
 	"os/exec"
 	"time"
 
-	"github.com/iron-io/ironcli/Godeps/_workspace/src/github.com/iron-io/iron_go/api"
-	"github.com/iron-io/ironcli/Godeps/_workspace/src/github.com/iron-io/iron_go/config"
+	"github.com/iron-io/ironcli/Godeps/_workspace/src/github.com/iron-io/iron_go3/api"
+	"github.com/iron-io/ironcli/Godeps/_workspace/src/github.com/iron-io/iron_go3/config"
 )
 
 type Worker struct {
@@ -29,7 +29,7 @@ func sleepBetweenRetries(previousDuration time.Duration) time.Duration {
 	if previousDuration >= 60*time.Second {
 		return previousDuration
 	}
-	return previousDuration + previousDuration
+	return previousDuration * previousDuration
 }
 
 var GoCodeRunner = []byte(`#!/bin/sh
@@ -118,8 +118,8 @@ func (w *Worker) WaitForTask(taskId string) chan TaskInfo {
 			}
 
 			if info.Status == "queued" || info.Status == "running" {
-				time.Sleep(retryDelay)
 				retryDelay = sleepBetweenRetries(retryDelay)
+				time.Sleep(retryDelay)
 			} else {
 				out <- info
 				return
@@ -141,9 +141,9 @@ func (w *Worker) WaitForTaskLog(taskId string) chan []byte {
 			log, err := w.TaskLog(taskId)
 			if err != nil {
 				e, ok := err.(api.HTTPResponseError)
-				if ok && e.Response().StatusCode == 404 {
-					time.Sleep(retryDelay)
+				if ok && e.StatusCode() == 404 {
 					retryDelay = sleepBetweenRetries(retryDelay)
+					time.Sleep(retryDelay)
 					continue
 				}
 				return

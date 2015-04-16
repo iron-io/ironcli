@@ -27,7 +27,7 @@ func (wf *WorkerFlags) payloadFile() *string {
 }
 
 func (wf *WorkerFlags) priority() *int {
-	return wf.Int("priority", 0, "0(default), 1 or 2")
+	return wf.Int("priority", 0, "0, 1 or 2")
 }
 
 func (wf *WorkerFlags) timeout() *int {

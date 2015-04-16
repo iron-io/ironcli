@@ -8,14 +8,17 @@ import (
 	"io"
 	"io/ioutil"
 	"net/http"
-	"net/http/httputil"
 	"net/url"
 	"os"
 	"strings"
 	"time"
 
-	"github.com/iron-io/ironcli/Godeps/_workspace/src/github.com/iron-io/iron_go/config"
+	"github.com/iron-io/ironcli/Godeps/_workspace/src/github.com/iron-io/iron_go3/config"
 )
+
+type DefaultResponseBody struct {
+	Msg string `json:"msg"`
+}
 
 type URL struct {
 	URL      url.URL
@@ -23,7 +26,8 @@ type URL struct {
 }
 
 var (
-	debug bool
+	Debug         bool
+	DebugOnErrors bool
 
 	// HttpClient is the client used by iron_go to make each http request. It is exported in case
 	// the client would like to modify it from the default behavior from http.DefaultClient.
@@ -31,15 +35,25 @@ var (
 )
 
 func dbg(v ...interface{}) {
-	if debug {
+	if Debug {
+		fmt.Fprintln(os.Stderr, v...)
+	}
+}
+
+func dbgerr(v ...interface{}) {
+	if DebugOnErrors && !Debug {
 		fmt.Fprintln(os.Stderr, v...)
 	}
 }
 
 func init() {
 	if os.Getenv("IRON_API_DEBUG") != "" {
-		debug = true
+		Debug = true
 		dbg("debugging of api enabled")
+	}
+	if os.Getenv("IRON_API_DEBUG_ON_ERRORS") != "" {
+		DebugOnErrors = true
+		dbg("debugging of api on errors enabled")
 	}
 }
 
@@ -70,45 +84,58 @@ func (u *URL) QueryAdd(key string, format string, value interface{}) *URL {
 	return u
 }
 
-func (u *URL) Req(method string, in, out interface{}) (err error) {
-	var reqBody io.Reader
-	if in != nil {
-		data, err := json.Marshal(in)
-		if err != nil {
-			return err
-		}
-		reqBody = bytes.NewBuffer(data)
+func (u *URL) Req(method string, in, out interface{}) error {
+	if in == nil {
+		in = &struct{}{}
 	}
-	response, err := u.Request(method, reqBody)
-	if response != nil {
+	data, err := json.Marshal(in)
+	if err != nil {
+		return err
+	}
+	dbg("request body:", in)
+
+	response, err := u.req(method, data)
+	if response != nil && response.Body != nil {
 		defer response.Body.Close()
 	}
-	if err == nil && out != nil {
-		err = json.NewDecoder(response.Body).Decode(out)
-		dbg("u:", u, "out:", fmt.Sprintf("%#v\n", out))
+	if err != nil {
+		dbg("ERROR!", err, err.Error())
+		body := "<empty>"
+		if response != nil && response.Body != nil {
+			binary, _ := ioutil.ReadAll(response.Body)
+			body = string(binary)
+		}
+		dbgerr("ERROR!", err, err.Error(), "Request:", string(data), " Response:", body)
+		return err
+	}
+	dbg("response:", response)
+	if out != nil {
+		return json.NewDecoder(response.Body).Decode(out)
 	}
 
-	return
+	// throw it away
+	io.Copy(ioutil.Discard, response.Body)
+	return nil
+}
+
+// returned body must be closed by caller if non-nil
+func (u *URL) Request(method string, body io.Reader) (response *http.Response, err error) {
+	bytes, err := ioutil.ReadAll(body)
+	if err != nil {
+		return nil, err
+	}
+	return u.req(method, bytes)
 }
 
 var MaxRequestRetries = 5
 
-func (u *URL) Request(method string, body io.Reader) (response *http.Response, err error) {
-	var bodyBytes []byte
-	if body == nil {
-		bodyBytes = []byte{}
-	} else {
-		bodyBytes, err = ioutil.ReadAll(body)
-		if err != nil {
-			return nil, err
-		}
-	}
-
+func (u *URL) req(method string, body []byte) (response *http.Response, err error) {
 	request, err := http.NewRequest(method, u.URL.String(), nil)
 	if err != nil {
 		return nil, err
 	}
 
+	request.ContentLength = int64(len(body))
 	request.Header.Set("Authorization", "OAuth "+u.Settings.Token)
 	request.Header.Set("Accept", "application/json")
 	request.Header.Set("Accept-Encoding", "gzip/deflate")
@@ -118,16 +145,20 @@ func (u *URL) Request(method string, body io.Reader) (response *http.Response, e
 		request.Header.Set("Content-Type", "application/json")
 	}
 
+	dbg("URL:", request.URL.String())
 	dbg("request:", fmt.Sprintf("%#v\n", request))
 
-	for tries := 0; tries <= MaxRequestRetries; tries++ {
-		request.Body = ioutil.NopCloser(bytes.NewBuffer(bodyBytes))
+	for tries := 0; tries < MaxRequestRetries; tries++ {
+		request.Body = ioutil.NopCloser(bytes.NewReader(body)) // because Readers are only useful once
 		response, err = HttpClient.Do(request)
 		if err != nil {
+			if response != nil && response.Body != nil {
+				response.Body.Close() // make sure to close since we won't return it
+			}
 			if err == io.EOF {
 				continue
 			}
-			return
+			return nil, err
 		}
 
 		if response.StatusCode == http.StatusServiceUnavailable {
@@ -139,28 +170,15 @@ func (u *URL) Request(method string, body io.Reader) (response *http.Response, e
 		break
 	}
 
-	// DumpResponse(response)
+	if err != nil { // for that one lucky case where io.EOF reaches MaxRetries
+		return nil, err
+	}
+
 	if err = ResponseAsError(response); err != nil {
-		return
+		return nil, err
 	}
 
-	return
-}
-
-func DumpRequest(req *http.Request) {
-	out, err := httputil.DumpRequestOut(req, true)
-	if err != nil {
-		panic(err)
-	}
-	fmt.Printf("%q\n", out)
-}
-
-func DumpResponse(response *http.Response) {
-	out, err := httputil.DumpResponse(response, true)
-	if err != nil {
-		panic(err)
-	}
-	fmt.Printf("%q\n", out)
+	return response, nil
 }
 
 var HTTPErrorDescriptions = map[int]string{
@@ -171,37 +189,39 @@ var HTTPErrorDescriptions = map[int]string{
 }
 
 func ResponseAsError(response *http.Response) HTTPResponseError {
-	if response.StatusCode == http.StatusOK {
+	if response.StatusCode == http.StatusOK || response.StatusCode == http.StatusCreated {
 		return nil
 	}
 
-	defer response.Body.Close()
-	desc, found := HTTPErrorDescriptions[response.StatusCode]
-	if found {
-		return resErr{response: response, error: response.Status + ": " + desc}
+	if response == nil {
+		return resErr{statusCode: http.StatusTeapot, error: fmt.Sprint("response nil but no errors. beware unicorns, this shouldn't happen")}
 	}
 
-	out := map[string]interface{}{}
+	if response.Body != nil {
+		defer response.Body.Close()
+	}
+
+	var out DefaultResponseBody
 	err := json.NewDecoder(response.Body).Decode(&out)
 	if err != nil {
-		return resErr{response: response, error: fmt.Sprint(response.Status, ": ", err.Error())}
+		return resErr{statusCode: response.StatusCode, error: fmt.Sprint(response.Status, ": ", err.Error())}
 	}
-	if msg, ok := out["msg"]; ok {
-		return resErr{response: response, error: fmt.Sprint(response.Status, ": ", msg)}
+	if out.Msg != "" {
+		return resErr{statusCode: response.StatusCode, error: fmt.Sprint(response.Status, ": ", out.Msg)}
 	}
 
-	return resErr{response: response, error: response.Status + ": Unknown API Response"}
+	return resErr{statusCode: response.StatusCode, error: response.Status + ": Unknown API Response"}
 }
 
 type HTTPResponseError interface {
 	Error() string
-	Response() *http.Response
+	StatusCode() int
 }
 
 type resErr struct {
-	error    string
-	response *http.Response
+	error      string
+	statusCode int
 }
 
-func (h resErr) Error() string            { return h.error }
-func (h resErr) Response() *http.Response { return h.response }
+func (h resErr) Error() string   { return h.error }
+func (h resErr) StatusCode() int { return h.statusCode }

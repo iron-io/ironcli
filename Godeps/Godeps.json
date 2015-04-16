@@ -15,25 +15,20 @@
 			"Rev": "2bcd11f863d540a1b190dc03b6c4f634c6ae91d4"
 		},
 		{
-			"ImportPath": "github.com/iron-io/iron_go/api",
-			"Rev": "8d5ea7380ea1a94626e6a1d22fa81fc0329081db"
+			"ImportPath": "github.com/iron-io/iron_go3/api",
+			"Rev": "e90fd28a60e224d8dea3c60d257c8c8aa3653e3f"
 		},
 		{
-			"ImportPath": "github.com/iron-io/iron_go/config",
-			"Rev": "8d5ea7380ea1a94626e6a1d22fa81fc0329081db"
+			"ImportPath": "github.com/iron-io/iron_go3/config",
+			"Rev": "e90fd28a60e224d8dea3c60d257c8c8aa3653e3f"
 		},
 		{
-			"ImportPath": "github.com/iron-io/iron_go/worker",
-			"Rev": "8d5ea7380ea1a94626e6a1d22fa81fc0329081db"
+			"ImportPath": "github.com/iron-io/iron_go3/mq",
+			"Rev": "e90fd28a60e224d8dea3c60d257c8c8aa3653e3f"
 		},
 		{
-			"ImportPath": "github.com/mattn/go-colorable",
-			"Rev": "043ae16291351db8465272edf465c9f388161627"
-		},
-		{
-			"ImportPath": "gopkg.in/inconshreveable/log15.v2",
-			"Comment": "v2.9",
-			"Rev": "f4b937ff5771022dceb1c0ac0397d2457fb5c357"
+			"ImportPath": "github.com/iron-io/iron_go3/worker",
+			"Rev": "e90fd28a60e224d8dea3c60d257c8c8aa3653e3f"
 		}
 	]
 }

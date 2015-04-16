@@ -61,7 +61,18 @@ var Subcommands = []cli.Command{
 		Name:    "list",
 		Aliases: []string{"ls"},
 		Usage:   "List code packages",
-		Action:  common.WithGlobalFlags(list),
+		Flags: []cli.Flag{
+			cli.IntFlag{
+				Name:  "page",
+				Usage: "the page number to get",
+			},
+			cli.IntFlag{
+				Name:  "per-page",
+				Usage: "the number of code packages to get per page",
+				Value: 10,
+			},
+		},
+		Action: common.WithGlobalFlags(list),
 	},
 	cli.Command{
 		Name:    "upload",
@@ -97,28 +108,6 @@ var Subcommands = []cli.Command{
 		Name:    "listrevs",
 		Aliases: []string{"lsr"},
 		Usage:   "List Code Package Revisions",
-		Flags: []cli.Flag{
-			cli.IntFlag{Name: "page", Value: 0, Usage: "the page of revisions to get. max 100"},
-			cli.IntFlag{Name: "perpage", Value: 30, Usage: "the max number of revs to get per page. max 100"},
-		},
-		Action: common.WithGlobalFlags(listrevs),
-	},
-	cli.Command{
-		Name:    "pause",
-		Aliases: []string{"p"},
-		Usage:   "Pause Task Queue for Code Package",
-		Flags: []cli.Flag{
-			cli.StringFlag{Name: "codeid", Usage: "the ID of the code to pause"},
-		},
-		Action: common.WithGlobalFlags(pause),
-	},
-	cli.Command{
-		Name:    "resume",
-		Aliases: []string{"r"},
-		Usage:   "Resume Paused Task Queue for Code Package",
-		Flags: []cli.Flag{
-			cli.StringFlag{Name: "codeid", Usage: "the ID of the code to resume"},
-		},
-		Action: common.WithGlobalFlags(resume),
+		Action:  common.WithGlobalFlags(listrevs),
 	},
 }

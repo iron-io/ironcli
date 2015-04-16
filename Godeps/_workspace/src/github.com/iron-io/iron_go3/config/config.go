@@ -34,21 +34,21 @@ var (
 			Port:       443,
 			ApiVersion: "2",
 			Host:       "worker-aws-us-east-1.iron.io",
-			UserAgent:  "iron_go/worker 2.0 (Go " + goVersion + ")",
+			UserAgent:  "iron_go3/worker 2.0 (Go " + goVersion + ")",
 		},
 		"mq": Settings{
 			Scheme:     "https",
 			Port:       443,
-			ApiVersion: "1",
+			ApiVersion: "3",
 			Host:       "mq-aws-us-east-1.iron.io",
-			UserAgent:  "iron_go/mq 1.0 (Go " + goVersion + ")",
+			UserAgent:  "iron_go3/mq 3.0 (Go " + goVersion + ")",
 		},
 		"cache": Settings{
 			Scheme:     "https",
 			Port:       443,
 			ApiVersion: "1",
 			Host:       "cache-aws-us-east-1.iron.io",
-			UserAgent:  "iron_go/cache 1.0 (Go " + goVersion + ")",
+			UserAgent:  "iron_go3/cache 1.0 (Go " + goVersion + ")",
 		},
 	}
 )
@@ -59,36 +59,10 @@ func dbg(v ...interface{}) {
 	}
 }
 
-// ManualConfig gathers configuration from env variables, json config files
-// and finally overwrites it with specified instance of Settings.
+// ManualConfig gathers configuration from env variables and json config files.
+// Examples of fullProduct are "iron_worker", "iron_cache", "iron_mq" and
+// finally overwrites it with specified instance of Settings.
 func ManualConfig(fullProduct string, configuration *Settings) (settings Settings) {
-	return config(fullProduct, "", configuration)
-}
-
-// Config gathers configuration from env variables and json config files.
-// Examples of fullProduct are "iron_worker", "iron_cache", "iron_mq".
-func Config(fullProduct string) (settings Settings) {
-	return config(fullProduct, "", nil)
-}
-
-// Like Config, but useful for keeping multiple dev environment information in
-// one iron.json config file. If env="", works same as Config.
-//
-// e.g.
-//    {
-//        "production": {
-//            "token": ...,
-//            "project_id": ...
-//        },
-//        "test": {
-//            ...
-//        }
-//    }
-func ConfigWithEnv(fullProduct, env string) (settings Settings) {
-	return config(fullProduct, env, nil)
-}
-
-func config(fullProduct, env string, configuration *Settings) Settings {
 	if os.Getenv("IRON_CONFIG_DEBUG") != "" {
 		debug = true
 		dbg("debugging of config enabled")
@@ -111,25 +85,26 @@ func config(fullProduct, env string, configuration *Settings) Settings {
 		}
 	}
 
-	base.globalConfig(family, product, env)
+	base.globalConfig(family, product)
 	base.globalEnv(family, product)
 	base.productEnv(family, product)
-	base.localConfig(family, product, env)
+	base.localConfig(family, product)
 	base.manualConfig(configuration)
 
 	return base
 }
 
-func (s *Settings) globalConfig(family, product, env string) {
-	u, err := user.Current()
-	if err != nil {
-		fmt.Println("Error getting user.Current():", err)
-		return
+// Config gathers configuration from env variables and json config files.
+// Examples of fullProduct are "iron_worker", "iron_cache", "iron_mq".
+func Config(fullProduct string) (settings Settings) {
+	return ManualConfig(fullProduct, nil)
+}
 
+func (s *Settings) globalConfig(family, product string) {
+	if u, err := user.Current(); err == nil {
+		path := filepath.Join(u.HomeDir, ".iron.json")
+		s.UseConfigFile(family, product, path)
 	}
-	//	fmt.Println("Homedir:", u.HomeDir)
-	path := filepath.Join(u.HomeDir, ".iron.json")
-	s.UseConfigFile(family, product, path, env)
 }
 
 // The environment variables the scheme looks for are all of the same formula:
@@ -150,8 +125,8 @@ func (s *Settings) productEnv(family, product string) {
 	s.commonEnv(eProduct)
 }
 
-func (s *Settings) localConfig(family, product, env string) {
-	s.UseConfigFile(family, product, "iron.json", env)
+func (s *Settings) localConfig(family, product string) {
+	s.UseConfigFile(family, product, "iron.json")
 }
 
 func (s *Settings) manualConfig(settings *Settings) {
@@ -192,7 +167,7 @@ func (s *Settings) commonEnv(prefix string) {
 }
 
 // Load and merge the given JSON config file.
-func (s *Settings) UseConfigFile(family, product, path, env string) {
+func (s *Settings) UseConfigFile(family, product, path string) {
 	content, err := ioutil.ReadFile(path)
 	if err != nil {
 		dbg("tried to", err, ": skipping")
@@ -206,10 +181,6 @@ func (s *Settings) UseConfigFile(family, product, path, env string) {
 	}
 
 	dbg("config in", path, "found")
-
-	if env != "" {
-		data = data[env].(map[string]interface{})
-	}
 	s.UseConfigMap(data)
 
 	ipData, found := data[family+"_"+product]

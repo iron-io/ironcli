@@ -6,7 +6,7 @@ import (
 	"testing"
 	"time"
 
-	// "github.com/iron-io/iron_go/worker"
+	// "github.com/iron-io/iron_go3/worker"
 	. "github.com/jeffh/go.bdd"
 )
 

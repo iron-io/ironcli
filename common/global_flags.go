@@ -46,3 +46,25 @@ func WithGlobalFlags(fn func(g *GlobalFlags)) func(*cli.Context) {
 		fn(gflags)
 	}
 }
+
+// IntOrFail returns g.Ctx.Int(name). if the value is equal to missing,
+// prints an error message and calls os.Exit(1)
+func (g *GlobalFlags) IntOrFail(name string, missing int) int {
+	i := g.Ctx.Int(name)
+	if i == missing {
+		fmt.Println("no ", name, " specified")
+		os.Exit(1)
+	}
+	return i
+}
+
+// StringOrFail returns g.Ctx.String(name). if the value is missing,
+// prints an error message and call os.Exit(1)
+func (g *GlobalFlags) StringOrFail(name string) string {
+	s := g.Ctx.String(name)
+	if s == "" {
+		fmt.Println("no ", name, " specified")
+		os.Exit(1)
+	}
+	return s
+}
