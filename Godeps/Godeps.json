@@ -6,10 +6,6 @@
 	],
 	"Deps": [
 		{
-			"ImportPath": "github.com/arschles/assert",
-			"Rev": "5cd4a1f6f6418f5b9a62fe7f0d66e4a38a545d4a"
-		},
-		{
 			"ImportPath": "github.com/codegangsta/cli",
 			"Comment": "1.2.0-93-g2bcd11f",
 			"Rev": "2bcd11f863d540a1b190dc03b6c4f634c6ae91d4"

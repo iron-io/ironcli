@@ -8,8 +8,8 @@ import (
 )
 
 func list(g *common.GlobalFlags) {
-	page := g.Ctx.Int("page")
-	perPage := g.Ctx.Int("per-page")
+	page := g.IntOrFail("page", -1)
+	perPage := g.IntOrFail("per-page", -1)
 	wrk := worker.Worker{Settings: *common.NewIronConfig(g)}
 	codes, err := wrk.CodePackageList(page, perPage)
 	common.FailErr(err)
@@ -21,7 +21,7 @@ func upload(g *common.GlobalFlags) {
 }
 
 func info(g *common.GlobalFlags) {
-	codeID := g.Ctx.String("codeid")
+	codeID := g.StringOrFail("codeid")
 	wrk := worker.Worker{Settings: *common.NewIronConfig(g)}
 	code, err := wrk.CodePackageInfo(codeID)
 	common.FailErr(err)
@@ -29,7 +29,7 @@ func info(g *common.GlobalFlags) {
 }
 
 func del(g *common.GlobalFlags) {
-	codeID := g.Ctx.String("codeid")
+	codeID := g.StringOrFail("codeid")
 	wrk := worker.Worker{Settings: *common.NewIronConfig(g)}
 	err := wrk.CodePackageDelete(codeID)
 	common.FailErr(err)
@@ -41,9 +41,25 @@ func download(g *common.GlobalFlags) {
 }
 
 func listrevs(g *common.GlobalFlags) {
-	codeID := g.Ctx.String("codeid")
+	codeID := g.StringOrFail("codeid")
 	wrk := worker.Worker{Settings: *common.NewIronConfig(g)}
 	code, err := wrk.CodePackageRevisions(codeID)
 	common.FailErr(err)
 	common.PrintJSON(code)
+}
+
+func logs(g *common.GlobalFlags) {
+	taskID := g.StringOrFail("taskid")
+	wrk := worker.Worker{Settings: *common.NewIronConfig(g)}
+	log, err := wrk.TaskLog(taskID)
+	common.FailErr(err)
+	fmt.Println(string(log))
+}
+
+func schedule(g *common.GlobalFlags) {
+	sched := getSchedule(g)
+	wrk := worker.Worker{Settings: *common.NewIronConfig(g)}
+	ids, err := wrk.Schedule(sched)
+	common.FailErr(err)
+	common.PrintJSON(ids)
 }

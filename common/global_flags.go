@@ -3,9 +3,12 @@ package common
 import (
 	"fmt"
 	"os"
+	"time"
 
 	"github.com/iron-io/ironcli/Godeps/_workspace/src/github.com/codegangsta/cli"
 )
+
+const TimeLayout = "Mon Jan 2 15:04:05 -0700 2006"
 
 type GlobalFlags struct {
 	ProjID  string
@@ -67,4 +70,19 @@ func (g *GlobalFlags) StringOrFail(name string) string {
 		os.Exit(1)
 	}
 	return s
+}
+
+// DurationOrFail calls g.IntOrFail(name, missing) and returns result * unit
+func (g *GlobalFlags) DurationOrFail(name string, unit time.Duration, missing int) time.Duration {
+	i := g.IntOrFail(name, missing)
+	return time.Duration(i) * unit
+}
+
+// TimeOrFail calls g.StringOrFail(name) and attempts to parse the result
+// according to TimeLayout
+func (g *GlobalFlags) TimeOrFail(name string) time.Time {
+	s := g.StringOrFail(name)
+	t, err := time.Parse(TimeLayout, s)
+	FailErr(err)
+	return t
 }
