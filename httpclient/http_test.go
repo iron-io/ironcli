@@ -6,7 +6,7 @@ import (
 	"net/url"
 	"testing"
 
-	"github.com/iron-io/ironcli/Godeps/_workspace/src/github.com/iron-io/go/vendored/github.com/arschles/assert"
+	"github.com/iron-io/ironcli/Godeps/_workspace/src/github.com/arschles/assert"
 )
 
 const (

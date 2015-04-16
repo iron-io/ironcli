@@ -7,7 +7,6 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/iron-io/go/pushd/httpclient"
 	"github.com/iron-io/ironcli/common"
 )
 
@@ -34,7 +33,7 @@ func BaseReq(g *common.GlobalFlags, method string, body string, pathFmt string, 
 // DecodeJSON decodes resp.Body into i, just as json.Unmarshal would.
 // prints an error to stdout and calls os.Exit(1) if there was an error
 // unmarshaling.
-func DecodeJSON(resp *httpclient.Response, i interface{}) {
+func DecodeJSON(resp *Response, i interface{}) {
 	err := json.Unmarshal(resp.Body, i)
 	if err != nil {
 		fmt.Println(err)
@@ -42,7 +41,7 @@ func DecodeJSON(resp *httpclient.Response, i interface{}) {
 	}
 }
 
-// DoJSON is a convenience function for calling httpclient.DoRequest
+// DoJSON is a convenience function for calling DoRequest
 // with req and then decoding the response body with json.Unmarshal
 // into resp. example usage:
 //  req := BaseReq(g, "GET", "", "a/b/c")
@@ -53,7 +52,7 @@ func DecodeJSON(resp *httpclient.Response, i interface{}) {
 // DoJSON will print to stdout and os.Exit(1) if there was a failure
 // creating the request or it could not decode the JSON
 func DoJSON(req *http.Request, resp interface{}) {
-	rawResp, err := httpclient.DoRequest(http.DefaultClient, req, true)
+	rawResp, err := DoRequest(http.DefaultClient, req, true)
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)

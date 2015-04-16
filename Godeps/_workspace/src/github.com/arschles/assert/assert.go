@@ -10,9 +10,9 @@ package assert
 
 import (
 	"fmt"
-	"reflect"
 	"runtime"
 	"testing"
+	"reflect"
 )
 
 // callerStr returns a string representation of the code numFrames stack
