@@ -417,7 +417,9 @@ func (u *UploadCmd) Args() error {
 	if !strings.HasSuffix(u.zip, ".zip") {
 		return errors.New("file extension must be .zip, got: " + u.zip)
 	}
-	if _, err := os.Stat(u.zip); err != nil {
+	if strings.HasPrefix(u.zip, "http") {
+		u.codes.FileName = u.zip
+	} else if _, err := os.Stat(u.zip); err != nil {
 		return err
 	}
 
