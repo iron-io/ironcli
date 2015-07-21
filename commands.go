@@ -417,7 +417,34 @@ func (u *UploadCmd) Args() error {
 		return errors.New("upload takes at least two arguments, the name of the worker and the name of the Docker image. eg: iron worker upload [--zip WORKER_ZIP] --name WORKER_NAME DOCKER_IMAGE [COMMAND]")
 	}
 
-	u.codes.Command = strings.TrimSpace(strings.Join(u.flags.Args()[1:], " "))
+	// here we do 2 things:
+	// * single quote any args that were multiple args, i.e. ["sh", "-c", "some command"] -> sh -c 'some command'
+	// * escape any single quotes inside of multiple args args.
+	// since docker basically doesn't allow things like:
+	//     $ docker run some/image sh -c "cmd $(some command)"
+	// to exec inside of the docker container anyway (i.e. $(some command) will be run on host),
+	// we're not really sacrificing any functionality. I could be wrong here.
+	var cmd string
+	for _, arg := range u.flags.Args()[1:] {
+		if len(strings.Split(arg, " ")) > 1 {
+			// escape any single quotes in arg, then delimit with single quotes.
+			// see http://php.net/escapeshellarg for technique. ' -> '\''
+			var this []rune
+			for _, char := range arg {
+				if char == '\'' {
+					this = append(this, '\'', '\\', '\'', '\'')
+				} else {
+					this = append(this, char)
+				}
+			}
+			arg = string(this)
+
+			cmd += `'` + arg + `' `
+		} else {
+			cmd += arg + " "
+		}
+	}
+	u.codes.Command = cmd
 	u.codes.Image = u.flags.Arg(0)
 
 	if *u.name == "" {
