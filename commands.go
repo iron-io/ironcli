@@ -540,7 +540,11 @@ func (u *UploadCmd) Args() error {
 		if envSlice, ok := u.envVars.Get().(stringSlice); ok {
 			for _, val := range envSlice {
 				pair := strings.SplitN(val, "=", 2)
-				envVarsMap[pair[0]] = pair[1]
+				var val string
+				if len(pair) > 1 {
+					val = pair[1]
+				}
+				envVarsMap[pair[0]] = val
 			}
 		}
 		u.codes.EnvVars = envVarsMap
