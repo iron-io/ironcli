@@ -23,6 +23,7 @@ dependencies:
     - tar -C $HOME -xvzf go1.5.linux-amd64.tar.gz
 
 test:
+  pre:
   override:
     - go build .:
         pwd: $GO_PROJECT/$CIRCLE_PROJECT_REPONAME
