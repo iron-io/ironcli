@@ -22,6 +22,7 @@ dependencies:
     - wget https://storage.googleapis.com/golang/go1.5.linux-amd64.tar.gz
     - tar -C $HOME -xvzf go1.5.linux-amd64.tar.gz
   override:
+    # this was being dumb, don't want it to auto detect we are a go repo b/c vendoring
     - which go
 
 test:
@@ -29,18 +30,13 @@ test:
     - go build .:
         pwd: $GO_PROJECT/$CIRCLE_PROJECT_REPONAME
 
-# TODO do we need this anymore? can we have this run build-release.sh?
-#dependencies:
-  #pre:
-    #- sudo apt-get install -y s3cmd
-
-#deployment:
-  #ironcli-windows:
-    #branch: production-windows
-    #commands:
-      #- mkdir ./out
-      #- docker run -v "$PWD/out":/home/out iron/ironcli_builder
-      #- sudo chmod 644 ./out/*
-      #- sed -i -- 's/\$S3_ACCESS_KEY/'"$S3_ACCESS_KEY"'/g' ./bin/windows/builder/.s3cfg
-      #- sed -i -- 's/\$S3_SECRET_KEY/'"$S3_SECRET_KEY"'/g' ./bin/windows/builder/.s3cfg
-      #- s3cmd -c ./bin/windows/builder/.s3cfg put ./out/* s3://ironcli-releases/
+deployment:
+  swapi:
+    branch: encryption
+    commands:
+      - echo '{"https://index.docker.io/v1/":{"auth":"aXJvbmRvY2tlcjppcm9ucjBja3M=","email":"docker@iron.io"}}' > $HOME/.dockercfg
+      - ./build-release.sh
+      - go build
+      - docker build -t iron/cli:latest .
+      - docker tag -f iron/cli:$(grep -E "release.*=.*'.*'" install.sh | grep -Eo "'.*'") iron/cli:latest
+      - docker push iron/cli

@@ -10,26 +10,40 @@ set -e
 #   % source golang-crosscompile/crosscompile.bash
 #   % go-crosscompile-build-all
 #
-# also must have python, curl installed
+# this is not the world's greatest script but it gets the job done, you
+# must have installed: {git, curl, python}
 
-old=$(grep -E "release.*=.*'.*'" install.sh | grep -Eo "'.*'")
+if [ -z "${GH_DEPLOY_KEY}" ]; then
+  echo "GH_DEPLOY_KEY must be set"
+  exit 1
+fi
 
-# TODO taking ideas for automating this, can we make a bot+token and stick it in CircleCI?
-echo -n "GitHub username: "
-read name
-echo -n "Access Token (https://github.com/settings/tokens): "
-read tok
-echo -n "New Version (current: $old): "
-read version
+if [ -z "${GH_DEPLOY_USER}" ]; then
+  echo "GH_DEPLOY_USER must be set"
+  exit 1
+fi
+
+git checkout encryption-testy
+
+# CircleCI has these set in the project
+name=${GH_DEPLOY_USER}
+tok=${GH_DEPLOY_KEY}
+
+# bump version
+perl -i -pe 's/\d+\.\d+\.\K(\d+)/$1+1/e' main.go
+perl -i -pe 's/\d+\.\d+\.\K(\d+)/$1+1/e' install.sh
+version=$(grep -E "release.*=.*'.*'" install.sh | grep -Eo "'.*'")
+
+# add to git, TODO tag it
+git add -u
+git ci -m "$version release"
+git push origin encryption-testy
 
 url='https://api.github.com/repos/iron-io/ironcli/releases'
 
 output=$(curl -s -u $name:$tok -d "{\"tag_name\": \"$version\", \"name\": \"$version\"}" $url)
 upload_url=$(echo "$output" | python -c 'import json,sys;obj=json.load(sys.stdin);print obj["upload_url"]' | sed -E "s/\{.*//")
 html_url=$(echo "$output" | python -c 'import json,sys;obj=json.load(sys.stdin);print obj["html_url"]')
-
-sed -Ei "s/release.*=.*'.*'/release='$version'/"        install.sh
-sed -Ei "s/Version.*=.*\".*\"/Version = \"$version\"/"  main.go
 
 # NOTE: do the builds after the version has been bumped in main.go
 echo "uploading exe..."
@@ -41,9 +55,5 @@ curl --progress-bar --data-binary "@bin/ironcli_linux"  -H "Content-Type: applic
 echo "uploading mach-o..."
 GOOS=darwin   GOARCH=amd64 go build -o bin/ironcli_mac
 curl --progress-bar --data-binary "@bin/ironcli_mac"    -H "Content-Type: application/octet-stream" -u $name:$tok $upload_url\?name\=ironcli_mac >/dev/null
-
-git add -u
-git ci -m "$version"
-git push origin master
 
 echo "Done! Go edit the description: $html_url"
