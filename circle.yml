@@ -21,6 +21,7 @@ dependencies:
     # install go1.5
     - wget https://storage.googleapis.com/golang/go1.5.linux-amd64.tar.gz
     - tar -C $HOME -xvzf go1.5.linux-amd64.tar.gz
+  override:
 
 test:
   pre:
