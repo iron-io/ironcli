@@ -5,12 +5,14 @@ package main
 // TODO(reed): fix: empty schedule payload not working ?
 
 import (
+	"bytes"
 	"encoding/base64"
 	"encoding/json"
 	"errors"
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"net/url"
 	"os"
 	"strings"
 	"time"
@@ -476,33 +478,35 @@ func (l *DockerLoginCmd) Flags(args ...string) error {
 
 // Takes one parameter, the task_id to log
 func (l *DockerLoginCmd) Args() error {
-
 	if *l.Email == "" || *l.Username == "" || *l.Password == "" || l.Email == nil || l.Username == nil || l.Password == nil {
 		return errors.New("you should set email(-e), password(-p), username(-u) parameters")
 	}
 
 	if *l.Serveraddress == "" || l.Serveraddress == nil {
-		defaultUrl := "https://index.docker.io/v1/" //default dockerhub url
+		defaultUrl := "https://hub.docker.com/v2/" //default dockerhub url
 		l.Serveraddress = &defaultUrl
+	} else {
+		vUrl, _ := url.Parse(*l.Serveraddress)
+		if vUrl.Scheme == "" {
+			u := "https://" + *l.Serveraddress
+			l.Serveraddress = &u
+		}
 	}
 
-	auth := base64.StdEncoding.EncodeToString([]byte(*l.Username + ":" + *l.Password))
-	l.TestAuth = &auth
-
 	//{"username": "string", "password": "string", "email": "string", "serveraddress" : "string", "auth": ""}
-	bytes, _ := json.Marshal(*l)
-	authString := base64.StdEncoding.EncodeToString(bytes)
+	vBytes, _ := json.Marshal(*l)
+	authString := base64.StdEncoding.EncodeToString(vBytes)
 	l.RemoteAuth = &authString
 
-	req, err := http.NewRequest("GET", *l.Serveraddress+"users/", nil)
+	data := url.Values{}
+	data.Add("username", *l.Username)
+	data.Add("password", *l.Password)
+
+	req, err := http.NewRequest("POST", *l.Serveraddress+"/users/login", bytes.NewBufferString(data.Encode()))
 	if err != nil {
 		return fmt.Errorf("error authenticating docker login: %v", err)
 	}
-
-	req.Header.Set("Accept", "application/json")
-	req.Header.Set("Accept-Encoding", "gzip/deflate")
-	req.Header.Set("Authorization", "Basic "+*l.TestAuth)
-	req.Header.Set("Content-Type", "application/json")
+	req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
 
 	res, err := http.DefaultClient.Do(req)
 
