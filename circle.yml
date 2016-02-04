@@ -32,8 +32,7 @@ test:
   override:
     - go build .:
         pwd: $GO_PROJECT/$CIRCLE_PROJECT_REPONAME
-    - go test .:
-        pwd: $GO_PROJECT/$CIRCLE_PROJECT_REPONAME/lambda
+    - go test -v ./lambda
 
 deployment:
   this:
