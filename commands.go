@@ -476,39 +476,145 @@ func (l *DockerLoginCmd) Flags(args ...string) error {
 	return l.flags.validateAllFlags()
 }
 
-// Takes one parameter, the task_id to log
-func (l *DockerLoginCmd) Args() error {
-	if *l.Email == "" || *l.Username == "" || *l.Password == "" || l.Email == nil || l.Username == nil || l.Password == nil {
-		return errors.New("you should set email(-e), password(-p), username(-u) parameters")
+func bearerAuthParams(r *http.Response) (map[string]string, error) {
+	s := strings.SplitN(r.Header.Get("www-authenticate"), " ", 2)
+	if s[0] != "Bearer" {
+		return nil, errors.New(fmt.Sprintf("Authorization endpoint is not specified in response to get token: %s.", s))
 	}
 
-	if *l.Serveraddress == "" || l.Serveraddress == nil {
-		defaultUrl := "https://hub.docker.com/v2/" //default dockerhub url
-		l.Serveraddress = &defaultUrl
+	result := map[string]string{}
+	for _, kv := range strings.Split(s[1], ",") {
+		parts := strings.SplitN(kv, "=", 2)
+		fmt.Println(parts)
+		if len(parts) != 2 {
+			continue
+		}
+		result[strings.Trim(parts[0], "\" ")] = strings.Trim(parts[1], "\" ")
+	}
+	return result, nil
+}
+
+func getAuthToken(l *DockerLoginCmd) (string, error) {
+	resp, err := http.Get(*l.Serveraddress)
+	if err != nil {
+		return "", err
+	}
+	result, err := bearerAuthParams(resp)
+	resp.Body.Close()
+	if err != nil {
+		return "", err
+	}
+
+	if _, ok := result["realm"]; !ok {
+		return "", errors.New(fmt.Sprintf("Token address is not specified in response header[realm field]: %v", result))
+	}
+	if _, ok := result["service"]; !ok {
+		return "", errors.New(fmt.Sprintf("Name of the service is not specified in response header[service field]: %v", result))
+	}
+	if _, ok := result["scope"]; !ok {
+		return "", errors.New(fmt.Sprintf("Access type is not specified in response header[scope field]: %v", result))
+	}
+
+	u, err := url.Parse(result["realm"])
+	if err != nil {
+		return "", err
+	}
+	query := u.Query()
+	query.Set("service", result["service"])
+	query.Set("scope", result["scope"])
+	u.RawQuery = query.Encode()
+
+	req, err := http.NewRequest("GET", u.String(), nil)
+	if err != nil {
+		return "", err
+	}
+	auth := base64.StdEncoding.EncodeToString([]byte(*l.Username + ":" + *l.Password))
+	req.Header.Set("Accept", "application/json")
+	req.Header.Set("Accept-Encoding", "gzip/deflate")
+	req.Header.Set("Authorization", "Basic "+auth)
+	req.Header.Set("Content-Type", "application/json")
+
+	res, err := http.DefaultClient.Do(req)
+	defer res.Body.Close()
+	if err != nil {
+		return "", err
+	}
+
+	var reply struct {
+		Token string `json:"token"`
+	}
+	body, err := ioutil.ReadAll(res.Body)
+	if err != nil {
+		return "", errors.New(fmt.Sprintf("error authenticating token endpoint: %v", err))
+	}
+	err = json.Unmarshal([]byte(body), &reply)
+	if err != nil {
+		return "", errors.New(fmt.Sprintf("error converting response to struct(token endpoint): %v", err))
+	}
+
+	return reply.Token, nil
+}
+
+func getLoginRequest(l *DockerLoginCmd) (*http.Request, error) {
+	var req *http.Request
+	var err error
+
+	if *l.Serveraddress == "" || l.Serveraddress == nil ||
+		strings.Contains(*l.Serveraddress, "hub.docker.com") ||
+		strings.Contains(*l.Serveraddress, "index.docker.io") {
+		u := "https://hub.docker.com/v2/" //default dockerhub url
+		l.Serveraddress = &u
+
+		data := url.Values{}
+		data.Add("username", *l.Username)
+		data.Add("password", *l.Password)
+
+		req, err = http.NewRequest("POST", *l.Serveraddress+"/users/login", bytes.NewBufferString(data.Encode()))
+		if err != nil {
+			return nil, errors.New(fmt.Sprint("error authenticating docker login: %v", err))
+		}
+		req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
 	} else {
 		vUrl, _ := url.Parse(*l.Serveraddress)
 		if vUrl.Scheme == "" {
 			u := "https://" + *l.Serveraddress
 			l.Serveraddress = &u
 		}
+
+		token, e := getAuthToken(l)
+		if e != nil {
+			return nil, e
+		}
+
+		req, err = http.NewRequest("GET", *l.Serveraddress, nil)
+		if err != nil {
+			return nil, errors.New(fmt.Sprint("error authenticating docker login: %v", err))
+		}
+		req.Header.Set("Accept", "application/json")
+		req.Header.Set("Authorization", "Bearer "+token)
+		req.Header.Set("Content-Type", "application/json")
 	}
 
-	//{"username": "string", "password": "string", "email": "string", "serveraddress" : "string", "auth": ""}
+	return req, nil
+}
+
+// Takes one parameter, the task_id to log
+func (l *DockerLoginCmd) Args() error {
+	if *l.Email == "" || *l.Username == "" || *l.Password == "" || l.Email == nil || l.Username == nil || l.Password == nil {
+		return errors.New("you should set email(-e), password(-p), username(-u) parameters")
+	}
+
+	req, err := getLoginRequest(l)
+	if err != nil {
+		return err
+	}
+
 	vBytes, _ := json.Marshal(*l)
 	authString := base64.StdEncoding.EncodeToString(vBytes)
 	l.RemoteAuth = &authString
 
-	data := url.Values{}
-	data.Add("username", *l.Username)
-	data.Add("password", *l.Password)
-
-	req, err := http.NewRequest("POST", *l.Serveraddress+"/users/login", bytes.NewBufferString(data.Encode()))
-	if err != nil {
-		return fmt.Errorf("error authenticating docker login: %v", err)
-	}
-	req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
-
 	res, err := http.DefaultClient.Do(req)
+	defer res.Body.Close()
 
 	if err != nil || res.StatusCode != 200 {
 		return errors.New("Docker repo auth failed")
