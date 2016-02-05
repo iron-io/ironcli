@@ -485,7 +485,6 @@ func bearerAuthParams(r *http.Response) (map[string]string, error) {
 	result := map[string]string{}
 	for _, kv := range strings.Split(s[1], ",") {
 		parts := strings.SplitN(kv, "=", 2)
-		fmt.Println(parts)
 		if len(parts) != 2 {
 			continue
 		}
