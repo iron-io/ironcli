@@ -27,8 +27,8 @@ dependencies:
 
 test:
   pre:
-    - git clone git@github.com:iron-io/lambda base_docker_images
-    - docker build -t iron/lambda-node ./base_docker_images/images/node
+    - git clone git@github.com:iron-io/lambda-images lambda-images
+    - docker build -t iron/lambda-node ./lambda-images/node
   override:
     - go build .:
         pwd: $GO_PROJECT/$CIRCLE_PROJECT_REPONAME
