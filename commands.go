@@ -667,7 +667,11 @@ func (u *UploadCmd) Args() error {
 	}
 
 	u.codes.Command = strings.TrimSpace(strings.Join(u.flags.Args()[1:], " "))
-	u.codes.Image = u.flags.Arg(0)
+	image := u.flags.Arg(0)
+	if len(strings.Split(image, "/")) < 2 {
+		image = "library/" + image
+	}
+	u.codes.Image = image
 
 	if *u.name == "" {
 		return errors.New("must specify -name for your worker")
