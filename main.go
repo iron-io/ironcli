@@ -52,6 +52,9 @@ var (
 			"rm":      new(RmCmd),
 			"info":    new(InfoCmd),
 		},
+		"lambda": mapper{
+			"create-function": new(LambdaCreateCmd),
+		},
 	}
 )
 
@@ -73,6 +76,7 @@ where [product] is one of:
   docker
   register
   run
+  lambda
 
 run '`+os.Args[0], `[product] -help for a list of commands.
 run '`+os.Args[0], `[product] [command] -help' for [command]'s flags/args.
