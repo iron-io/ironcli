@@ -61,7 +61,6 @@ func (lcc *LambdaCreateCmd) Flags(args ...string) error {
 
 func (lcc *LambdaCreateCmd) Run() {
 	fmt.Println("fn", *lcc.functionName)
-	fmt.Println("RNRUNR")
 
 	files := make([]lambda.FileLike, 0, len(lcc.fileNames))
 	for _, fileName := range lcc.fileNames {
@@ -71,5 +70,9 @@ func (lcc *LambdaCreateCmd) Run() {
 		}
 		files = append(files, file)
 	}
-	lambda.CreateImage(*lcc.functionName, "iron/lambda-node", *lcc.handler, files...)
+	fmt.Println("OPened correctly")
+	err := lambda.CreateImage(*lcc.functionName, "iron/lambda-node", *lcc.handler, files...)
+	if err != nil {
+		fmt.Fprintln(os.Stderr, red(err))
+	}
 }
