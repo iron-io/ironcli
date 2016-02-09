@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/iron-io/ironcli/lambda"
+	"github.com/iron-io/lambda"
 )
 
 type LambdaCreateCmd struct {
