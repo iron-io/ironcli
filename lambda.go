@@ -2,14 +2,45 @@ package main
 
 import (
 	"errors"
+	"flag"
 	"fmt"
+	"log"
 	"os"
 
+	"github.com/iron-io/iron_go3/config"
 	"github.com/iron-io/lambda"
 )
 
+type LambdaFlags struct {
+	*flag.FlagSet
+}
+
+func (lf *LambdaFlags) validateAllFlags() error {
+	availableRuntimes := []string{"nodejs", "python2.7", "java8"}
+	selectedRuntime := lf.Lookup("runtime")
+	validRuntime := false
+	for _, r := range availableRuntimes {
+		if selectedRuntime.Value.String() == r {
+			validRuntime = true
+		}
+	}
+
+	if !validRuntime {
+		return errors.New(fmt.Sprintf("Invalid runtime. Supported runtimes %s", availableRuntimes))
+	}
+
+	return nil
+}
+
+type lambdaCmd struct {
+	settings  config.Settings
+	flags     *LambdaFlags
+	token     *string
+	projectID *string
+}
+
 type LambdaCreateCmd struct {
-	mqCmd
+	lambdaCmd
 
 	functionName *string
 	runtime      *string
@@ -17,12 +48,16 @@ type LambdaCreateCmd struct {
 	fileNames    []string
 }
 
-func (mf *MqFlags) functionName() *string {
-	return mf.String("function-name", "", "")
+func (lf *LambdaFlags) functionName() *string {
+	return lf.String("function-name", "", "")
 }
 
-func (mf *MqFlags) handler() *string {
-	return mf.String("handler", "", "")
+func (lf *LambdaFlags) handler() *string {
+	return lf.String("handler", "", "")
+}
+
+func (lf *LambdaFlags) runtime() *string {
+	return lf.String("runtime", "", "")
 }
 
 func (lcc *LambdaCreateCmd) Args() error {
@@ -47,10 +82,13 @@ func (lcc *LambdaCreateCmd) Config() error {
 }
 
 func (lcc *LambdaCreateCmd) Flags(args ...string) error {
-	lcc.flags = NewMqFlagSet()
+	flags := flag.NewFlagSet("commands", flag.ContinueOnError)
+	flags.Usage = func() {}
+	lcc.flags = &LambdaFlags{flags}
 
 	lcc.functionName = lcc.flags.functionName()
 	lcc.handler = lcc.flags.handler()
+	lcc.runtime = lcc.flags.runtime()
 
 	if err := lcc.flags.Parse(args); err != nil {
 		return err
@@ -60,19 +98,16 @@ func (lcc *LambdaCreateCmd) Flags(args ...string) error {
 }
 
 func (lcc *LambdaCreateCmd) Run() {
-	fmt.Println("fn", *lcc.functionName)
-
 	files := make([]lambda.FileLike, 0, len(lcc.fileNames))
 	for _, fileName := range lcc.fileNames {
 		file, err := os.Open(fileName)
 		if err != nil {
-			panic("Handle this")
+			log.Fatal(err)
 		}
 		files = append(files, file)
 	}
-	fmt.Println("OPened correctly")
-	err := lambda.CreateImage(*lcc.functionName, "iron/lambda-node", *lcc.handler, files...)
+	err := lambda.CreateImage(*lcc.functionName, "iron/lambda-nodejs", *lcc.handler, files...)
 	if err != nil {
-		fmt.Fprintln(os.Stderr, red(err))
+		log.Fatal(err)
 	}
 }
