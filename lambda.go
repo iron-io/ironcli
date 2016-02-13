@@ -8,7 +8,7 @@ import (
 	"os"
 
 	"github.com/iron-io/iron_go3/config"
-	"github.com/iron-io/lambda"
+	"github.com/iron-io/lambda/lambda"
 )
 
 type LambdaFlags struct {
