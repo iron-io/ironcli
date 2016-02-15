@@ -51,6 +51,14 @@ func (lf *LambdaFlags) runtime() *string {
 	return lf.String("runtime", "", "")
 }
 
+func (lf *LambdaFlags) clientContext() *string {
+	return lf.String("client-context", "", "")
+}
+
+func (lf *LambdaFlags) payload() *string {
+	return lf.String("payload", "", "")
+}
+
 type lambdaCmd struct {
 	settings  config.Settings
 	flags     *LambdaFlags
@@ -114,6 +122,66 @@ func (lcc *LambdaCreateCmd) Run() {
 		files = append(files, file)
 	}
 	err := lambda.CreateImage(*lcc.functionName, "iron/lambda-nodejs", *lcc.handler, files...)
+	if err != nil {
+		log.Fatal(err)
+	}
+}
+
+type LambdaTestFunctionCmd struct {
+	lambdaCmd
+
+	functionName  *string
+	clientContext *string
+	payload       *string
+}
+
+func (lcc *LambdaTestFunctionCmd) Args() error {
+	return nil
+}
+
+func (lcc *LambdaTestFunctionCmd) Usage() {
+	fmt.Fprintln(os.Stderr, `usage: iron lambda test-function --function-name NAME [--client-context <value>] [--payload <value>]
+	
+Runs local Dockerized Lambda function and writes output to stdout.`)
+	lcc.flags.PrintDefaults()
+}
+
+func (lcc *LambdaTestFunctionCmd) Config() error {
+	return nil
+}
+
+func (lcc *LambdaTestFunctionCmd) Flags(args ...string) error {
+	flags := flag.NewFlagSet("commands", flag.ContinueOnError)
+	flags.Usage = func() {}
+	lcc.flags = &LambdaFlags{flags}
+
+	lcc.functionName = lcc.flags.functionName()
+	lcc.clientContext = lcc.flags.clientContext()
+	lcc.payload = lcc.flags.payload()
+
+	if err := lcc.flags.Parse(args); err != nil {
+		return err
+	}
+
+	return lcc.flags.validateAllFlags()
+}
+
+func (lcc *LambdaTestFunctionCmd) Run() {
+	exists, err := lambda.ImageExists(*lcc.functionName)
+	if err != nil {
+		log.Fatal("Error communicating with Docker daemon", err)
+	}
+
+	if !exists {
+		log.Fatal(fmt.Sprintf("Function %s does not exist.", *lcc.functionName))
+	}
+
+	payload := ""
+	if lcc.payload != nil {
+		payload = *lcc.payload
+	}
+	// Redirect output to stdout.
+	err = lambda.RunImageWithPayload(*lcc.functionName, payload)
 	if err != nil {
 		log.Fatal(err)
 	}

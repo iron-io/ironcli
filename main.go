@@ -54,6 +54,7 @@ var (
 		},
 		"lambda": mapper{
 			"create-function": new(LambdaCreateCmd),
+			"test-function":   new(LambdaTestFunctionCmd),
 		},
 	}
 )
