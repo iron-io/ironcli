@@ -16,20 +16,39 @@ type LambdaFlags struct {
 }
 
 func (lf *LambdaFlags) validateAllFlags() error {
+	fn := lf.Lookup("function-name")
+	if fn.Value.String() == "" {
+		return errors.New(fmt.Sprintf("Please specify function-name."))
+	}
+
 	availableRuntimes := []string{"nodejs", "python2.7", "java8"}
 	selectedRuntime := lf.Lookup("runtime")
-	validRuntime := false
-	for _, r := range availableRuntimes {
-		if selectedRuntime.Value.String() == r {
-			validRuntime = true
+	if selectedRuntime != nil {
+		validRuntime := false
+		for _, r := range availableRuntimes {
+			if selectedRuntime.Value.String() == r {
+				validRuntime = true
+			}
+		}
+
+		if !validRuntime {
+			return errors.New(fmt.Sprintf("Invalid runtime. Supported runtimes %s", availableRuntimes))
 		}
 	}
 
-	if !validRuntime {
-		return errors.New(fmt.Sprintf("Invalid runtime. Supported runtimes %s", availableRuntimes))
-	}
-
 	return nil
+}
+
+func (lf *LambdaFlags) functionName() *string {
+	return lf.String("function-name", "", "")
+}
+
+func (lf *LambdaFlags) handler() *string {
+	return lf.String("handler", "", "")
+}
+
+func (lf *LambdaFlags) runtime() *string {
+	return lf.String("runtime", "", "")
 }
 
 type lambdaCmd struct {
@@ -46,18 +65,6 @@ type LambdaCreateCmd struct {
 	runtime      *string
 	handler      *string
 	fileNames    []string
-}
-
-func (lf *LambdaFlags) functionName() *string {
-	return lf.String("function-name", "", "")
-}
-
-func (lf *LambdaFlags) handler() *string {
-	return lf.String("handler", "", "")
-}
-
-func (lf *LambdaFlags) runtime() *string {
-	return lf.String("runtime", "", "")
 }
 
 func (lcc *LambdaCreateCmd) Args() error {
