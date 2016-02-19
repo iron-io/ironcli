@@ -5,7 +5,6 @@ package main
 // TODO(reed): fix: empty schedule payload not working ?
 
 import (
-	"encoding/base64"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -100,7 +99,6 @@ type DockerLoginCmd struct {
 	Password      *string `json:"password"`
 	Serveraddress *string `json:"serveraddress"`
 	TestAuth      *string `json:"-"`    //
-	RemoteAuth    *string `json:"-"`    //
 	Auth          string  `json:"auth"` //Docker api require to use empty auth
 }
 
@@ -480,9 +478,10 @@ func (l *DockerLoginCmd) Args() error {
 		return errors.New("you should set email(-e), password(-p), username(-u) parameters")
 	}
 
-	vBytes, _ := json.Marshal(*l)
-	authString := base64.StdEncoding.EncodeToString(vBytes)
-	l.RemoteAuth = &authString
+	if *l.Serveraddress == "" || l.Serveraddress == nil {
+		defaultUrl := "https://hub.docker.com/v2/"
+		l.Serveraddress = &defaultUrl
+	}
 
 	return nil
 }
@@ -494,10 +493,21 @@ func (l *DockerLoginCmd) Usage() {
 
 func (l *DockerLoginCmd) Run() {
 	fmt.Println(LINES, "Storing docker repo credentials")
-	auth := map[string]string{
-		"auth": *l.RemoteAuth,
+	vJson, err := json.Marshal(*l)
+	if err != nil {
+		fmt.Println(err)
+		return
 	}
-	msg, err := dockerLogin(&l.wrkr, &auth)
+	auth := map[string]string{
+		"auth": string(vJson),
+	}
+
+	vBytes, err := json.Marshal(auth)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	msg, err := dockerLogin(&l.wrkr, vBytes)
 	if err != nil {
 		fmt.Println(err)
 		return
