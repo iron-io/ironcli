@@ -7,6 +7,7 @@ import (
 	"log"
 	"os"
 
+	"github.com/aws/aws-sdk-go/aws/credentials"
 	"github.com/iron-io/iron_go3/config"
 	"github.com/iron-io/lambda/lambda"
 )
@@ -184,5 +185,61 @@ func (lcc *LambdaTestFunctionCmd) Run() {
 	err = lambda.RunImageWithPayload(*lcc.functionName, payload)
 	if err != nil {
 		log.Fatal(err)
+	}
+}
+
+type LambdaPublishCmd struct {
+	lambdaCmd
+
+	functionName *string
+}
+
+func (lcc *LambdaPublishCmd) Args() error {
+	return nil
+}
+
+func (lcc *LambdaPublishCmd) Usage() {
+	fmt.Fprintln(os.Stderr, `usage: iron lambda publish-function --function-name NAME
+	
+Pushes Lambda function to Docker Hub and registers with IronWorker.`)
+	lcc.flags.PrintDefaults()
+}
+
+func (lcc *LambdaPublishCmd) Config() error {
+	return nil
+}
+
+func (lcc *LambdaPublishCmd) Flags(args ...string) error {
+	flags := flag.NewFlagSet("commands", flag.ContinueOnError)
+	flags.Usage = func() {}
+	lcc.flags = &LambdaFlags{flags}
+
+	lcc.functionName = lcc.flags.functionName()
+
+	if err := lcc.flags.Parse(args); err != nil {
+		return err
+	}
+
+	return lcc.flags.validateAllFlags()
+}
+
+func (lcc *LambdaPublishCmd) Run() {
+	exists, err := lambda.ImageExists(*lcc.functionName)
+	if err != nil {
+		log.Fatal("Error communicating with Docker daemon:", err)
+	}
+
+	if !exists {
+		log.Fatal(fmt.Sprintf("Function %s does not exist:", *lcc.functionName))
+	}
+
+	err = lambda.PushImage(*lcc.functionName)
+	if err != nil {
+		log.Fatal("Error pushing image:", err)
+	}
+
+	err = lambda.RegisterWithIron(*lcc.functionName, credentials.NewEnvCredentials())
+	if err != nil {
+		log.Fatal("Error registering with IronWorker:", err)
 	}
 }

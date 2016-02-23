@@ -53,8 +53,9 @@ var (
 			"info":    new(InfoCmd),
 		},
 		"lambda": mapper{
-			"create-function": new(LambdaCreateCmd),
-			"test-function":   new(LambdaTestFunctionCmd),
+			"create-function":  new(LambdaCreateCmd),
+			"test-function":    new(LambdaTestFunctionCmd),
+			"publish-function": new(LambdaPublishCmd),
 		},
 	}
 )
