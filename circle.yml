@@ -25,6 +25,11 @@ dependencies:
     # this was being dumb, don't want it to auto detect we are a go repo b/c vendoring
     - which go
 
+test:
+  override:
+    - go build .:
+        pwd: $GO_PROJECT/$CIRCLE_PROJECT_REPONAME
+
 deployment:
   this:
     branch: release
