@@ -40,15 +40,15 @@ func (lf *LambdaFlags) validateAllFlags() error {
 }
 
 func (lf *LambdaFlags) functionName() *string {
-	return lf.String("function-name", "", "")
+	return lf.String("function-name", "", "Name of function. This is usually follows Docker image naming conventions.")
 }
 
 func (lf *LambdaFlags) handler() *string {
-	return lf.String("handler", "", "")
+	return lf.String("handler", "", "function/class that is the entrypoint.")
 }
 
 func (lf *LambdaFlags) runtime() *string {
-	return lf.String("runtime", "", "")
+	return lf.String("runtime", "", "Runtime that your Lambda function depends on. Valid values are nodejs, python, or java.")
 }
 
 func (lf *LambdaFlags) clientContext() *string {
@@ -56,7 +56,7 @@ func (lf *LambdaFlags) clientContext() *string {
 }
 
 func (lf *LambdaFlags) payload() *string {
-	return lf.String("payload", "", "")
+	return lf.String("payload", "", "Payload to pass to the Lambda function. This is usually a JSON object.")
 }
 
 type lambdaCmd struct {
