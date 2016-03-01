@@ -12,7 +12,7 @@ import (
 	"github.com/iron-io/lambda/lambda"
 )
 
-var availableRuntimes = []string{"nodejs", "python2.7", "java8"}
+var availableRuntimes = []string{"nodejs", "python:2.7", "java8"}
 
 type LambdaFlags struct {
 	*flag.FlagSet
