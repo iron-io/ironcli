@@ -6,10 +6,13 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"strings"
 
 	"github.com/iron-io/iron_go3/config"
 	"github.com/iron-io/lambda/lambda"
 )
+
+var availableRuntimes = []string{"nodejs", "python2.7", "java8"}
 
 type LambdaFlags struct {
 	*flag.FlagSet
@@ -21,7 +24,6 @@ func (lf *LambdaFlags) validateAllFlags() error {
 		return errors.New(fmt.Sprintf("Please specify function-name."))
 	}
 
-	availableRuntimes := []string{"nodejs", "python2.7", "java8"}
 	selectedRuntime := lf.Lookup("runtime")
 	if selectedRuntime != nil {
 		validRuntime := false
@@ -48,7 +50,7 @@ func (lf *LambdaFlags) handler() *string {
 }
 
 func (lf *LambdaFlags) runtime() *string {
-	return lf.String("runtime", "", "Runtime that your Lambda function depends on. Valid values are nodejs, python, or java.")
+	return lf.String("runtime", "", fmt.Sprintf("Runtime that your Lambda function depends on. Valid values are %s.", strings.Join(availableRuntimes, ", ")))
 }
 
 func (lf *LambdaFlags) clientContext() *string {
