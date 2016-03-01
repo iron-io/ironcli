@@ -123,7 +123,7 @@ func (lcc *LambdaCreateCmd) Run() {
 		}
 		files = append(files, file)
 	}
-	err := lambda.CreateImage(*lcc.functionName, "iron/lambda-nodejs", *lcc.handler, files...)
+	err := lambda.CreateImage(*lcc.functionName, fmt.Sprintf("iron/lambda-%s", *lcc.runtime), *lcc.handler, files...)
 	if err != nil {
 		log.Fatal(err)
 	}
