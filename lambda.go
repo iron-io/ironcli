@@ -4,11 +4,13 @@ import (
 	"errors"
 	"flag"
 	"fmt"
+	"io"
 	"log"
 	"os"
 	"strings"
 
 	aws_credentials "github.com/aws/aws-sdk-go/aws/credentials"
+	"github.com/docker/docker/pkg/jsonmessage"
 	"github.com/iron-io/iron_go3/config"
 	"github.com/iron-io/lambda/lambda"
 )
@@ -117,6 +119,24 @@ func (lcc *LambdaCreateCmd) Flags(args ...string) error {
 	return lcc.flags.validateAllFlags()
 }
 
+type DockerJsonWriter struct {
+	under io.Writer
+	w     io.Writer
+}
+
+func NewDockerJsonWriter(under io.Writer) *DockerJsonWriter {
+	r, w := io.Pipe()
+	go func() {
+		err := jsonmessage.DisplayJSONMessagesStream(r, os.Stdout, 1, true, nil)
+		log.Fatal(err)
+	}()
+	return &DockerJsonWriter{under, w}
+}
+
+func (djw *DockerJsonWriter) Write(p []byte) (int, error) {
+	return djw.w.Write(p)
+}
+
 func (lcc *LambdaCreateCmd) Run() {
 	files := make([]lambda.FileLike, 0, len(lcc.fileNames))
 	for _, fileName := range lcc.fileNames {
@@ -132,8 +152,8 @@ func (lcc *LambdaCreateCmd) Run() {
 		fmt.Sprintf("iron/lambda-%s", *lcc.runtime),
 		"",
 		*lcc.handler,
-		os.Stdout,
-		false,
+		NewDockerJsonWriter(os.Stdout),
+		true,
 	}
 
 	err := lambda.CreateImage(opts, files...)
