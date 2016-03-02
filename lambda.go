@@ -46,7 +46,7 @@ func (lf *LambdaFlags) functionName() *string {
 }
 
 func (lf *LambdaFlags) handler() *string {
-	return lf.String("handler", "", "function/class that is the entrypoint.")
+	return lf.String("handler", "", "function/class that is the entrypoint for this function. Of the form <module name>.<function name> for nodejs/Python, <full class name>::<function name base> for Java.")
 }
 
 func (lf *LambdaFlags) runtime() *string {
@@ -90,7 +90,9 @@ func (lcc *LambdaCreateCmd) Args() error {
 }
 
 func (lcc *LambdaCreateCmd) Usage() {
-	fmt.Fprintln(os.Stderr, `usage: iron lambda create-function --function-name NAME --runtime RUNTIME --handler HANDLER file [files...]`)
+	fmt.Fprintln(os.Stderr, `usage: iron lambda create-function --function-name NAME --runtime RUNTIME --handler HANDLER file [files...]
+
+Create Docker image that can run your Lambda function. The files are the contents of the zip file to be uploaded to AWS Lambda.`)
 	lcc.flags.PrintDefaults()
 }
 
