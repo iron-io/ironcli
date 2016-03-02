@@ -8,6 +8,7 @@ import (
 	"os"
 	"strings"
 
+	aws_credentials "github.com/aws/aws-sdk-go/aws/credentials"
 	"github.com/iron-io/iron_go3/config"
 	"github.com/iron-io/lambda/lambda"
 )
@@ -241,7 +242,7 @@ func (lcc *LambdaPublishCmd) Run() {
 		log.Fatal("Error pushing image:", err)
 	}
 
-	err = lambda.RegisterWithIronDefaultAWSCredentials(*lcc.functionName)
+	err = lambda.RegisterWithIron(*lcc.functionName, aws_credentials.NewEnvCredentials())
 	if err != nil {
 		log.Fatal("Error registering with IronWorker:", err)
 	}
