@@ -7,6 +7,7 @@ import (
 	"io"
 	"log"
 	"os"
+	"path/filepath"
 	"strings"
 
 	aws_credentials "github.com/aws/aws-sdk-go/aws/credentials"
@@ -139,7 +140,15 @@ func (djw *DockerJsonWriter) Write(p []byte) (int, error) {
 
 func (lcc *LambdaCreateCmd) Run() {
 	files := make([]lambda.FileLike, 0, len(lcc.fileNames))
+	jar := ""
 	for _, fileName := range lcc.fileNames {
+		// First file must be a valid jar.
+		if *lcc.runtime == "java8" && jar == "" {
+			if !strings.HasSuffix(fileName, ".jar") {
+				log.Fatal("First file for Java functions must be the JAR containing the handler.")
+			}
+			jar = filepath.Base(fileName)
+		}
 		file, err := os.Open(fileName)
 		if err != nil {
 			log.Fatal(err)
@@ -154,6 +163,10 @@ func (lcc *LambdaCreateCmd) Run() {
 		*lcc.handler,
 		NewDockerJsonWriter(os.Stdout),
 		true,
+	}
+
+	if *lcc.runtime == "java8" {
+		opts.Package = jar
 	}
 
 	err := lambda.CreateImage(opts, files...)
