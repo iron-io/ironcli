@@ -52,11 +52,6 @@ var (
 			"rm":      new(RmCmd),
 			"info":    new(InfoCmd),
 		},
-		"lambda": mapper{
-			"create-function":  new(LambdaCreateCmd),
-			"test-function":    new(LambdaTestFunctionCmd),
-			"publish-function": new(LambdaPublishCmd),
-		},
 	}
 )
 
