@@ -21,12 +21,17 @@ dependencies:
     # install go1.5
     - wget https://storage.googleapis.com/golang/go1.5.linux-amd64.tar.gz
     - tar -C $HOME -xvzf go1.5.linux-amd64.tar.gz
+    # install glide
+    - wget https://github.com/Masterminds/glide/releases/download/0.9.2/glide-0.9.2-linux-amd64.tar.gz
+    - tar -C $HOME --strip-components 1 --include '*glide' -zxvf ./glide-0.9.2-linux-amd64.tar.gz
   override:
     # this was being dumb, don't want it to auto detect we are a go repo b/c vendoring
     - which go
 
 test:
   override:
+    - $HOME/glide i:
+        pwd: $GO_PROJECT/$CIRCLE_PROJECT_REPONAME
     - go build .:
         pwd: $GO_PROJECT/$CIRCLE_PROJECT_REPONAME
 
