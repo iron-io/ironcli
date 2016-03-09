@@ -9,5 +9,7 @@ import:
 - package: github.com/fatih/color
   version: 0.1
 - package: github.com/iron-io/lambda
+  # Use SSH URL while lambda is private so that this can work on CircleCI.
+  repo: git@github.com:iron-io/lambda
   subpackages:
   - lambda
