@@ -1,0 +1,40 @@
+hash: 4de39c1cf9aea1197087d5ce4d41393351c2eab3781f9e2f0f07f4fa4b54287e
+updated: 2016-03-09T17:57:42.305626124+05:30
+imports:
+- name: github.com/aws/aws-sdk-go
+  version: 2e7cf03d7f5c8a4b4c9f7341ddf1e13102845cf2
+  subpackages:
+  - aws/credentials
+  - aws/awserr
+- name: github.com/fatih/color
+  version: 1b35f289c47d5c73c398cea8e006b7bcb6234a96
+- name: github.com/fsouza/go-dockerclient
+  version: 9b6c9720043b74304a6dd07a2a901d16e7bf3d3d
+  subpackages:
+  - external/github.com/docker/docker/opts
+  - external/github.com/docker/docker/pkg/archive
+  - external/github.com/docker/docker/pkg/fileutils
+  - external/github.com/docker/docker/pkg/homedir
+  - external/github.com/docker/docker/pkg/stdcopy
+  - external/github.com/hashicorp/go-cleanhttp
+  - external/github.com/Sirupsen/logrus
+  - external/github.com/opencontainers/runc/libcontainer/user
+  - external/golang.org/x/sys/unix
+- name: github.com/go-ini/ini
+  version: 776aa739ce9373377cd16f526cdf06cb4c89b40f
+- name: github.com/iron-io/iron_go3
+  version: 327b49356eb18e45d21c09a2cc0bc44f88c6c482
+  subpackages:
+  - api
+  - config
+  - mq
+  - worker
+- name: github.com/iron-io/lambda
+  version: 534e6e171177c63a51744f5c90a74b6221111d4f
+  subpackages:
+  - lambda
+- name: github.com/satori/go.uuid
+  version: e673fdd4dea8a7334adbbe7f57b7e4b00bdc5502
+- name: github.com/shiena/ansicolor
+  version: a422bbe96644373c5753384a59d678f7d261ff10
+devImports: []
