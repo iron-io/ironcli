@@ -3,7 +3,7 @@ import:
 - package: github.com/fatih/color
   version: 533cd7fd8a85905f67a1753afb4deddc85ea174f
 - package: github.com/iron-io/iron_go3
-  version: cf9612702bea112d6e036cb2151b051c9a3f7274
+  version: d1197926301489b15e418c49a0b17a9c42817acd
   subpackages:
   - api
   - config
