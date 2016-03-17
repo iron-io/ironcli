@@ -54,8 +54,13 @@ Since go1.5, we are lab rats in the go1.5 vendoring experiment. This eliminates
 the need to modify import paths and depend on package maintainers not to break things.
 For more info, see: <https://golang.org/s/go15vendor>.
 
-Just `export GO15VENDOREXPERIMENT=1` in your shell env however you like, and
-then `go build`.
+We use [glide](http://glide.sh) to manage the vendoring. To build ironcli:
+
+```sh
+export GO15VENDOREXPERIMENT=1
+glide install
+go build
+```
 
 ## Other Installation Methods
 
