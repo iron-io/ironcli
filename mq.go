@@ -288,7 +288,7 @@ func (i *InfoCmd) Run() {
 	fmt.Printf("%sMessage expiration: %d\n", BLANKS, info.MessageExpiration)
 	fmt.Printf("%sMessage timeout: %d\n", BLANKS, info.MessageTimeout)
 	if info.Push != nil {
-		fmt.Printf("%sType: %s\n", BLANKS, *info.Type)
+		fmt.Printf("%sType: %s\n", BLANKS, info.Type)
 		fmt.Printf("%sSubscribers: %d\n", BLANKS, len(info.Push.Subscribers))
 		fmt.Printf("%sRetries: %d\n", BLANKS, info.Push.Retries)
 		fmt.Printf("%sRetries delay: %d\n", BLANKS, info.Push.RetriesDelay)
