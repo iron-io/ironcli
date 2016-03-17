@@ -1,0 +1,23 @@
+hash: 3144fecf70cc09b31ad538d2dc4ab26e289bf00849491bf6cb0478dade056122
+updated: 2016-03-17T15:32:05.861289861-07:00
+imports:
+- name: github.com/fatih/color
+  version: 533cd7fd8a85905f67a1753afb4deddc85ea174f
+- name: github.com/iron-io/iron_go3
+  version: cf9612702bea112d6e036cb2151b051c9a3f7274
+  subpackages:
+  - api
+  - config
+  - mq
+  - worker
+- name: github.com/mattn/go-colorable
+  version: 9cbef7c35391cca05f15f8181dc0b18bc9736dbb
+  repo: https://github.com/mattn/go-colorable
+- name: github.com/mattn/go-isatty
+  version: 56b76bdf51f7708750eac80fa38b952bb9f32639
+  repo: https://github.com/mattn/go-isatty
+- name: golang.org/x/sys
+  version: 9d4e42a20653790449273b3c85e67d6d8bae6e2e
+  subpackages:
+  - unix
+devImports: []
