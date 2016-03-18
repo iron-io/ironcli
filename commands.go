@@ -321,9 +321,9 @@ func (q *QueueCmd) Args() error {
 	delay := time.Duration(*q.delay) * time.Second
 	timeout := time.Duration(*q.timeout) * time.Second
 
-	var priority *int
+	var priority int = -3
 	if *q.priority > -3 && *q.priority < 3 {
-		priority = q.priority
+		priority = *q.priority
 	}
 
 	encryptionKey := []byte(*q.encryptionKey)
@@ -345,7 +345,7 @@ func (q *QueueCmd) Args() error {
 	q.task = worker.Task{
 		CodeName: q.flags.Arg(0),
 		Payload:  payload,
-		Priority: *priority,
+		Priority: priority,
 		Timeout:  &timeout,
 		Delay:    &delay,
 		Cluster:  *q.cluster,
