@@ -1,0 +1,18 @@
+package: github.com/iron-io/ironcli
+import:
+- package: github.com/fatih/color
+  version: 533cd7fd8a85905f67a1753afb4deddc85ea174f
+- package: github.com/iron-io/iron_go3
+  version: d1197926301489b15e418c49a0b17a9c42817acd
+  subpackages:
+  - api
+  - config
+  - mq
+  - worker
+- package: github.com/aws/aws-sdk-go
+  version: ~1.1.9
+  subpackages:
+    - aws/credentials
+- package: github.com/iron-io/lambda
+  subpackages:
+    - lambda

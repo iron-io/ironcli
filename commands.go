@@ -345,7 +345,7 @@ func (q *QueueCmd) Args() error {
 	q.task = worker.Task{
 		CodeName: q.flags.Arg(0),
 		Payload:  payload,
-		Priority: priority,
+		Priority: *priority,
 		Timeout:  &timeout,
 		Delay:    &delay,
 		Cluster:  *q.cluster,

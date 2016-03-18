@@ -21,11 +21,18 @@ dependencies:
     # install go1.5
     - wget https://storage.googleapis.com/golang/go1.5.linux-amd64.tar.gz
     - tar -C $HOME -xvzf go1.5.linux-amd64.tar.gz
+    # install glide 0.9.3
+    - wget https://github.com/Masterminds/glide/releases/download/0.9.3/glide-0.9.3-linux-amd64.tar.gz
+    - tar -C $HOME/bin -xvzf glide-0.9.3-linux-amd64.tar.gz --strip=1
   override:
     # this was being dumb, don't want it to auto detect we are a go repo b/c vendoring
     - which go
+    - glide --version
 
 test:
+  pre:
+    - glide install:
+        pwd: $GO_PROJECT/$CIRCLE_PROJECT_REPONAME
   override:
     - go build .:
         pwd: $GO_PROJECT/$CIRCLE_PROJECT_REPONAME
@@ -37,6 +44,7 @@ deployment:
       - echo $DOCKER_HUB_CREDS > $HOME/.dockercfg
       - git config --global user.name "Tony Stark"
       - git config --global user.email "deploys@iron.io"
+      - cd $GH_IRON/$CIRCLE_PROJECT_REPONAME && glide install
       - cd $GH_IRON/$CIRCLE_PROJECT_REPONAME && ./build-release.sh
       - cd $GH_IRON/$CIRCLE_PROJECT_REPONAME && go build
       - docker build -t iron/cli:latest $GH_IRON/$CIRCLE_PROJECT_REPONAME
