@@ -140,22 +140,6 @@ func (djw *DockerJsonWriter) Write(p []byte) (int, error) {
 
 func (lcc *LambdaCreateCmd) Run() {
 	files := make([]lambda.FileLike, 0, len(lcc.fileNames))
-	jar := ""
-	for _, fileName := range lcc.fileNames {
-		// First file must be a valid jar.
-		if *lcc.runtime == "java8" && jar == "" {
-			if !strings.HasSuffix(fileName, ".jar") {
-				log.Fatal("First file for Java functions must be the JAR containing the handler.")
-			}
-			jar = filepath.Base(fileName)
-		}
-		file, err := os.Open(fileName)
-		if err != nil {
-			log.Fatal(err)
-		}
-		files = append(files, file)
-	}
-
 	opts := lambda.CreateImageOptions{
 		*lcc.functionName,
 		fmt.Sprintf("iron/lambda-%s", *lcc.runtime),
@@ -165,8 +149,25 @@ func (lcc *LambdaCreateCmd) Run() {
 		true,
 	}
 
+	// For Java we allow only 1 file and it MUST be a JAR.
 	if *lcc.runtime == "java8" {
-		opts.Package = jar
+		if len(lcc.fileNames) != 1 {
+			log.Fatal("Java Lambda functions can only include 1 file and it must be a JAR file.")
+		}
+
+		if filepath.Ext(lcc.fileNames[0]) != ".jar" {
+			log.Fatal("Java Lambda function package must be a JAR file.")
+		}
+
+		opts.Package = filepath.Base(lcc.fileNames[0])
+	}
+
+	for _, fileName := range lcc.fileNames {
+		file, err := os.Open(fileName)
+		if err != nil {
+			log.Fatal(err)
+		}
+		files = append(files, file)
 	}
 
 	err := lambda.CreateImage(opts, files...)
