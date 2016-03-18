@@ -126,7 +126,17 @@ func (lcc *LambdaCreateCmd) Run() {
 		}
 		files = append(files, file)
 	}
-	err := lambda.CreateImage(*lcc.functionName, fmt.Sprintf("iron/lambda-%s", *lcc.runtime), *lcc.handler, files...)
+
+	opts := lambda.CreateImageOptions{
+		*lcc.functionName,
+		fmt.Sprintf("iron/lambda-%s", *lcc.runtime),
+		"",
+		*lcc.handler,
+		os.Stdout,
+		false,
+	}
+
+	err := lambda.CreateImage(opts, files...)
 	if err != nil {
 		log.Fatal(err)
 	}
