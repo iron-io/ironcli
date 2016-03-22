@@ -128,7 +128,7 @@ type DockerJsonWriter struct {
 func NewDockerJsonWriter(under io.Writer) *DockerJsonWriter {
 	r, w := io.Pipe()
 	go func() {
-		err := jsonmessage.DisplayJSONMessagesStream(r, os.Stdout, 1, true, nil)
+		err := jsonmessage.DisplayJSONMessagesStream(r, under, 1, true, nil)
 		log.Fatal(err)
 	}()
 	return &DockerJsonWriter{under, w}
