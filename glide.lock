@@ -1,15 +1,29 @@
-hash: 92e12b6f286a4af3731652cba5b7733270758fb5972f5ec48fccae9998ef3fee
-updated: 2016-03-18T09:25:52.571171628-07:00
+hash: 42e2dc63789faa35e43bd7ee3b9527a95b81b68a3434291c44e08c3d717fa831
+updated: 2016-03-22T10:23:10.527963287-07:00
 imports:
 - name: github.com/aws/aws-sdk-go
   version: 4da0bec8953a0a540f391930a946917b12a95671
   subpackages:
   - aws/credentials
   - aws/awserr
+- name: github.com/Azure/go-ansiterm
+  version: 70b2c90b260171e829f1ebd7c17f600c11858dbe
+  subpackages:
+  - winterm
+- name: github.com/docker/docker
+  version: e8774fbb9f76a2ed7d02039a1a6c490fdbe0160c
+  subpackages:
+  - pkg/jsonmessage
+  - pkg/jsonlog
+  - pkg/term
+  - pkg/system
+  - pkg/term/windows
+- name: github.com/docker/go-units
+  version: 5d2041e26a699eaca682e2ea41c8f891e1060444
 - name: github.com/fatih/color
   version: 533cd7fd8a85905f67a1753afb4deddc85ea174f
 - name: github.com/fsouza/go-dockerclient
-  version: cec3f19b1d800de38185ec0e08446156254ec463
+  version: 7c07ffce0f7e14a4da49ce92a2842d4e87be1c1e
   subpackages:
   - external/github.com/docker/docker/opts
   - external/github.com/docker/docker/pkg/archive
@@ -29,7 +43,7 @@ imports:
   - external/golang.org/x/net/context
   - external/github.com/docker/go-units
 - name: github.com/go-ini/ini
-  version: 776aa739ce9373377cd16f526cdf06cb4c89b40f
+  version: 12f418cc7edc5a618a51407b7ac1f1f512139df3
 - name: github.com/iron-io/iron_go3
   version: d1197926301489b15e418c49a0b17a9c42817acd
   subpackages:
@@ -38,7 +52,7 @@ imports:
   - mq
   - worker
 - name: github.com/iron-io/lambda
-  version: f163149912205e2a989db460285b6db016855e3b
+  version: 34e5a7f8c8b80ac578e64045857c622516f035d1
   subpackages:
   - lambda
 - name: github.com/mattn/go-colorable
@@ -49,8 +63,8 @@ imports:
   repo: https://github.com/mattn/go-isatty
 - name: github.com/satori/go.uuid
   version: e673fdd4dea8a7334adbbe7f57b7e4b00bdc5502
-- name: golang.org/x/sys
+- name: github.com/Sirupsen/logrus
+  version: 4b6ea7319e214d98c938f12692336f7ca9348d6b
+- name: golang.org/x/sys/unix
   version: 9d4e42a20653790449273b3c85e67d6d8bae6e2e
-  subpackages:
-  - unix
 devImports: []
