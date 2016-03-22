@@ -149,6 +149,10 @@ func (lcc *LambdaCreateCmd) Run() {
 		true,
 	}
 
+	if *lcc.handler == "" {
+		log.Fatal("No handler specified.")
+	}
+
 	// For Java we allow only 1 file and it MUST be a JAR.
 	if *lcc.runtime == "java8" {
 		if len(lcc.fileNames) != 1 {
