@@ -281,7 +281,7 @@ func (lcc *LambdaPublishCmd) Run() {
 		log.Fatal(fmt.Sprintf("Function %s does not exist:", *lcc.functionName))
 	}
 
-	err = lambda.PushImage(*lcc.functionName)
+	err = lambda.PushImage(lambda.PushImageOptions{*lcc.functionName, NewDockerJsonWriter(os.Stdout), true})
 	if err != nil {
 		log.Fatal("Error pushing image:", err)
 	}
