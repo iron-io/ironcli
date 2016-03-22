@@ -96,7 +96,8 @@ func (lcc *LambdaCreateCmd) Args() error {
 func (lcc *LambdaCreateCmd) Usage() {
 	fmt.Fprintln(os.Stderr, `usage: iron lambda create-function --function-name NAME --runtime RUNTIME --handler HANDLER file [files...]
 
-Create Docker image that can run your Lambda function. The files are the contents of the zip file to be uploaded to AWS Lambda.`)
+Create Docker image that can run your Lambda function. The files are the contents of the zip file to be uploaded to AWS Lambda.
+`)
 	lcc.flags.PrintDefaults()
 }
 
@@ -195,7 +196,8 @@ func (lcc *LambdaTestFunctionCmd) Args() error {
 func (lcc *LambdaTestFunctionCmd) Usage() {
 	fmt.Fprintln(os.Stderr, `usage: iron lambda test-function --function-name NAME [--client-context <value>] [--payload <value>]
 	
-Runs local Dockerized Lambda function and writes output to stdout.`)
+Runs local Dockerized Lambda function and writes output to stdout.
+`)
 	lcc.flags.PrintDefaults()
 }
 
@@ -253,7 +255,9 @@ func (lcc *LambdaPublishCmd) Args() error {
 func (lcc *LambdaPublishCmd) Usage() {
 	fmt.Fprintln(os.Stderr, `usage: iron lambda publish-function --function-name NAME
 	
-Pushes Lambda function to Docker Hub and registers with IronWorker.`)
+Pushes Lambda function to Docker Hub and registers with IronWorker.
+If you do not want to use IronWorker, simply run 'docker push NAME' instead.
+`)
 	lcc.flags.PrintDefaults()
 }
 
