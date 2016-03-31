@@ -37,7 +37,7 @@ func (lf *LambdaFlags) validateAllFlags() error {
 		}
 
 		if !validRuntime {
-			return errors.New(fmt.Sprintf("Invalid runtime. Supported runtimes %s", availableRuntimes))
+			return fmt.Errorf("Invalid runtime. Supported runtimes %s", availableRuntimes)
 		}
 	}
 
@@ -141,12 +141,12 @@ func (djw *DockerJsonWriter) Write(p []byte) (int, error) {
 func (lcc *LambdaCreateCmd) Run() {
 	files := make([]lambda.FileLike, 0, len(lcc.fileNames))
 	opts := lambda.CreateImageOptions{
-		*lcc.functionName,
-		fmt.Sprintf("iron/lambda-%s", *lcc.runtime),
-		"",
-		*lcc.handler,
-		NewDockerJsonWriter(os.Stdout),
-		true,
+		Name:          *lcc.functionName,
+		Base:          fmt.Sprintf("iron/lambda-%s", *lcc.runtime),
+		Package:       "",
+		Handler:       *lcc.handler,
+		OutputStream:  NewDockerJsonWriter(os.Stdout),
+		RawJSONStream: true,
 	}
 
 	if *lcc.handler == "" {
@@ -168,6 +168,7 @@ func (lcc *LambdaCreateCmd) Run() {
 
 	for _, fileName := range lcc.fileNames {
 		file, err := os.Open(fileName)
+		defer file.Close()
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -288,7 +289,11 @@ func (lcc *LambdaPublishCmd) Run() {
 		log.Fatal(fmt.Sprintf("Function %s does not exist:", *lcc.functionName))
 	}
 
-	err = lambda.PushImage(lambda.PushImageOptions{*lcc.functionName, NewDockerJsonWriter(os.Stdout), true})
+	err = lambda.PushImage(lambda.PushImageOptions{
+		NameVersion:   *lcc.functionName,
+		OutputStream:  NewDockerJsonWriter(os.Stdout),
+		RawJSONStream: true,
+	})
 	if err != nil {
 		log.Fatal("Error pushing image:", err)
 	}
