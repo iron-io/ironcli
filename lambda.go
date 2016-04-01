@@ -76,8 +76,8 @@ func (lf *LambdaFlags) payload() *string {
 	return lf.String("payload", "", "Payload to pass to the Lambda function. This is usually a JSON object.")
 }
 
-func (lf *LambdaFlags) container() *string {
-	return lf.String("container", "", "By default the name of the container is the name of the Lambda function. Use this to set a custom name.")
+func (lf *LambdaFlags) image() *string {
+	return lf.String("image", "", "By default the name of the Docker image is the name of the Lambda function. Use this to set a custom name.")
 }
 
 func (lf *LambdaFlags) version() *string {
@@ -85,7 +85,7 @@ func (lf *LambdaFlags) version() *string {
 }
 
 func (lf *LambdaFlags) downloadOnly() *bool {
-	return lf.Bool("download-only", false, "Only download the function into a directory. Will not create a container.")
+	return lf.Bool("download-only", false, "Only download the function into a directory. Will not create a Docker image.")
 }
 
 func (lf *LambdaFlags) awsProfile() *string {
@@ -358,7 +358,7 @@ type LambdaImportCmd struct {
 	version      *string
 	downloadOnly *bool
 	awsProfile   *string
-	container    *string
+	image        *string
 	awsRegion    *string
 }
 
@@ -372,9 +372,9 @@ func (lcc *LambdaImportCmd) Args() error {
 }
 
 func (lcc *LambdaImportCmd) Usage() {
-	fmt.Fprintln(os.Stderr, `usage: iron lambda aws-import [--region <region>] [--profile <aws profile>] [--version <version>] [--download-only] [--container <name>] ARN
+	fmt.Fprintln(os.Stderr, `usage: iron lambda aws-import [--region <region>] [--profile <aws profile>] [--version <version>] [--download-only] [--image <name>] ARN
 	
-Converts an existing Lambda function to a container. 
+Converts an existing Lambda function to an image. 
 
 The function code is downloaded to a directory in the current working directory
 that has the same name as the Lambda function.
@@ -394,7 +394,7 @@ func (lcc *LambdaImportCmd) Flags(args ...string) error {
 	lcc.version = lcc.flags.version()
 	lcc.downloadOnly = lcc.flags.downloadOnly()
 	lcc.awsProfile = lcc.flags.awsProfile()
-	lcc.container = lcc.flags.container()
+	lcc.image = lcc.flags.image()
 	lcc.awsRegion = lcc.flags.awsRegion()
 
 	if err := lcc.flags.Parse(args); err != nil {
@@ -554,8 +554,8 @@ func (lcc *LambdaImportCmd) Run() {
 		RawJSONStream: true,
 	}
 
-	if *lcc.container != "" {
-		opts.Name = *lcc.container
+	if *lcc.image != "" {
+		opts.Name = *lcc.image
 	}
 
 	if *function.Configuration.Runtime == "java8" {
