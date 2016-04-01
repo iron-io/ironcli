@@ -20,5 +20,6 @@ import:
   subpackages:
   - lambda
 - package: github.com/docker/docker
+  version: 65370be888d940899593a001024f53d6b83b4bb0
   subpackages:
   - pkg/jsonmessage
