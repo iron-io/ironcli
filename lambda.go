@@ -404,7 +404,85 @@ func (lcc *LambdaImportCmd) Flags(args ...string) error {
 	return lcc.flags.validateAllFlags(skipFunctionName)
 }
 
-func (lcc *LambdaImportCmd) Run() {
+func (lcc *LambdaImportCmd) downloadToFile(url string) (string, error) {
+	downloadResp, err := http.Get(url)
+	if err != nil {
+		return "", err
+	}
+	defer downloadResp.Body.Close()
+
+	// zip reader needs ReaderAt, hence the indirection.
+	tmpFile, err := ioutil.TempFile("", "lambda-function-")
+	if err != nil {
+		return "", err
+	}
+
+	io.Copy(tmpFile, downloadResp.Body)
+	tmpFile.Close()
+	return tmpFile.Name(), nil
+}
+
+func (lcc *LambdaImportCmd) unzipAndGetTopLevelFiles(dst, src string) (files []lambda.FileLike, topErr error) {
+	files = make([]lambda.FileLike, 0)
+
+	zipReader, err := zip.OpenReader(src)
+	if err != nil {
+		return files, err
+	}
+	defer zipReader.Close()
+
+	var fd *os.File
+	for _, f := range zipReader.File {
+		path := filepath.Join(dst, f.Name)
+		fmt.Printf("Extracting '%s' to '%s'\n", f.Name, path)
+		if f.FileInfo().IsDir() {
+			os.Mkdir(path, 0644)
+			// Only top-level dirs go into the list since that is what CreateImage expects.
+			if filepath.Dir(f.Name) == filepath.Base(f.Name) {
+				fd, topErr = os.Open(path)
+				if topErr != nil {
+					break
+				}
+				files = append(files, fd)
+			}
+		} else {
+			// We do not close fd here since we may want to use it to dockerize.
+			fd, topErr = os.OpenFile(path, os.O_RDWR|os.O_CREATE, 0644)
+			if topErr != nil {
+				break
+			}
+
+			var zipFd io.ReadCloser
+			zipFd, topErr = f.Open()
+			if topErr != nil {
+				break
+			}
+
+			_, topErr = io.Copy(fd, zipFd)
+			if topErr != nil {
+				// OK to skip closing fd here.
+				break
+			}
+
+			zipFd.Close()
+
+			// Only top-level files go into the list since that is what CreateImage expects.
+			if filepath.Dir(f.Name) == "." {
+				_, topErr = fd.Seek(0, 0)
+				if topErr != nil {
+					break
+				}
+
+				files = append(files, fd)
+			} else {
+				fd.Close()
+			}
+		}
+	}
+	return
+}
+
+func (lcc *LambdaImportCmd) getFunction() (*aws_lambda.GetFunctionOutput, error) {
 	creds := aws_credentials.NewChainCredentials([]aws_credentials.Provider{
 		&aws_credentials.EnvProvider{},
 		&aws_credentials.SharedCredentialsProvider{
@@ -421,40 +499,33 @@ func (lcc *LambdaImportCmd) Run() {
 		Qualifier:    aws.String(*lcc.version),
 	})
 
-	if err != nil {
-		log.Fatalln("Error connecting to AWS", err)
-	}
+	return resp, err
+}
 
-	functionName := *resp.Configuration.FunctionName
+func (lcc *LambdaImportCmd) Run() {
+	function, err := lcc.getFunction()
+	if err != nil {
+		log.Fatalln("Error getting function information", err)
+	}
+	functionName := *function.Configuration.FunctionName
 
 	err = os.Mkdir(fmt.Sprintf("./%s", functionName), os.ModePerm)
 	if err != nil {
 		log.Fatalln("Error creating directory: '"+functionName+"':", err)
 	}
 
-	downloadResp, err := http.Get(*resp.Code.Location)
+	tmpFileName, err := lcc.downloadToFile(*function.Code.Location)
 	if err != nil {
 		log.Fatalln("Error downloading code", err)
 	}
-
-	defer downloadResp.Body.Close()
-
-	// zip reader needs ReaderAt, hence the indirection.
-	tmpFile, err := ioutil.TempFile("", "lambda-function-")
-	if err != nil {
-		log.Fatalln("Error opening temporary file to download lambda function", err)
-	}
-	defer os.Remove(tmpFile.Name())
-
-	io.Copy(tmpFile, downloadResp.Body)
-	tmpFile.Close()
+	defer os.Remove(tmpFileName)
 
 	files := make([]lambda.FileLike, 0)
 
-	if *resp.Configuration.Runtime == "java8" {
+	if *function.Configuration.Runtime == "java8" {
 		fmt.Println("Found Java Lambda function. Going to assume code is a single JAR file.")
 		path := filepath.Join(functionName, "function.jar")
-		os.Rename(tmpFile.Name(), path)
+		os.Rename(tmpFileName, path)
 		fd, err := os.Open(path)
 		if err != nil {
 			log.Fatalln(err)
@@ -462,71 +533,23 @@ func (lcc *LambdaImportCmd) Run() {
 
 		files = append(files, fd)
 	} else {
-
-		zipReader, err := zip.OpenReader(tmpFile.Name())
+		files, err = lcc.unzipAndGetTopLevelFiles(functionName, tmpFileName)
 		if err != nil {
-			log.Fatalln("Error extracting function", err)
-		}
-		defer zipReader.Close()
-
-		for _, f := range zipReader.File {
-			path := filepath.Join(functionName, f.Name)
-			fmt.Printf("Extracting '%s' to '%s'\n", f.Name, path)
-			if f.FileInfo().IsDir() {
-				// This is weird but attemping to create files inside META-INF with 0644 has permission denied on mac
-				os.Mkdir(path, 0777)
-				// Only top-level dirs go into the list since that is what CreateImage expects.
-				if filepath.Dir(f.Name) == filepath.Base(f.Name) {
-					dd, err := os.Open(path)
-					if err != nil {
-						log.Fatalln("Error opening dir", path, err)
-					}
-					files = append(files, dd)
-				}
-			} else {
-				// We do not close fd here since we want to use it to dockerize.
-				fd, err := os.OpenFile(path, os.O_RDWR|os.O_CREATE, 0777)
-				if err != nil {
-					log.Fatalln("Error creating file", path, err)
-				}
-
-				zipFd, err := f.Open()
-				if err != nil {
-					log.Fatalln("Error opening file inside archive", path, err)
-				}
-
-				_, err = io.Copy(fd, zipFd)
-				if err != nil {
-					// OK to skip closing fd here.
-					log.Fatalln(path, err)
-				}
-				zipFd.Close()
-
-				_, err = fd.Seek(0, 0)
-				if err != nil {
-					log.Fatalln("Error seeking!", err)
-				}
-
-				// Only top-level files go into the list since that is what CreateImage expects.
-				if filepath.Dir(f.Name) == "." {
-					files = append(files, fd)
-				} else {
-					fd.Close()
-				}
-			}
+			log.Fatalln(err)
 		}
 	}
 
 	if *lcc.downloadOnly {
-		// Since we are a command line program that will quite soon, it is OK to let the OS clean `files` up.
+		// Since we are a command line program that will quit soon, it is OK to
+		// let the OS clean `files` up.
 		return
 	}
 
 	opts := lambda.CreateImageOptions{
 		Name:          functionName,
-		Base:          fmt.Sprintf("iron/lambda-%s", *resp.Configuration.Runtime),
+		Base:          fmt.Sprintf("iron/lambda-%s", *function.Configuration.Runtime),
 		Package:       "",
-		Handler:       *resp.Configuration.Handler,
+		Handler:       *function.Configuration.Handler,
 		OutputStream:  NewDockerJsonWriter(os.Stdout),
 		RawJSONStream: true,
 	}
@@ -535,7 +558,7 @@ func (lcc *LambdaImportCmd) Run() {
 		opts.Name = *lcc.container
 	}
 
-	if *resp.Configuration.Runtime == "java8" {
+	if *function.Configuration.Runtime == "java8" {
 		opts.Package = filepath.Base(files[0].(*os.File).Name())
 	}
 
