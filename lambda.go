@@ -5,7 +5,6 @@ import (
 	"flag"
 	"fmt"
 	"io"
-	"log"
 	"os"
 	"path/filepath"
 	"strings"
@@ -129,7 +128,10 @@ func NewDockerJsonWriter(under io.Writer) *DockerJsonWriter {
 	r, w := io.Pipe()
 	go func() {
 		err := jsonmessage.DisplayJSONMessagesStream(r, under, 1, true, nil)
-		log.Fatal(err)
+		if err != nil {
+			fmt.Fprintln(os.Stderr, red(err))
+			os.Exit(1)
+		}
 	}()
 	return &DockerJsonWriter{under, w}
 }
@@ -150,17 +152,20 @@ func (lcc *LambdaCreateCmd) Run() {
 	}
 
 	if *lcc.handler == "" {
-		log.Fatal("No handler specified.")
+		fmt.Fprintln(os.Stderr, red("No handler specified."))
+		os.Exit(1)
 	}
 
 	// For Java we allow only 1 file and it MUST be a JAR.
 	if *lcc.runtime == "java8" {
 		if len(lcc.fileNames) != 1 {
-			log.Fatal("Java Lambda functions can only include 1 file and it must be a JAR file.")
+			fmt.Fprintln(os.Stderr, red("Java Lambda functions can only include 1 file and it must be a JAR file."))
+			os.Exit(1)
 		}
 
 		if filepath.Ext(lcc.fileNames[0]) != ".jar" {
-			log.Fatal("Java Lambda function package must be a JAR file.")
+			fmt.Fprintln(os.Stderr, red("Java Lambda function package must be a JAR file."))
+			os.Exit(1)
 		}
 
 		opts.Package = filepath.Base(lcc.fileNames[0])
@@ -170,14 +175,16 @@ func (lcc *LambdaCreateCmd) Run() {
 		file, err := os.Open(fileName)
 		defer file.Close()
 		if err != nil {
-			log.Fatal(err)
+			fmt.Fprintln(os.Stderr, red(err))
+			os.Exit(1)
 		}
 		files = append(files, file)
 	}
 
 	err := lambda.CreateImage(opts, files...)
 	if err != nil {
-		log.Fatal(err)
+		fmt.Fprintln(os.Stderr, red(err))
+		os.Exit(1)
 	}
 }
 
@@ -224,11 +231,13 @@ func (lcc *LambdaTestFunctionCmd) Flags(args ...string) error {
 func (lcc *LambdaTestFunctionCmd) Run() {
 	exists, err := lambda.ImageExists(*lcc.functionName)
 	if err != nil {
-		log.Fatal("Error communicating with Docker daemon", err)
+		fmt.Fprintln(os.Stderr, red("Error communicating with Docker daemon", err))
+		os.Exit(1)
 	}
 
 	if !exists {
-		log.Fatal(fmt.Sprintf("Function %s does not exist.", *lcc.functionName))
+		fmt.Fprintln(os.Stderr, red(fmt.Sprintf("Function %s does not exist.", *lcc.functionName)))
+		os.Exit(1)
 	}
 
 	payload := ""
@@ -238,7 +247,8 @@ func (lcc *LambdaTestFunctionCmd) Run() {
 	// Redirect output to stdout.
 	err = lambda.RunImageWithPayload(*lcc.functionName, payload)
 	if err != nil {
-		log.Fatal(err)
+		fmt.Fprintln(os.Stderr, red(err))
+		os.Exit(1)
 	}
 }
 
@@ -282,11 +292,13 @@ func (lcc *LambdaPublishCmd) Flags(args ...string) error {
 func (lcc *LambdaPublishCmd) Run() {
 	exists, err := lambda.ImageExists(*lcc.functionName)
 	if err != nil {
-		log.Fatal("Error communicating with Docker daemon:", err)
+		fmt.Fprintln(os.Stderr, red("Error communicating with Docker daemon:", err))
+		os.Exit(1)
 	}
 
 	if !exists {
-		log.Fatal(fmt.Sprintf("Function %s does not exist:", *lcc.functionName))
+		fmt.Fprintln(os.Stderr, red(fmt.Sprintf("Function %s does not exist:", *lcc.functionName)))
+		os.Exit(1)
 	}
 
 	err = lambda.PushImage(lambda.PushImageOptions{
@@ -295,11 +307,13 @@ func (lcc *LambdaPublishCmd) Run() {
 		RawJSONStream: true,
 	})
 	if err != nil {
-		log.Fatal("Error pushing image:", err)
+		fmt.Fprintln(os.Stderr, red("Error pushing image:", err))
+		os.Exit(1)
 	}
 
 	err = lambda.RegisterWithIron(*lcc.functionName)
 	if err != nil {
-		log.Fatal("Error registering with IronWorker:", err)
+		fmt.Fprintln(os.Stderr, red("Error registering with IronWorker:", err))
+		os.Exit(1)
 	}
 }
