@@ -505,18 +505,21 @@ func (lcc *LambdaImportCmd) getFunction() (*aws_lambda.GetFunctionOutput, error)
 func (lcc *LambdaImportCmd) Run() {
 	function, err := lcc.getFunction()
 	if err != nil {
-		log.Fatalln("Error getting function information", err)
+		fmt.Fprintln(os.Stderr, red("Error getting function information", err))
+		os.Exit(1)
 	}
 	functionName := *function.Configuration.FunctionName
 
 	err = os.Mkdir(fmt.Sprintf("./%s", functionName), os.ModePerm)
 	if err != nil {
-		log.Fatalln("Error creating directory: '"+functionName+"':", err)
+		fmt.Fprintln(os.Stderr, red("Error creating directory: '"+functionName+"':", err))
+		os.Exit(1)
 	}
 
 	tmpFileName, err := lcc.downloadToFile(*function.Code.Location)
 	if err != nil {
-		log.Fatalln("Error downloading code", err)
+		fmt.Fprintln(os.Stderr, red("Error downloading code", err))
+		os.Exit(1)
 	}
 	defer os.Remove(tmpFileName)
 
@@ -528,14 +531,16 @@ func (lcc *LambdaImportCmd) Run() {
 		os.Rename(tmpFileName, path)
 		fd, err := os.Open(path)
 		if err != nil {
-			log.Fatalln(err)
+			fmt.Fprintln(os.Stderr, red(err))
+			os.Exit(1)
 		}
 
 		files = append(files, fd)
 	} else {
 		files, err = lcc.unzipAndGetTopLevelFiles(functionName, tmpFileName)
 		if err != nil {
-			log.Fatalln(err)
+			fmt.Fprintln(os.Stderr, red(err))
+			os.Exit(1)
 		}
 	}
 
@@ -564,6 +569,7 @@ func (lcc *LambdaImportCmd) Run() {
 
 	err = lambda.CreateImage(opts, files...)
 	if err != nil {
-		log.Fatalln("Error creating image", err)
+		fmt.Fprintln(os.Stderr, red("Error creating image", err))
+		os.Exit(1)
 	}
 }
