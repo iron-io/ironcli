@@ -1,8 +1,49 @@
-hash: c93c981b5d3ab63124a1b5217bd4271ce167acd3bd399189f8956a21d161b00c
-updated: 2016-03-17T16:09:49.443044814-07:00
+hash: 42e2dc63789faa35e43bd7ee3b9527a95b81b68a3434291c44e08c3d717fa831
+updated: 2016-03-29T17:02:33.404480292-07:00
 imports:
+- name: github.com/aws/aws-sdk-go
+  version: e7cf1e5986499eea7d4a87868f1eb578c8f2045a
+  subpackages:
+  - aws/credentials
+  - aws/awserr
+- name: github.com/Azure/go-ansiterm
+  version: 70b2c90b260171e829f1ebd7c17f600c11858dbe
+  subpackages:
+  - winterm
+- name: github.com/docker/docker
+  version: 99adcaebc0aca57f2665f356e4a9b4218aa5d5f7
+  subpackages:
+  - pkg/jsonmessage
+  - pkg/jsonlog
+  - pkg/term
+  - pkg/system
+  - pkg/term/windows
+- name: github.com/docker/go-units
+  version: 5d2041e26a699eaca682e2ea41c8f891e1060444
 - name: github.com/fatih/color
   version: 533cd7fd8a85905f67a1753afb4deddc85ea174f
+- name: github.com/fsouza/go-dockerclient
+  version: 4ac6ea1aa6ee9be15e66aa694c4b3f909df239f4
+  subpackages:
+  - external/github.com/docker/docker/opts
+  - external/github.com/docker/docker/pkg/archive
+  - external/github.com/docker/docker/pkg/fileutils
+  - external/github.com/docker/docker/pkg/homedir
+  - external/github.com/docker/docker/pkg/stdcopy
+  - external/github.com/hashicorp/go-cleanhttp
+  - external/github.com/Sirupsen/logrus
+  - external/github.com/docker/docker/pkg/idtools
+  - external/github.com/docker/docker/pkg/ioutils
+  - external/github.com/docker/docker/pkg/pools
+  - external/github.com/docker/docker/pkg/promise
+  - external/github.com/docker/docker/pkg/system
+  - external/github.com/docker/docker/pkg/longpath
+  - external/github.com/opencontainers/runc/libcontainer/user
+  - external/golang.org/x/sys/unix
+  - external/golang.org/x/net/context
+  - external/github.com/docker/go-units
+- name: github.com/go-ini/ini
+  version: 12f418cc7edc5a618a51407b7ac1f1f512139df3
 - name: github.com/iron-io/iron_go3
   version: d1197926301489b15e418c49a0b17a9c42817acd
   subpackages:
@@ -10,14 +51,22 @@ imports:
   - config
   - mq
   - worker
+- name: github.com/iron-io/lambda
+  version: 1b1a3d36b185aa270509518964f34c3d7733ebfc
+  subpackages:
+  - lambda
 - name: github.com/mattn/go-colorable
   version: 9cbef7c35391cca05f15f8181dc0b18bc9736dbb
   repo: https://github.com/mattn/go-colorable
 - name: github.com/mattn/go-isatty
   version: 56b76bdf51f7708750eac80fa38b952bb9f32639
   repo: https://github.com/mattn/go-isatty
+- name: github.com/satori/go.uuid
+  version: f9ab0dce87d815821e221626b772e3475a0d2749
+- name: github.com/Sirupsen/logrus
+  version: 4b6ea7319e214d98c938f12692336f7ca9348d6b
 - name: golang.org/x/sys
-  version: 9d4e42a20653790449273b3c85e67d6d8bae6e2e
+  version: 320cb01ddbbf0473674c2585f9b6e245721de355
   subpackages:
   - unix
 devImports: []
