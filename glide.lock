@@ -1,17 +1,36 @@
-hash: 42e2dc63789faa35e43bd7ee3b9527a95b81b68a3434291c44e08c3d717fa831
-updated: 2016-03-29T17:02:33.404480292-07:00
+hash: 753c5607d8bb7ff0b1447c425630ca27982d87ea79bccd25ca9b9f80a45c575c
+updated: 2016-03-31T22:18:24.183505866-07:00
 imports:
 - name: github.com/aws/aws-sdk-go
   version: e7cf1e5986499eea7d4a87868f1eb578c8f2045a
   subpackages:
   - aws/credentials
+  - aws
+  - aws/session
+  - services/lambda
+  - service/lambda
   - aws/awserr
+  - aws/client
+  - aws/corehandlers
+  - aws/defaults
+  - aws/request
+  - private/endpoints
+  - aws/awsutil
+  - aws/client/metadata
+  - private/protocol
+  - private/protocol/restjson
+  - private/signer/v4
+  - aws/credentials/ec2rolecreds
+  - aws/ec2metadata
+  - private/protocol/jsonrpc
+  - private/protocol/rest
+  - private/protocol/json/jsonutil
 - name: github.com/Azure/go-ansiterm
   version: 70b2c90b260171e829f1ebd7c17f600c11858dbe
   subpackages:
   - winterm
 - name: github.com/docker/docker
-  version: 99adcaebc0aca57f2665f356e4a9b4218aa5d5f7
+  version: 4a7bd7eaef0038b006cf23adface84081e5aab3b
   subpackages:
   - pkg/jsonmessage
   - pkg/jsonlog
@@ -55,6 +74,8 @@ imports:
   version: 1b1a3d36b185aa270509518964f34c3d7733ebfc
   subpackages:
   - lambda
+- name: github.com/jmespath/go-jmespath
+  version: 0b12d6b521d83fc7f755e7cfc1b1fbdd35a01a74
 - name: github.com/mattn/go-colorable
   version: 9cbef7c35391cca05f15f8181dc0b18bc9736dbb
   repo: https://github.com/mattn/go-colorable

@@ -56,6 +56,7 @@ var (
 			"create-function":  new(LambdaCreateCmd),
 			"test-function":    new(LambdaTestFunctionCmd),
 			"publish-function": new(LambdaPublishCmd),
+			"aws-import":       new(LambdaImportCmd),
 		},
 	}
 )
