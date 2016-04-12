@@ -20,10 +20,8 @@ import (
 	"github.com/iron-io/iron_go3/worker"
 )
 
-func dockerLogin(w *worker.Worker, args *map[string]string) (msg string, err error) {
-
-	data, err := json.Marshal(args)
-	reader := bytes.NewReader(data)
+func dockerLogin(w *worker.Worker, args []byte) (msg string, err error) {
+	reader := bytes.NewReader(args)
 
 	req, err := http.NewRequest("POST", api.Action(w.Settings, "credentials").URL.String(), reader)
 	if err != nil {
