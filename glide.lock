@@ -1,8 +1,8 @@
-hash: 753c5607d8bb7ff0b1447c425630ca27982d87ea79bccd25ca9b9f80a45c575c
-updated: 2016-03-31T22:18:24.183505866-07:00
+hash: de06abde94dcdadf0107169eae4579473c883d35caf1d2bbb8288210932a6c12
+updated: 2016-04-11T15:04:00.881036036-07:00
 imports:
 - name: github.com/aws/aws-sdk-go
-  version: e7cf1e5986499eea7d4a87868f1eb578c8f2045a
+  version: 188bbc645efb550a8d59d343b23e2b9a9b87a2f9
   subpackages:
   - aws/credentials
   - aws
@@ -30,7 +30,7 @@ imports:
   subpackages:
   - winterm
 - name: github.com/docker/docker
-  version: 4a7bd7eaef0038b006cf23adface84081e5aab3b
+  version: 65370be888d940899593a001024f53d6b83b4bb0
   subpackages:
   - pkg/jsonmessage
   - pkg/jsonlog
@@ -42,13 +42,14 @@ imports:
 - name: github.com/fatih/color
   version: 533cd7fd8a85905f67a1753afb4deddc85ea174f
 - name: github.com/fsouza/go-dockerclient
-  version: 4ac6ea1aa6ee9be15e66aa694c4b3f909df239f4
+  version: 98829062f36e94bc8c31a1c9a8b087b90f9d2d9c
   subpackages:
   - external/github.com/docker/docker/opts
   - external/github.com/docker/docker/pkg/archive
   - external/github.com/docker/docker/pkg/fileutils
   - external/github.com/docker/docker/pkg/homedir
   - external/github.com/docker/docker/pkg/stdcopy
+  - external/github.com/docker/go-units
   - external/github.com/hashicorp/go-cleanhttp
   - external/github.com/Sirupsen/logrus
   - external/github.com/docker/docker/pkg/idtools
@@ -60,7 +61,6 @@ imports:
   - external/github.com/opencontainers/runc/libcontainer/user
   - external/golang.org/x/sys/unix
   - external/golang.org/x/net/context
-  - external/github.com/docker/go-units
 - name: github.com/go-ini/ini
   version: 12f418cc7edc5a618a51407b7ac1f1f512139df3
 - name: github.com/iron-io/iron_go3
@@ -71,7 +71,7 @@ imports:
   - mq
   - worker
 - name: github.com/iron-io/lambda
-  version: 1b1a3d36b185aa270509518964f34c3d7733ebfc
+  version: 197598b21c6918d143244cc69d4d443f062d3c78
   subpackages:
   - lambda
 - name: github.com/jmespath/go-jmespath
@@ -87,7 +87,7 @@ imports:
 - name: github.com/Sirupsen/logrus
   version: 4b6ea7319e214d98c938f12692336f7ca9348d6b
 - name: golang.org/x/sys
-  version: 320cb01ddbbf0473674c2585f9b6e245721de355
+  version: 9eef40adf05b951699605195b829612bd7b69952
   subpackages:
   - unix
 devImports: []
