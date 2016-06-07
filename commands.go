@@ -656,10 +656,14 @@ func (u *RegisterCmd) Args() error {
 	u.codes.Command = strings.TrimSpace(strings.Join(u.flags.Args()[1:], " "))
 	u.codes.Image = u.flags.Arg(0)
 
-	u.codes.Name = u.codes.Image
-	if strings.ContainsRune(u.codes.Name, ':') {
-		arr := strings.SplitN(u.codes.Name, ":", 2)
-		u.codes.Name = arr[0]
+	if u.name != nil && *u.name != "" {
+		u.codes.Name = *u.name
+	} else {
+		u.codes.Name = u.codes.Image
+		if strings.ContainsRune(u.codes.Name, ':') {
+			arr := strings.SplitN(u.codes.Name, ":", 2)
+			u.codes.Name = arr[0]
+		}
 	}
 
 	u.codes.MaxConcurrency = *u.maxConc
