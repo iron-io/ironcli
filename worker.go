@@ -139,6 +139,9 @@ func pushCodes(zipName string, w *worker.Worker, args worker.Code) (*worker.Code
 //   [ 256 byte RSA encrypted AES key | len(payload) AES-GCM cipher | 16 bytes AES tag | 12 bytes AES nonce ]
 func rsaEncrypt(publicKey []byte, payloadPlain string) (string, error) {
 	rsablock, _ := pem.Decode(publicKey)
+	if rsablock == nil {
+		return "", errors.New("failed to find any PEM data in key input")
+	}
 	rsaKey, err := x509.ParsePKIXPublicKey(rsablock.Bytes)
 	if err != nil {
 		return "", err
