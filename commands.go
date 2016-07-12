@@ -10,6 +10,7 @@ import (
 	"errors"
 	"fmt"
 	"io/ioutil"
+	"math/big"
 	"net/http"
 	"os"
 	"strings"
@@ -374,9 +375,20 @@ func (q *QueueCmd) Run() {
 	fmt.Println(BLANKS, q.hud_URL_str+"jobs/"+id+INFO)
 
 	if *q.wait {
-		fmt.Println(LINES, yellow("Waiting for task ", id))
+		fmt.Println(LINES, yellow("Waiting for task to start running"))
 
+		done := make(chan struct{})
+		go runWatch(done, "queued")
+		q.waitForRunning(id)
+		close(done)
+
+		// TODO print actual queued time?
+		fmt.Println(LINES, yellow("Task running, waiting for completion"))
+
+		done = make(chan struct{})
+		go runWatch(done, "running")
 		ti := <-q.wrkr.WaitForTask(id)
+		close(done)
 		if ti.Msg != "" {
 			fmt.Fprintln(os.Stderr, "error running task:", ti.Msg)
 			return
@@ -388,10 +400,55 @@ func (q *QueueCmd) Run() {
 			return
 		}
 
+		// TODO print actual run time?
 		fmt.Println(LINES, green("Done"))
 		fmt.Println(LINES, "Printing Log:")
 		fmt.Printf("%s", string(log))
 	}
+}
+
+func (q *QueueCmd) waitForRunning(taskId string) {
+	for {
+		info, err := q.wrkr.TaskInfo(taskId)
+		if err != nil {
+			fmt.Fprintln(os.Stderr, "error getting task info:", err)
+			return
+		}
+
+		if info.Status == "queued" {
+			time.Sleep(100 * time.Millisecond)
+		} else {
+			return
+		}
+	}
+}
+
+func runWatch(done <-chan struct{}, state string) {
+	start := time.Now()
+	var elapsed time.Duration
+	var h, m, s, ms int64
+	for {
+		select {
+		case <-time.After(time.Millisecond):
+		case <-done:
+			fmt.Fprintln(os.Stdout, LINES, state+":", fmt.Sprintf("%v:%v:%v:%v\r", h, m, s, ms))
+			return
+		}
+		elapsed = time.Since(start)
+
+		h = mod(elapsed.Hours(), 24)
+		m = mod(elapsed.Minutes(), 60)
+		s = mod(elapsed.Seconds(), 60)
+		ms = mod(float64(elapsed.Nanoseconds())/1000, 100)
+
+		fmt.Fprint(os.Stdout, LINES, " "+state+":", fmt.Sprintf(" %v:%v:%v:%v\r", h, m, s, ms))
+	}
+}
+
+// mod calculates the modulos of a float64 against and int64.
+func mod(val float64, mod int64) int64 {
+	raw := big.NewInt(int64(val))
+	return raw.Mod(raw, big.NewInt(mod)).Int64()
 }
 
 func (s *StatusCmd) Flags(args ...string) error {
