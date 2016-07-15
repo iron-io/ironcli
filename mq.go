@@ -468,7 +468,8 @@ func (p *PopCmd) Run() {
 
 	messages, err := q.PopN(*p.n)
 	if err != nil {
-		fmt.Fprintln(os.Stderr, red(err))
+		fmt.Fprintln(os.Stderr, red("Error popping:"), red(err))
+		return
 	}
 
 	// If anything here fails, we still want to print out what was deleted before exiting
@@ -568,7 +569,8 @@ func (p *PushCmd) Run() {
 
 	ids, err := q.PushStrings(p.messages...)
 	if err != nil {
-		fmt.Fprintln(os.Stderr, red(err))
+		fmt.Fprintln(os.Stderr, red("Error pushing:"), red(err))
+		return
 	}
 
 	if isPipedOut() {
@@ -639,7 +641,8 @@ func (r *ReserveCmd) Run() {
 	q := mq.ConfigNew(r.queue_name, &r.settings)
 	messages, err := q.GetNWithTimeout(*r.n, *r.timeout)
 	if err != nil {
-		fmt.Fprintln(os.Stderr, red(err))
+		fmt.Fprintln(os.Stderr, red("Error reserving:"), red(err))
+		return
 	}
 
 	// If anything here fails, we still want to print out what was reserved before exiting
