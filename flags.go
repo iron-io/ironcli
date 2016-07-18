@@ -10,6 +10,9 @@ import (
 	"time"
 )
 
+// the flag package makes it impossible to distinguish from flags that existed/didn't? so use this
+const unset = -1
+
 type WorkerFlags struct {
 	*flag.FlagSet
 }
@@ -93,11 +96,11 @@ func (wf *WorkerFlags) startAt() *string {
 }
 
 func (wf *WorkerFlags) retries() *int {
-	return wf.Int("retries", 0, "max times to retry failed task, max 10, default 0")
+	return wf.Int("retries", unset, "max times to retry failed task, max 10, default 0")
 }
 
 func (wf *WorkerFlags) retriesDelay() *int {
-	return wf.Int("retries-delay", 0, "time between retries, in seconds. default 0")
+	return wf.Int("retries-delay", unset, "time between retries, in seconds. default 0")
 }
 
 func (wf *WorkerFlags) config() *string {

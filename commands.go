@@ -335,13 +335,6 @@ func (q *QueueCmd) Args() error {
 			return err
 		}
 	}
-	if len(encryptionKey) > 0 {
-		var err error
-		payload, err = rsaEncrypt(encryptionKey, payload)
-		if err != nil {
-			return err
-		}
-	}
 
 	q.task = worker.Task{
 		CodeName: q.flags.Arg(0),
@@ -351,6 +344,14 @@ func (q *QueueCmd) Args() error {
 		Delay:    &delay,
 		Cluster:  *q.cluster,
 		Label:    *q.label,
+	}
+
+	if len(encryptionKey) > 0 {
+		tasks, err := worker.EncryptPayloads(encryptionKey, q.task)
+		if err != nil {
+			return err
+		}
+		q.task = tasks[0]
 	}
 
 	return nil
@@ -380,7 +381,8 @@ func (q *QueueCmd) Run() {
 		done := make(chan struct{})
 		go runWatch(done, "queued")
 		q.waitForRunning(id)
-		close(done)
+		done <- struct{}{}
+		<-done // await pong (to print things well)
 
 		// TODO print actual queued time?
 		fmt.Println(LINES, yellow("Task running, waiting for completion"))
@@ -388,7 +390,8 @@ func (q *QueueCmd) Run() {
 		done = make(chan struct{})
 		go runWatch(done, "running")
 		ti := <-q.wrkr.WaitForTask(id)
-		close(done)
+		done <- struct{}{}
+		<-done // wait for pong
 		if ti.Msg != "" {
 			fmt.Fprintln(os.Stderr, "error running task:", ti.Msg)
 			return
@@ -423,7 +426,7 @@ func (q *QueueCmd) waitForRunning(taskId string) {
 	}
 }
 
-func runWatch(done <-chan struct{}, state string) {
+func runWatch(done chan struct{}, state string) {
 	start := time.Now()
 	var elapsed time.Duration
 	var h, m, s, ms int64
@@ -432,6 +435,7 @@ func runWatch(done <-chan struct{}, state string) {
 		case <-time.After(time.Millisecond):
 		case <-done:
 			fmt.Fprintln(os.Stdout, LINES, state+":", fmt.Sprintf("%v:%v:%v:%v\r", h, m, s, ms))
+			done <- struct{}{} // pong
 			return
 		}
 		elapsed = time.Since(start)
@@ -631,9 +635,15 @@ func (u *UploadCmd) Args() error {
 			return err
 		}
 	}
+
+	if *u.retries != unset {
+		u.codes.Retries = u.retries
+	}
+	if *u.retriesDelay != unset {
+		u.codes.RetriesDelay = u.retriesDelay
+	}
+
 	u.codes.MaxConcurrency = *u.maxConc
-	u.codes.Retries = *u.retries
-	u.codes.RetriesDelay = *u.retriesDelay
 	u.codes.Config = *u.config
 	u.codes.DefaultPriority = *u.defaultPriority
 
@@ -673,7 +683,7 @@ func (u *UploadCmd) Run() {
 	} else {
 		fmt.Println(LINES, `Uploading worker '`+u.codes.Name+`'`)
 	}
-	code, err := pushCodes(*u.zip, &u.wrkr, u.codes)
+	code, err := u.wrkr.CodePackageZipUpload(*u.zip, u.codes)
 	if err != nil {
 		fmt.Println(err)
 		return
@@ -723,9 +733,14 @@ func (u *RegisterCmd) Args() error {
 		}
 	}
 
+	if *u.retries != unset {
+		u.codes.Retries = u.retries
+	}
+	if *u.retriesDelay != unset {
+		u.codes.RetriesDelay = u.retriesDelay
+	}
+
 	u.codes.MaxConcurrency = *u.maxConc
-	u.codes.Retries = *u.retries
-	u.codes.RetriesDelay = *u.retriesDelay
 	u.codes.Config = *u.config
 	u.codes.DefaultPriority = *u.defaultPriority
 
@@ -765,7 +780,7 @@ func (u *RegisterCmd) Run() {
 	} else {
 		fmt.Println(LINES, `Registering worker '`+u.codes.Name+`'`)
 	}
-	code, err := pushCodes("", &u.wrkr, u.codes)
+	code, err := u.wrkr.CodePackageUpload(u.codes)
 	if err != nil {
 		fmt.Println(err)
 		return
