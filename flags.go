@@ -11,7 +11,7 @@ import (
 )
 
 // the flag package makes it impossible to distinguish from flags that existed/didn't? so use this
-const unset = -1
+const unset = -1000
 
 type WorkerFlags struct {
 	*flag.FlagSet
@@ -56,11 +56,11 @@ func (wf *WorkerFlags) payloadFile() *string {
 }
 
 func (wf *WorkerFlags) priority() *int {
-	return wf.Int("priority", -3, "0(default), 1 or 2; uses worker's default priority if unset")
+	return wf.Int("priority", unset, "0(default), 1 or 2; uses worker's default priority if unset")
 }
 
 func (wf *WorkerFlags) defaultPriority() *int {
-	return wf.Int("default-priority", -3, "0(default), 1 or 2")
+	return wf.Int("default-priority", unset, "0(default), 1 or 2")
 }
 
 func (wf *WorkerFlags) timeout() *int {
@@ -76,11 +76,11 @@ func (wf *WorkerFlags) wait() *bool {
 }
 
 func (wf *WorkerFlags) maxConc() *int {
-	return wf.Int("max-concurrency", -1, "max workers to run in parallel. default is no limit")
+	return wf.Int("max-concurrency", unset, "max workers to run in parallel. default is no limit")
 }
 
 func (wf *WorkerFlags) runEvery() *int {
-	return wf.Int("run-every", -1, "time between runs in seconds (>= 60), default is run once")
+	return wf.Int("run-every", unset, "time between runs in seconds (>= 60), default is run once")
 }
 
 func (wf *WorkerFlags) runTimes() *int {

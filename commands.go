@@ -253,10 +253,10 @@ func (s *SchedCmd) Args() error {
 		t, _ := time.Parse(time.RFC3339, *s.startAt)
 		s.sched.StartAt = &t
 	}
-	if *s.maxConc > 0 {
+	if *s.maxConc != unset {
 		s.sched.MaxConcurrency = s.maxConc
 	}
-	if *s.runEvery > 0 {
+	if *s.runEvery != unset {
 		s.sched.RunEvery = s.runEvery
 	}
 
@@ -643,9 +643,13 @@ func (u *UploadCmd) Args() error {
 		u.codes.RetriesDelay = u.retriesDelay
 	}
 
-	u.codes.MaxConcurrency = *u.maxConc
+	if *u.maxConc != unset {
+		u.codes.MaxConcurrency = *u.maxConc
+	}
 	u.codes.Config = *u.config
-	u.codes.DefaultPriority = *u.defaultPriority
+	if *u.defaultPriority != unset {
+		u.codes.DefaultPriority = *u.defaultPriority
+	}
 
 	if u.host != nil && *u.host != "" {
 		u.codes.Host = *u.host
