@@ -1,4 +1,4 @@
-package main
+package commands
 
 // Contains each command and its configuration
 
@@ -8,19 +8,80 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"errors"
+	"flag"
 	"fmt"
 	"io/ioutil"
 	"math/big"
 	"net/http"
 	"os"
+	"runtime"
 	"strings"
 	"time"
 
+	"github.com/fatih/color"
 	"github.com/iron-io/iron_go3/config"
 	"github.com/iron-io/iron_go3/worker"
 )
 
 // TODO(reed): default flags for everybody
+var (
+	Commands = map[string]Commander{
+		"run": Runner{},
+		"docker": Mapper{
+			"login": new(DockerLoginCmd),
+		},
+		"register": Registrar{},
+		"worker": Mapper{
+			"upload":   new(UploadCmd),
+			"queue":    new(QueueCmd),
+			"schedule": new(SchedCmd),
+			"status":   new(StatusCmd),
+			"log":      new(LogCmd),
+		},
+		"mq": Mapper{
+			"push":    new(PushCmd),
+			"pop":     new(PopCmd),
+			"reserve": new(ReserveCmd),
+			"delete":  new(DeleteCmd),
+			"peek":    new(PeekCmd),
+			"clear":   new(ClearCmd),
+			"list":    new(ListCmd),
+			"create":  new(CreateCmd),
+			"rm":      new(RmCmd),
+			"info":    new(InfoCmd),
+		},
+		"lambda": Mapper{
+			"create-function":  new(LambdaCreateCmd),
+			"test-function":    new(LambdaTestFunctionCmd),
+			"publish-function": new(LambdaPublishCmd),
+			"aws-import":       new(LambdaImportCmd),
+		},
+	}
+
+	TokenFlag     = flag.String("token", "", "provide OAuth token")
+	ProjectIDFlag = flag.String("project-id", "", "provide project ID")
+	EnvFlag       = flag.String("env", "", "provide specific dev environment")
+
+	red, yellow, green func(a ...interface{}) string
+)
+
+const (
+	LINES  = "-----> "
+	BLANKS = "       "
+	INFO   = " for more info"
+)
+
+func init() {
+	if runtime.GOOS == "windows" {
+		red = fmt.Sprint
+		yellow = fmt.Sprint
+		green = fmt.Sprint
+	} else {
+		red = color.New(color.FgRed).SprintFunc()
+		yellow = color.New(color.FgYellow).SprintFunc()
+		green = color.New(color.FgGreen).SprintFunc()
+	}
+}
 
 // The idea is:
 //     parse flags -- if help, Usage() && quit
@@ -48,12 +109,12 @@ type command struct {
 
 // All Commands will do similar configuration
 func (bc *command) Config() error {
-	bc.wrkr.Settings = config.ConfigWithEnv("iron_worker", *envFlag)
-	if *projectIDFlag != "" {
-		bc.wrkr.Settings.ProjectId = *projectIDFlag
+	bc.wrkr.Settings = config.ConfigWithEnv("iron_worker", *EnvFlag)
+	if *ProjectIDFlag != "" {
+		bc.wrkr.Settings.ProjectId = *ProjectIDFlag
 	}
-	if *tokenFlag != "" {
-		bc.wrkr.Settings.Token = *tokenFlag
+	if *TokenFlag != "" {
+		bc.wrkr.Settings.Token = *TokenFlag
 	}
 
 	if bc.wrkr.Settings.ProjectId == "" {
@@ -632,8 +693,8 @@ func (u *UploadCmd) Args() error {
 		}
 	}
 	u.codes.MaxConcurrency = *u.maxConc
-	u.codes.Retries = *u.retries
-	u.codes.RetriesDelay = *u.retriesDelay
+	u.codes.Retries = u.retries
+	u.codes.RetriesDelay = u.retriesDelay
 	u.codes.Config = *u.config
 	u.codes.DefaultPriority = *u.defaultPriority
 
@@ -724,8 +785,8 @@ func (u *RegisterCmd) Args() error {
 	}
 
 	u.codes.MaxConcurrency = *u.maxConc
-	u.codes.Retries = *u.retries
-	u.codes.RetriesDelay = *u.retriesDelay
+	u.codes.Retries = u.retries
+	u.codes.RetriesDelay = u.retriesDelay
 	u.codes.Config = *u.config
 	u.codes.DefaultPriority = *u.defaultPriority
 
@@ -776,4 +837,60 @@ func (u *RegisterCmd) Run() {
 		fmt.Println(BLANKS, green(`Registered code package with id='`+code.Id+`'`))
 	}
 	fmt.Println(BLANKS, green(u.hud_URL_str+"code/"+code.Id+INFO))
+}
+
+type Commander interface {
+	// Given a full set of command line args, call Args and Flags with
+	// whatever position needed to be sufficiently rad.
+	Command(args ...string) (Command, error)
+	Commands() []string
+}
+
+type (
+	// mapper expects > 0 args, calls flags after first arg
+	Mapper map[string]Command
+	// Runner calls flags on first (zeroeth) arg
+	Runner struct{}
+	// registrar calls flags on first (zeroeth) arg, using RegisterCmd
+	Registrar struct{}
+)
+
+func (r Runner) Commands() []string { return []string{"just run!"} } // --help handled in Flags()
+func (r Runner) Command(args ...string) (Command, error) {
+	run := new(RunCmd)
+	err := run.Flags(args[0:]...)
+	if err == nil {
+		err = run.Args()
+	}
+	return run, err
+}
+
+func (r Registrar) Commands() []string { return []string{"just register!"} } // --help handled in Flags()
+func (r Registrar) Command(args ...string) (Command, error) {
+	run := new(RegisterCmd)
+	err := run.Flags(args[0:]...)
+	if err == nil {
+		err = run.Args()
+	}
+	return run, err
+}
+
+func (m Mapper) Commands() []string {
+	var c []string
+	for cmd := range m {
+		c = append(c, cmd)
+	}
+	return c
+}
+
+func (m Mapper) Command(args ...string) (Command, error) {
+	c, ok := m[args[0]]
+	if !ok {
+		return nil, fmt.Errorf("command not found: %s", args[0])
+	}
+	err := c.Flags(args[1:]...)
+	if err == nil {
+		err = c.Args()
+	}
+	return c, err
 }
