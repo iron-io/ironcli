@@ -1,0 +1,75 @@
+hash: a104a522dc2ba982d25101330bbd5d44778565128f0cb09f34061c167921046c
+updated: 2016-07-14T08:40:37.798125603-07:00
+imports:
+- name: github.com/amir/raidman
+  version: 91c20f3f475cab75bb40ad7951d9bbdde357ade7
+  subpackages:
+  - proto
+- name: github.com/BurntSushi/toml
+  version: bec2dacf4b590d26237cfebff4471e21ce543494
+- name: github.com/cactus/go-statsd-client
+  version: 91c326c3f7bd20f0226d3d1c289dd9f8ce28d33d
+  subpackages:
+  - statsd
+- name: github.com/dgrijalva/jwt-go
+  version: 01aeca54ebda6e0fbfafd0a524d234159c05ec20
+- name: github.com/golang/protobuf
+  version: 874264fbbb43f4d91e999fecb4b40143ed611400
+  subpackages:
+  - proto
+- name: github.com/gorilla/context
+  version: aed02d124ae4a0e94fea4541c8effd05bf0c8296
+- name: github.com/gorilla/mux
+  version: 9fa818a44c2bf1396a17f9d5a3c0f6dd39d2ff8e
+- name: github.com/iron-io/common
+  version: 7c9faec363c808052742b4c4b84876c4c2172308
+  subpackages:
+  - httpshutdown
+  - msgpack
+  - semaphore
+  - serverutil
+- name: github.com/iron-io/go
+  version: 1ed3de151aa27db91d6df5dc8c8ce164c833b57c
+  subpackages:
+  - common
+  - common/httpshutdown
+  - common/msgpack
+  - common/semaphore
+  - common/stats
+- name: github.com/iron-io/golog
+  version: 5b80d97af5a2a5d386e7609efb82192ae99a7c67
+- name: github.com/iron-io/iron_go
+  version: 920c950272e820d9e2562fcbf40303f05564f118
+  subpackages:
+  - cache
+  - worker
+  - api
+  - config
+- name: github.com/mattn/go-colorable
+  version: 9056b7a9f2d1f2d96498d6d146acd1f9d5ed3d59
+- name: github.com/mattn/go-isatty
+  version: 56b76bdf51f7708750eac80fa38b952bb9f32639
+- name: github.com/Sirupsen/logrus
+  version: 32055c351ea8b00b96d70f28db48d9840feaf0ec
+- name: github.com/vmihailenco/bufio
+  version: 24e7e48f60fc2d9e99e43c07485d9fff42051e66
+- name: github.com/vrischmann/envconfig
+  version: 9e6e1c4d3b73427d03118518603bb904d9c55236
+- name: golang.org/x/net
+  version: a728288923b47049b2ce791836767ffbe964a5bd
+  subpackages:
+  - proxy
+- name: golang.org/x/sys
+  version: b518c298ac9dc94b6ac0757394f50d10c5dfa25a
+  subpackages:
+  - unix
+- name: gopkg.in/inconshreveable/log15.v2
+  version: b105bd37f74e5d9dc7b6ad7806715c7a2b83fd3f
+  subpackages:
+  - stack
+  - term
+- name: gopkg.in/mgo.v2
+  version: 29cc868a5ca65f401ff318143f9408d02f4799cc
+  subpackages:
+  - bson
+devImports: []

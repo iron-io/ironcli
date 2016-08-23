@@ -1,41 +1,45 @@
-hash: de06abde94dcdadf0107169eae4579473c883d35caf1d2bbb8288210932a6c12
-updated: 2016-04-11T15:04:00.881036036-07:00
+hash: 181348ec95e1ea6f24749b7c4c68e0344d055beabef11e18e4b50f932d009b29
+updated: 2016-08-24T00:00:36.628508378+04:00
 imports:
 - name: github.com/aws/aws-sdk-go
-  version: 188bbc645efb550a8d59d343b23e2b9a9b87a2f9
+  version: 8f2725740345a0561fa09669f5f75f905404ef8b
   subpackages:
-  - aws/credentials
   - aws
-  - aws/session
-  - services/lambda
-  - service/lambda
   - aws/awserr
-  - aws/client
-  - aws/corehandlers
-  - aws/defaults
-  - aws/request
-  - private/endpoints
   - aws/awsutil
+  - aws/client
   - aws/client/metadata
-  - private/protocol
-  - private/protocol/restjson
-  - private/signer/v4
+  - aws/corehandlers
+  - aws/credentials
   - aws/credentials/ec2rolecreds
+  - aws/defaults
   - aws/ec2metadata
+  - aws/request
+  - aws/session
+  - private/endpoints
+  - private/protocol
+  - private/protocol/json/jsonutil
   - private/protocol/jsonrpc
   - private/protocol/rest
-  - private/protocol/json/jsonutil
+  - private/protocol/restjson
+  - private/signer/v4
+  - service/lambda
+  - services/lambda
 - name: github.com/Azure/go-ansiterm
   version: 70b2c90b260171e829f1ebd7c17f600c11858dbe
   subpackages:
   - winterm
+- name: github.com/coreos/go-semver
+  version: 8ab6407b697782a06568d4b7f1db25550ec2e4c6
+  subpackages:
+  - semver
 - name: github.com/docker/docker
   version: 65370be888d940899593a001024f53d6b83b4bb0
   subpackages:
-  - pkg/jsonmessage
   - pkg/jsonlog
-  - pkg/term
+  - pkg/jsonmessage
   - pkg/system
+  - pkg/term
   - pkg/term/windows
 - name: github.com/docker/go-units
   version: 5d2041e26a699eaca682e2ea41c8f891e1060444
@@ -44,25 +48,36 @@ imports:
 - name: github.com/fsouza/go-dockerclient
   version: 98829062f36e94bc8c31a1c9a8b087b90f9d2d9c
   subpackages:
+  - external/github.com/Sirupsen/logrus
   - external/github.com/docker/docker/opts
   - external/github.com/docker/docker/pkg/archive
   - external/github.com/docker/docker/pkg/fileutils
   - external/github.com/docker/docker/pkg/homedir
-  - external/github.com/docker/docker/pkg/stdcopy
-  - external/github.com/docker/go-units
-  - external/github.com/hashicorp/go-cleanhttp
-  - external/github.com/Sirupsen/logrus
   - external/github.com/docker/docker/pkg/idtools
   - external/github.com/docker/docker/pkg/ioutils
+  - external/github.com/docker/docker/pkg/longpath
   - external/github.com/docker/docker/pkg/pools
   - external/github.com/docker/docker/pkg/promise
+  - external/github.com/docker/docker/pkg/stdcopy
   - external/github.com/docker/docker/pkg/system
-  - external/github.com/docker/docker/pkg/longpath
+  - external/github.com/docker/go-units
+  - external/github.com/hashicorp/go-cleanhttp
   - external/github.com/opencontainers/runc/libcontainer/user
-  - external/golang.org/x/sys/unix
   - external/golang.org/x/net/context
+  - external/golang.org/x/sys/unix
+- name: github.com/giantswarm/semver-bump
+  version: 88e6c9f2fe390c48839eaba32490fd09cb3b581c
+  subpackages:
+  - bump
+  - storage
 - name: github.com/go-ini/ini
   version: 12f418cc7edc5a618a51407b7ac1f1f512139df3
+- name: github.com/inconshreveable/mousetrap
+  version: 76626ae9c91c4f2a10f34cad8ce83ea42c93bb75
+- name: github.com/iron-io/functions
+  version: c5abab9f1577afeff8736a64482de6e75c9ff8e9
+  subpackages:
+  - api/models
 - name: github.com/iron-io/iron_go3
   version: d1197926301489b15e418c49a0b17a9c42817acd
   subpackages:
@@ -76,6 +91,10 @@ imports:
   - lambda
 - name: github.com/jmespath/go-jmespath
   version: 0b12d6b521d83fc7f755e7cfc1b1fbdd35a01a74
+- name: github.com/juju/errgo
+  version: 08cceb5d0b5331634b9826762a8fd53b29b86ad8
+  subpackages:
+  - errors
 - name: github.com/mattn/go-colorable
   version: 9cbef7c35391cca05f15f8181dc0b18bc9736dbb
   repo: https://github.com/mattn/go-colorable
@@ -86,8 +105,14 @@ imports:
   version: f9ab0dce87d815821e221626b772e3475a0d2749
 - name: github.com/Sirupsen/logrus
   version: 4b6ea7319e214d98c938f12692336f7ca9348d6b
+- name: github.com/spf13/cobra
+  version: 1f4717172e07e12150feb061b2ab847c3054f53f
+- name: github.com/spf13/pflag
+  version: 103ce5cd2042f2fe629c1957abb64ab3e7f50235
 - name: golang.org/x/sys
   version: 9eef40adf05b951699605195b829612bd7b69952
   subpackages:
   - unix
-devImports: []
+- name: gopkg.in/yaml.v2
+  version: 53feefa2559fb8dfa8d81baad31be332c97d6c77
+testImports: []

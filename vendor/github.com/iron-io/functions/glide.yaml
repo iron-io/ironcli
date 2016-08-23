@@ -1,0 +1,9 @@
+package: github.com/iron-io/microgateway
+import:
+- package: github.com/gorilla/mux
+- package: github.com/iron-io/common
+- package: github.com/iron-io/golog
+- package: github.com/iron-io/iron_go
+  subpackages:
+  - cache
+  - worker
