@@ -1,9 +1,13 @@
-package: github.com/iron-io/microgateway
+package: github.com/iron-io/functions
 import:
-- package: github.com/gorilla/mux
-- package: github.com/iron-io/common
-- package: github.com/iron-io/golog
-- package: github.com/iron-io/iron_go
-  subpackages:
-  - cache
-  - worker
+- package: github.com/Sirupsen/logrus
+- package: github.com/boltdb/bolt
+- package: github.com/gin-gonic/gin
+- package: github.com/go-openapi/errors
+- package: github.com/go-openapi/strfmt
+- package: github.com/go-openapi/validate
+- package: github.com/iron-io/titan
+  repo: https://github.com/iron-io/titan.git
+  vcs: git
+  version: master
+- package: github.com/lib/pq

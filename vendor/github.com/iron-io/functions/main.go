@@ -1,33 +1,37 @@
-/*
-
-For keeping a minimum running, perhaps when doing a routing table update, if destination hosts are all
- expired or about to expire we start more.
-
-*/
-
 package main
 
 import (
-	"os"
-
 	log "github.com/Sirupsen/logrus"
-	"github.com/iron-io/functions/api"
+	"github.com/iron-io/functions/api/config"
+	"github.com/iron-io/functions/api/datastore"
+	"github.com/iron-io/functions/api/models"
+	"github.com/iron-io/functions/api/runner"
+	"github.com/iron-io/functions/api/server"
+	"github.com/spf13/viper"
+	"golang.org/x/net/context"
 )
 
 func main() {
+	ctx := context.Background()
+	c := &models.Config{}
 
-	config := &api.Config{}
-	config.CloudFlare.Email = os.Getenv("CLOUDFLARE_EMAIL")
-	config.CloudFlare.ApiKey = os.Getenv("CLOUDFLARE_API_KEY")
-	config.CloudFlare.ZoneId = os.Getenv("CLOUDFLARE_ZONE_ID")
+	config.InitConfig()
 
-	// TODO: validate inputs, iron tokens, cloudflare stuff, etc
-	err := config.Validate()
+	err := c.Validate()
 	if err != nil {
 		log.WithError(err).Fatalln("Invalid config.")
 	}
-	log.Printf("config: %+v", config)
 
-	api := api.New(config)
-	api.Start()
+	ds, err := datastore.New(viper.GetString("DB"))
+	if err != nil {
+		log.WithError(err).Fatalln("Invalid DB url.")
+	}
+
+	runner, err := runner.New()
+	if err != nil {
+		log.WithError(err).Fatalln("Failed to create a runner")
+	}
+
+	srv := server.New(c, ds, runner)
+	srv.Run(ctx)
 }

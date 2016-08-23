@@ -693,8 +693,8 @@ func (u *UploadCmd) Args() error {
 		}
 	}
 	u.codes.MaxConcurrency = *u.maxConc
-	u.codes.Retries = u.retries
-	u.codes.RetriesDelay = u.retriesDelay
+	u.codes.Retries = *u.retries
+	u.codes.RetriesDelay = *u.retriesDelay
 	u.codes.Config = *u.config
 	u.codes.DefaultPriority = *u.defaultPriority
 
@@ -785,8 +785,8 @@ func (u *RegisterCmd) Args() error {
 	}
 
 	u.codes.MaxConcurrency = *u.maxConc
-	u.codes.Retries = u.retries
-	u.codes.RetriesDelay = u.retriesDelay
+	u.codes.Retries = *u.retries
+	u.codes.RetriesDelay = *u.retriesDelay
 	u.codes.Config = *u.config
 	u.codes.DefaultPriority = *u.defaultPriority
 

@@ -24,8 +24,7 @@ import:
   version: 65370be888d940899593a001024f53d6b83b4bb0
   subpackages:
   - pkg/jsonmessage
-- package: github.com/iron-io/functions
-  version: 0.0.28
 - package: github.com/giantswarm/semver-bump
   version: 1.1.1
 - package: github.com/spf13/cobra
+- package: github.com/iron-io/functions
