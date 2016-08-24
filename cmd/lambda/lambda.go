@@ -15,6 +15,9 @@ func NewLambda() *Lambda {
 			ArgsUsage: "[image] [args]",
 			Subcommands: cli.Commands{
 				NewLambdaCreateFunction().GetCmd(),
+				NewLambdaAwsImport().GetCmd(),
+				NewLambdaPublishFunction().GetCmd(),
+				NewLambdaTestFunction().GetCmd(),
 			},
 		},
 	}

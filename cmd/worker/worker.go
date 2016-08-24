@@ -15,6 +15,10 @@ func NewWorker() *Worker {
 			ArgsUsage: "[image] [args]",
 			Subcommands: cli.Commands{
 				NewWorkerUpload().GetCmd(),
+				NewWorkerLog().GetCmd(),
+				NewWorkerQueue().GetCmd(),
+				NewWorkerSchedule().GetCmd(),
+				NewWorkerStatus().GetCmd(),
 			},
 		},
 	}

@@ -15,6 +15,15 @@ func NewMq() *Mq {
 			ArgsUsage: "[image] [args]",
 			Subcommands: cli.Commands{
 				NewMqPush().GetCmd(),
+				NewMqClear().GetCmd(),
+				NewMqCreate().GetCmd(),
+				NewMqDelete().GetCmd(),
+				NewMqInfo().GetCmd(),
+				NewMqList().GetCmd(),
+				NewMqPeek().GetCmd(),
+				NewMqPop().GetCmd(),
+				NewMqReverse().GetCmd(),
+				NewMqRm().GetCmd(),
 			},
 		},
 	}
