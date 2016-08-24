@@ -1,22 +1,27 @@
 package docker
 
-import (
-	"github.com/iron-io/ironcli/commands"
-	"github.com/iron-io/ironcli/helpers"
-	"github.com/spf13/cobra"
-)
+import "github.com/urfave/cli"
 
-var commandName = "docker"
-
-var RootCmd = &cobra.Command{
-	Use: commandName,
+type Docker struct {
+	cli.Command
 }
 
-// TODO: Convert old commands to cobra and put it here
-
-func init() {
-	commands := commands.Commands[commandName].(commands.Mapper)
-	for name := range commands {
-		RootCmd.AddCommand(&cobra.Command{Use: name, Run: helpers.OldCommands})
+func NewDocker() *Docker {
+	docker := &Docker{
+		Command: cli.Command{
+			Name:      "docker",
+			Usage:     "do the doo",
+			UsageText: "doo - does the dooing",
+			ArgsUsage: "[image] [args]",
+			Subcommands: cli.Commands{
+				NewDockerLogin().GetCmd(),
+			},
+		},
 	}
+
+	return docker
+}
+
+func (r Docker) GetCmd() cli.Command {
+	return r.Command
 }

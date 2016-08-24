@@ -1,0 +1,8 @@
+settings:
+  token: ""
+  project_id: ""
+  host: "worker-aws-us-east-1.iron.io"
+  scheme: "https"
+  port: 443
+  api_version: "2"
+  user_agent: "iron_cli"

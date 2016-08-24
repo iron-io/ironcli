@@ -1,13 +1,32 @@
 package cmd
 
 import (
-	"github.com/iron-io/ironcli/helpers"
-	"github.com/spf13/cobra"
+	"fmt"
+
+	"github.com/urfave/cli"
 )
 
-var RegisterCmd = &cobra.Command{
-	Use: "register",
-	Run: helpers.OldCommands,
+type Register struct {
+	cli.Command
 }
 
-// TODO: Convert old commands to cobra and put it here
+func NewRegister() *Register {
+	register := &Register{
+		Command: cli.Command{
+			Name:      "register",
+			Usage:     "do the doo",
+			UsageText: "doo - does the dooing",
+			ArgsUsage: "[test]",
+			Action: func(c *cli.Context) error {
+				fmt.Println("added task: ", c.Args().First())
+				return nil
+			},
+		},
+	}
+
+	return register
+}
+
+func (r Register) GetCmd() cli.Command {
+	return r.Command
+}

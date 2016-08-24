@@ -1,22 +1,27 @@
 package lambda
 
-import (
-	"github.com/iron-io/ironcli/commands"
-	"github.com/iron-io/ironcli/helpers"
-	"github.com/spf13/cobra"
-)
+import "github.com/urfave/cli"
 
-var commandName = "lambda"
-
-var RootCmd = &cobra.Command{
-	Use: commandName,
+type Lambda struct {
+	cli.Command
 }
 
-// TODO: Convert old commands to cobra and put it here
-
-func init() {
-	commands := commands.Commands[commandName].(commands.Mapper)
-	for name := range commands {
-		RootCmd.AddCommand(&cobra.Command{Use: name, Run: helpers.OldCommands})
+func NewLambda() *Lambda {
+	lambda := &Lambda{
+		Command: cli.Command{
+			Name:      "lambda",
+			Usage:     "do the doo",
+			UsageText: "doo - does the dooing",
+			ArgsUsage: "[image] [args]",
+			Subcommands: cli.Commands{
+				NewLambdaCreateFunction().GetCmd(),
+			},
+		},
 	}
+
+	return lambda
+}
+
+func (r Lambda) GetCmd() cli.Command {
+	return r.Command
 }

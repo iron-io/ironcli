@@ -1,4 +1,4 @@
-package cmd
+package worker
 
 import (
 	"fmt"
@@ -6,27 +6,27 @@ import (
 	"github.com/urfave/cli"
 )
 
-type Run struct {
+type WorkerUpload struct {
 	cli.Command
 }
 
-func NewRun() *Run {
-	run := &Run{
+func NewWorkerUpload() *WorkerUpload {
+	workerUpload := &WorkerUpload{
 		Command: cli.Command{
-			Name:      "run",
+			Name:      "upload",
 			Usage:     "do the doo",
 			UsageText: "doo - does the dooing",
 			ArgsUsage: "[image] [args]",
 			Action: func(c *cli.Context) error {
-				fmt.Println("added task: ", c.Args().First())
+				fmt.Println("added task: test ", c.Args().First())
 				return nil
 			},
 		},
 	}
 
-	return run
+	return workerUpload
 }
 
-func (r Run) GetCmd() cli.Command {
+func (r WorkerUpload) GetCmd() cli.Command {
 	return r.Command
 }

@@ -1,22 +1,27 @@
 package worker
 
-import (
-	"github.com/iron-io/ironcli/commands"
-	"github.com/iron-io/ironcli/helpers"
-	"github.com/spf13/cobra"
-)
+import "github.com/urfave/cli"
 
-var commandName = "worker"
-
-var RootCmd = &cobra.Command{
-	Use: commandName,
+type Worker struct {
+	cli.Command
 }
 
-// TODO: Convert old commands to cobra and put it here
-
-func init() {
-	commands := commands.Commands[commandName].(commands.Mapper)
-	for name := range commands {
-		RootCmd.AddCommand(&cobra.Command{Use: name, Run: helpers.OldCommands})
+func NewWorker() *Worker {
+	worker := &Worker{
+		Command: cli.Command{
+			Name:      "worker",
+			Usage:     "do the doo",
+			UsageText: "doo - does the dooing",
+			ArgsUsage: "[image] [args]",
+			Subcommands: cli.Commands{
+				NewWorkerUpload().GetCmd(),
+			},
+		},
 	}
+
+	return worker
+}
+
+func (r Worker) GetCmd() cli.Command {
+	return r.Command
 }

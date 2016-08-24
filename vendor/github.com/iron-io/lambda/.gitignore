@@ -1,4 +1,0 @@
-*.pyc
-**/vendor/*
-target
-test-suite/**/*.jar

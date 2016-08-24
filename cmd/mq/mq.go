@@ -1,22 +1,27 @@
 package mq
 
-import (
-	"github.com/iron-io/ironcli/commands"
-	"github.com/iron-io/ironcli/helpers"
-	"github.com/spf13/cobra"
-)
+import "github.com/urfave/cli"
 
-var commandName = "mq"
-
-var RootCmd = &cobra.Command{
-	Use: commandName,
+type Mq struct {
+	cli.Command
 }
 
-// TODO: Convert old commands to cobra and put it here
-
-func init() {
-	commands := commands.Commands[commandName].(commands.Mapper)
-	for name := range commands {
-		RootCmd.AddCommand(&cobra.Command{Use: name, Run: helpers.OldCommands})
+func NewMq() *Mq {
+	mq := &Mq{
+		Command: cli.Command{
+			Name:      "mq",
+			Usage:     "do the doo",
+			UsageText: "doo - does the dooing",
+			ArgsUsage: "[image] [args]",
+			Subcommands: cli.Commands{
+				NewMqPush().GetCmd(),
+			},
+		},
 	}
+
+	return mq
+}
+
+func (r Mq) GetCmd() cli.Command {
+	return r.Command
 }
