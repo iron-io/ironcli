@@ -41,14 +41,13 @@ const (
 )
 
 func init() {
-	cobra.OnInitialize(initConfig)
+	cobra.OnInitialize(nil)
 
-	RootCmd.PersistentFlags().StringVarP(&EnvFlag, "env", "e", "", "provide specific dev environment")
-	RootCmd.PersistentFlags().StringVarP(&ProjectIDFlag, "project-id", "p", "", "provide projectid")
-	RootCmd.PersistentFlags().StringVarP(&TokenFlag, "token", "t", "", "provide projectid")
-	RootCmd.PersistentFlags().BoolVarP(&versionFlag, "version", "v", false, "provide projectid")
-}
+	RootCmd.PersistentFlags().StringVarP(&EnvFlag, "env", "e", "", "Provide specific dev environment")
+	RootCmd.PersistentFlags().StringVarP(&ProjectIDFlag, "project-id", "p", "", "Provile your project_id")
+	RootCmd.PersistentFlags().StringVarP(&TokenFlag, "token", "t", "", "Provide token of your account")
+	RootCmd.PersistentFlags().BoolVarP(&versionFlag, "version", "v", false, "Get current version of CLI")
 
-// initConfig reads in config file and ENV variables if set.
-func initConfig() {
+	RunCmd.Flags().StringVarP(&RunZIP, "zip", "z", "", "")
+	RunCmd.Flags().StringVarP(&RunName, "name", "n", "", "")
 }

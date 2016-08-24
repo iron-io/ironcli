@@ -1,13 +1,20 @@
 package cmd
 
 import (
-	"github.com/iron-io/ironcli/helpers"
+	"fmt"
+	"strings"
+
 	"github.com/spf13/cobra"
 )
 
-var RunCmd = &cobra.Command{
-	Use: "run",
-	Run: helpers.OldCommands,
-}
+var (
+	RunZIP  string
+	RunName string
+)
 
-// TODO: Convert old commands to cobra and put it here
+var RunCmd = &cobra.Command{
+	Use: "run [image]",
+	Run: func(cmd *cobra.Command, args []string) {
+		fmt.Println("Print: " + strings.Join(args, " "))
+	},
+}

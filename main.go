@@ -19,5 +19,6 @@ func main() {
 		cmd.RunCmd,
 		worker.RootCmd,
 	)
+
 	cmd.Execute()
 }
