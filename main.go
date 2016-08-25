@@ -12,7 +12,6 @@ import (
 	"github.com/iron-io/ironcli/cmd/mq"
 	"github.com/iron-io/ironcli/cmd/worker"
 	"github.com/urfave/cli"
-	"github.com/urfave/cli/altsrc"
 )
 
 type genericType struct {
@@ -30,6 +29,10 @@ func (g *genericType) String() string {
 }
 
 func main() {
+	var (
+		settings config.Settings
+	)
+
 	app := cli.NewApp()
 	app.Name = "Iron CLI"
 	app.Version = "0.3.0"
@@ -44,39 +47,28 @@ func main() {
 	app.Usage = "Go version of the Iron.io command line tools"
 
 	app.Flags = []cli.Flag{
-		altsrc.NewStringFlag(cli.StringFlag{Name: "settings.token"}),
-		altsrc.NewStringFlag(cli.StringFlag{Name: "settings.project_id"}),
-		altsrc.NewStringFlag(cli.StringFlag{Name: "settings.host"}),
-		altsrc.NewStringFlag(cli.StringFlag{Name: "settings.scheme"}),
-		altsrc.NewIntFlag(cli.IntFlag{Name: "settings.port"}),
-		altsrc.NewStringFlag(cli.StringFlag{Name: "settings.api_version"}),
-		altsrc.NewStringFlag(cli.StringFlag{Name: "settings.user_agent"}),
 		cli.StringFlag{Name: "project-id"},
 		cli.StringFlag{Name: "token"},
-		cli.StringFlag{Name: "config", Value: "env/config.yaml"},
+		cli.StringFlag{Name: "env"},
 	}
 
-	app.Before = altsrc.InitInputSourceWithContext(app.Flags, altsrc.NewYamlSourceFromFlagFunc("config"))
-
 	// Init settings
-	app.After = func(c *cli.Context) error {
-		settings := config.Settings{
-			Token:      c.GlobalString("settings.token"),
-			ProjectId:  c.GlobalString("settings.project_id"),
-			Host:       c.GlobalString("settings.host"),
-			Scheme:     c.GlobalString("settings.scheme"),
-			Port:       uint16(c.GlobalInt("settings.port")),
-			ApiVersion: c.GlobalString("settings.api_version"),
-			UserAgent:  c.GlobalString("settings.user_agent"),
-		}
-
+	app.Before = func(c *cli.Context) error {
 		if c.GlobalString("project-id") != "" {
-			settings.ProjectId = c.GlobalString("project-id")
+			err := os.Setenv("IRON_PROJECT_ID", c.GlobalString("project-id"))
+			if err != nil {
+				return err
+			}
 		}
 
 		if c.GlobalString("token") != "" {
-			settings.Token = c.GlobalString("token")
+			err := os.Setenv("IRON_TOKEN", c.GlobalString("token"))
+			if err != nil {
+				return err
+			}
 		}
+
+		settings = config.ConfigWithEnv("iron_worker", c.GlobalString("env"))
 
 		return nil
 	}
@@ -86,12 +78,12 @@ func main() {
 	}
 
 	app.Commands = []cli.Command{
-		cmd.NewRegister().GetCmd(),
-		cmd.NewRun().GetCmd(),
-		worker.NewWorker().GetCmd(),
-		mq.NewMq().GetCmd(),
-		docker.NewDocker().GetCmd(),
-		lambda.NewLambda().GetCmd(),
+		cmd.NewRegister(&settings).GetCmd(),
+		cmd.NewRun(&settings).GetCmd(),
+		worker.NewWorker(&settings).GetCmd(),
+		mq.NewMq(&settings).GetCmd(),
+		docker.NewDocker(&settings).GetCmd(),
+		lambda.NewLambda(&settings).GetCmd(),
 	}
 
 	err := app.Run(os.Args)

@@ -1,12 +1,15 @@
 package worker
 
-import "github.com/urfave/cli"
+import (
+	"github.com/iron-io/iron_go3/config"
+	"github.com/urfave/cli"
+)
 
 type Worker struct {
 	cli.Command
 }
 
-func NewWorker() *Worker {
+func NewWorker(settings *config.Settings) *Worker {
 	worker := &Worker{
 		Command: cli.Command{
 			Name:      "worker",

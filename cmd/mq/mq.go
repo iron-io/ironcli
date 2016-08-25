@@ -1,12 +1,15 @@
 package mq
 
-import "github.com/urfave/cli"
+import (
+	"github.com/iron-io/iron_go3/config"
+	"github.com/urfave/cli"
+)
 
 type Mq struct {
 	cli.Command
 }
 
-func NewMq() *Mq {
+func NewMq(settings *config.Settings) *Mq {
 	mq := &Mq{
 		Command: cli.Command{
 			Name:      "mq",

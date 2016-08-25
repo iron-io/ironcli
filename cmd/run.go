@@ -3,6 +3,7 @@ package cmd
 import (
 	"fmt"
 
+	"github.com/iron-io/iron_go3/config"
 	"github.com/urfave/cli"
 )
 
@@ -10,7 +11,7 @@ type Run struct {
 	cli.Command
 }
 
-func NewRun() *Run {
+func NewRun(settings *config.Settings) *Run {
 	run := &Run{
 		Command: cli.Command{
 			Name:      "run",

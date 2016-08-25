@@ -21,12 +21,11 @@ type DockerLogin struct {
 	TestAuth   string `json:"-"`
 	RemoteAuth string `json:"-"`
 	Auth       string `json:"auth"`
-	Settings   config.Settings
 
 	cli.Command
 }
 
-func NewDockerLogin() *DockerLogin {
+func NewDockerLogin(settings *config.Settings) *DockerLogin {
 	dockerLogin := &DockerLogin{}
 	dockerLogin.Command = cli.Command{
 		Name:      "login",
@@ -65,7 +64,7 @@ func NewDockerLogin() *DockerLogin {
 				"auth": dockerLogin.RemoteAuth,
 			}
 
-			msg, err := dockerLogin.Run(c, &auth)
+			msg, err := dockerLogin.Run(settings, &auth)
 			if err != nil {
 				return err
 			}
@@ -115,20 +114,22 @@ func (r *DockerLogin) Login() error {
 	return nil
 }
 
-func (r *DockerLogin) Run(c *cli.Context, args *map[string]string) (msg string, err error) {
+func (r *DockerLogin) Run(settings *config.Settings, args *map[string]string) (msg string, err error) {
 	data, err := json.Marshal(args)
 	reader := bytes.NewReader(data)
 
-	req, err := http.NewRequest("POST", api.Action(r.Settings, "credentials").URL.String(), reader)
+	req, err := http.NewRequest("POST", api.Action(*settings, "credentials").URL.String(), reader)
 	if err != nil {
 		return "", err
 	}
 
+	fmt.Println(req.URL)
+
 	req.Header.Set("Accept", "application/json")
 	req.Header.Set("Accept-Encoding", "gzip/deflate")
-	req.Header.Set("Authorization", "OAuth "+r.Settings.Token)
+	req.Header.Set("Authorization", "OAuth "+settings.Token)
 	req.Header.Set("Content-Type", "application/json")
-	req.Header.Set("User-Agent", r.Settings.UserAgent)
+	req.Header.Set("User-Agent", settings.UserAgent)
 
 	response, err := http.DefaultClient.Do(req)
 	if err != nil {

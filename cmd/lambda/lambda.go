@@ -1,12 +1,15 @@
 package lambda
 
-import "github.com/urfave/cli"
+import (
+	"github.com/iron-io/iron_go3/config"
+	"github.com/urfave/cli"
+)
 
 type Lambda struct {
 	cli.Command
 }
 
-func NewLambda() *Lambda {
+func NewLambda(settings *config.Settings) *Lambda {
 	lambda := &Lambda{
 		Command: cli.Command{
 			Name:      "lambda",

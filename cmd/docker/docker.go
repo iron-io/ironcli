@@ -1,12 +1,15 @@
 package docker
 
-import "github.com/urfave/cli"
+import (
+	"github.com/iron-io/iron_go3/config"
+	"github.com/urfave/cli"
+)
 
 type Docker struct {
 	cli.Command
 }
 
-func NewDocker() *Docker {
+func NewDocker(settings *config.Settings) *Docker {
 	docker := &Docker{
 		Command: cli.Command{
 			Name:      "docker",
@@ -14,7 +17,7 @@ func NewDocker() *Docker {
 			UsageText: "doo - does the dooing",
 			ArgsUsage: "[image] [args]",
 			Subcommands: cli.Commands{
-				NewDockerLogin().GetCmd(),
+				NewDockerLogin(settings).GetCmd(),
 			},
 		},
 	}

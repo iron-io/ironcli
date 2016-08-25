@@ -3,6 +3,7 @@ package cmd
 import (
 	"fmt"
 
+	"github.com/iron-io/iron_go3/config"
 	"github.com/urfave/cli"
 )
 
@@ -10,7 +11,7 @@ type Register struct {
 	cli.Command
 }
 
-func NewRegister() *Register {
+func NewRegister(settings *config.Settings) *Register {
 	register := &Register{
 		Command: cli.Command{
 			Name:      "register",
@@ -18,6 +19,7 @@ func NewRegister() *Register {
 			UsageText: "doo - does the dooing",
 			ArgsUsage: "[test]",
 			Action: func(c *cli.Context) error {
+				fmt.Println(settings)
 				fmt.Println("added task: ", c.Args().First())
 				return nil
 			},
