@@ -14,20 +14,6 @@ import (
 	"github.com/urfave/cli"
 )
 
-type genericType struct {
-	s string
-	*config.Settings
-}
-
-func (g *genericType) Set(value string) error {
-	g.s = value
-	return nil
-}
-
-func (g *genericType) String() string {
-	return g.s
-}
-
 func main() {
 	var (
 		settings config.Settings
@@ -47,9 +33,9 @@ func main() {
 	app.Usage = "Go version of the Iron.io command line tools"
 
 	app.Flags = []cli.Flag{
-		cli.StringFlag{Name: "project-id"},
-		cli.StringFlag{Name: "token"},
-		cli.StringFlag{Name: "env"},
+		cli.StringFlag{Name: "project-id", Usage: "provide project ID"},
+		cli.StringFlag{Name: "token", Usage: "provide OAuth token"},
+		cli.StringFlag{Name: "env", Usage: "provide specific dev environment"},
 	}
 
 	// Init settings
