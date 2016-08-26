@@ -17,7 +17,7 @@ func NewWorker(settings *config.Settings) *Worker {
 			UsageText: "doo - does the dooing",
 			ArgsUsage: "[command]",
 			Subcommands: cli.Commands{
-				NewWorkerUpload().GetCmd(),
+				NewWorkerUpload(settings).GetCmd(),
 				NewWorkerLog().GetCmd(),
 				NewWorkerQueue().GetCmd(),
 				NewWorkerSchedule().GetCmd(),
