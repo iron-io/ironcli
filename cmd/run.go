@@ -30,6 +30,7 @@ type Run struct {
 
 func NewRun(settings *config.Settings) *Run {
 	run := &Run{}
+
 	run.Command = cli.Command{
 		Name:      "run",
 		Usage:     "do the doo",
@@ -47,13 +48,13 @@ func NewRun(settings *config.Settings) *Run {
 				Destination: &run.config,
 			},
 			cli.StringFlag{
-				Name:        "configFile",
-				Usage:       "configFile usage",
+				Name:        "config-file",
+				Usage:       "config-file usage",
 				Destination: &run.configFile,
 			},
 			cli.IntFlag{
-				Name:        "maxConc",
-				Usage:       "maxConc usage",
+				Name:        "max-conc",
+				Usage:       "max-conc usage",
 				Value:       -1,
 				Destination: &run.maxConc,
 			},
@@ -64,14 +65,14 @@ func NewRun(settings *config.Settings) *Run {
 				Destination: &run.retries,
 			},
 			cli.IntFlag{
-				Name:        "retriesDelay",
-				Usage:       "retriesDelay usage",
+				Name:        "retries-delay",
+				Usage:       "retries-delay usage",
 				Value:       0,
 				Destination: &run.retriesDelay,
 			},
 			cli.IntFlag{
-				Name:        "defaultPriority",
-				Usage:       "defaultPriority usage",
+				Name:        "default-priority",
+				Usage:       "default-priority usage",
 				Value:       -3,
 				Destination: &run.defaultPriority,
 			},

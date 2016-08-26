@@ -19,7 +19,7 @@ func NewWorker(settings *config.Settings) *Worker {
 			Subcommands: cli.Commands{
 				NewWorkerUpload(settings).GetCmd(),
 				NewWorkerLog().GetCmd(),
-				NewWorkerQueue().GetCmd(),
+				NewWorkerQueue(settings).GetCmd(),
 				NewWorkerSchedule().GetCmd(),
 				NewWorkerStatus().GetCmd(),
 			},
