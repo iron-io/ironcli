@@ -19,8 +19,8 @@ func NewWorker(settings *config.Settings) *Worker {
 				NewWorkerUpload(settings).GetCmd(),
 				NewWorkerLog(settings).GetCmd(),
 				NewWorkerQueue(settings).GetCmd(),
-				NewWorkerSchedule().GetCmd(),
-				NewWorkerStatus().GetCmd(),
+				NewWorkerSchedule(settings).GetCmd(),
+				NewWorkerStatus(settings).GetCmd(),
 			},
 		},
 	}

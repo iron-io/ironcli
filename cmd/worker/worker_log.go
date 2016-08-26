@@ -19,12 +19,13 @@ func NewWorkerLog(settings *config.Settings) *WorkerLog {
 
 	workerLog.Command = cli.Command{
 		Name:      "log",
-		Usage:     "get log from worker of queue",
+		Usage:     "get log from task of queue",
 		ArgsUsage: "[task-id]",
 		Action: func(c *cli.Context) error {
 			workerLog.wrkr.Settings = *settings
 
 			fmt.Println("LINES", "Getting log for task with id='"+c.Args().First()+"'")
+
 			out, err := workerLog.wrkr.TaskLog(c.Args().First())
 			if err != nil {
 				return err
