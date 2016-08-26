@@ -18,15 +18,14 @@ import (
 )
 
 type Register struct {
-	name            *string
-	config          *string
-	configFile      *string
-	maxConc         *int
-	retries         *int
-	retriesDelay    *int
-	defaultPriority *int
-	host            *string
-	cmd             string
+	name            string
+	config          string
+	configFile      string
+	maxConc         int
+	retries         int
+	retriesDelay    int
+	defaultPriority int
+	host            string
 	codes           worker.Code
 
 	cli.Command
@@ -36,10 +35,61 @@ func NewRegister(settings *config.Settings) *Register {
 	register := &Register{}
 	register.Command = cli.Command{
 		Name:      "register",
-		Usage:     "do the doo",
+		Usage:     "register worker in the project",
 		UsageText: "doo - does the dooing",
-		ArgsUsage: "[test]",
+		ArgsUsage: "[image] [command] [args]",
+		Flags: []cli.Flag{
+			cli.StringFlag{
+				Name:        "name",
+				Usage:       "name usage",
+				Destination: &register.name,
+			},
+			cli.StringFlag{
+				Name:        "config",
+				Usage:       "config usage",
+				Destination: &register.config,
+			},
+			cli.StringFlag{
+				Name:        "configFile",
+				Usage:       "configFile usage",
+				Destination: &register.configFile,
+			},
+			cli.IntFlag{
+				Name:        "maxConc",
+				Usage:       "maxConc usage",
+				Value:       -1,
+				Destination: &register.maxConc,
+			},
+			cli.IntFlag{
+				Name:        "retries",
+				Usage:       "retries usage",
+				Value:       0,
+				Destination: &register.retries,
+			},
+			cli.IntFlag{
+				Name:        "retriesDelay",
+				Usage:       "retriesDelay usage",
+				Value:       0,
+				Destination: &register.retriesDelay,
+			},
+			cli.IntFlag{
+				Name:        "defaultPriority",
+				Usage:       "defaultPriority usage",
+				Value:       -3,
+				Destination: &register.defaultPriority,
+			},
+			cli.StringFlag{
+				Name:        "host",
+				Usage:       "host usage",
+				Destination: &register.host,
+			},
+		},
 		Action: func(c *cli.Context) error {
+			err := register.Register(c.Args().Tail(), c.Args().First())
+			if err != nil {
+				return err
+			}
+
 			register.Run(settings)
 
 			return nil
@@ -53,9 +103,13 @@ func (r Register) GetCmd() cli.Command {
 	return r.Command
 }
 
-func (r *Register) Register() error {
-	if r.name != nil && *r.name != "" {
-		r.codes.Name = *r.name
+func (r *Register) Register(cmd []string, image string) error {
+	r.codes.Command = strings.TrimSpace(strings.Join(cmd, " "))
+	r.codes.Image = image
+	r.codes.Name = image
+
+	if r.name != "" {
+		r.codes.Name = r.name
 	} else {
 		r.codes.Name = r.codes.Image
 		if strings.ContainsRune(r.codes.Name, ':') {
@@ -64,18 +118,18 @@ func (r *Register) Register() error {
 		}
 	}
 
-	r.codes.MaxConcurrency = *r.maxConc
-	r.codes.Retries = *r.retries
-	r.codes.RetriesDelay = *r.retriesDelay
-	r.codes.Config = *r.config
-	r.codes.DefaultPriority = *r.defaultPriority
+	r.codes.MaxConcurrency = r.maxConc
+	r.codes.Retries = r.retries
+	r.codes.RetriesDelay = r.retriesDelay
+	r.codes.Config = r.config
+	r.codes.DefaultPriority = r.defaultPriority
 
-	if r.host != nil && *r.host != "" {
-		r.codes.Host = *r.host
+	if r.host != "" {
+		r.codes.Host = r.host
 	}
 
-	if *r.configFile != "" {
-		pload, err := ioutil.ReadFile(*r.configFile)
+	if r.configFile != "" {
+		pload, err := ioutil.ReadFile(r.configFile)
 		if err != nil {
 			return err
 		}
@@ -132,6 +186,8 @@ func (r *Register) pushCodes(zipName string, settings *config.Settings, args wor
 	}
 	mWriter.Close()
 
+	fmt.Println(body.String())
+
 	req, err := http.NewRequest("POST", api.Action(*settings, "codes").URL.String(), &body)
 	if err != nil {
 		return nil, err
@@ -154,6 +210,7 @@ func (r *Register) pushCodes(zipName string, settings *config.Settings, args wor
 
 	var data worker.Code
 	err = json.NewDecoder(response.Body).Decode(&data)
+
 	return &data, err
 }
 

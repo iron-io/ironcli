@@ -31,7 +31,7 @@ func NewDockerLogin(settings *config.Settings) *DockerLogin {
 		Name:      "login",
 		Usage:     "do the doo",
 		UsageText: "doo - does the dooing",
-		ArgsUsage: "[image] [args]",
+		ArgsUsage: "[args]",
 		Flags: []cli.Flag{
 			cli.StringFlag{
 				Name:        "email",
