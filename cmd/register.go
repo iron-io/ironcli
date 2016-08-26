@@ -85,12 +85,27 @@ func NewRegister(settings *config.Settings) *Register {
 			},
 		},
 		Action: func(c *cli.Context) error {
-			err := register.Register(c.Args().Tail(), c.Args().First())
+			err := register.Execute(c.Args().Tail(), c.Args().First())
 			if err != nil {
 				return err
 			}
 
-			register.Run(settings)
+			if register.codes.Host != "" {
+				fmt.Println(`Spinning up '` + register.codes.Name + `'`)
+			} else {
+				fmt.Println(`Registering worker '` + register.codes.Name + `'`)
+			}
+
+			code, err := register.pushCodes("", settings, register.codes)
+			if err != nil {
+				return err
+			}
+
+			if code.Host != "" {
+				fmt.Println(`Hosted at: '` + code.Host + `'`)
+			} else {
+				fmt.Println(`Registered code package with id='` + code.Id + `'`)
+			}
 
 			return nil
 		},
@@ -101,42 +116,6 @@ func NewRegister(settings *config.Settings) *Register {
 
 func (r Register) GetCmd() cli.Command {
 	return r.Command
-}
-
-func (r *Register) Register(cmd []string, image string) error {
-	r.codes.Command = strings.TrimSpace(strings.Join(cmd, " "))
-	r.codes.Image = image
-	r.codes.Name = image
-
-	if r.name != "" {
-		r.codes.Name = r.name
-	} else {
-		r.codes.Name = r.codes.Image
-		if strings.ContainsRune(r.codes.Name, ':') {
-			arr := strings.SplitN(r.codes.Name, ":", 2)
-			r.codes.Name = arr[0]
-		}
-	}
-
-	r.codes.MaxConcurrency = r.maxConc
-	r.codes.Retries = r.retries
-	r.codes.RetriesDelay = r.retriesDelay
-	r.codes.Config = r.config
-	r.codes.DefaultPriority = r.defaultPriority
-
-	if r.host != "" {
-		r.codes.Host = r.host
-	}
-
-	if r.configFile != "" {
-		pload, err := ioutil.ReadFile(r.configFile)
-		if err != nil {
-			return err
-		}
-		r.codes.Config = string(pload)
-	}
-
-	return nil
 }
 
 func (r *Register) pushCodes(zipName string, settings *config.Settings, args worker.Code) (*worker.Code, error) {
@@ -186,8 +165,6 @@ func (r *Register) pushCodes(zipName string, settings *config.Settings, args wor
 	}
 	mWriter.Close()
 
-	fmt.Println(body.String())
-
 	req, err := http.NewRequest("POST", api.Action(*settings, "codes").URL.String(), &body)
 	if err != nil {
 		return nil, err
@@ -214,22 +191,38 @@ func (r *Register) pushCodes(zipName string, settings *config.Settings, args wor
 	return &data, err
 }
 
-func (r *Register) Run(settings *config.Settings) {
-	if r.codes.Host != "" {
-		fmt.Println(`Spinning up '` + r.codes.Name + `'`)
+func (r *Register) Execute(cmd []string, image string) error {
+	r.codes.Command = strings.TrimSpace(strings.Join(cmd, " "))
+	r.codes.Image = image
+	r.codes.Name = image
+
+	if r.name != "" {
+		r.codes.Name = r.name
 	} else {
-		fmt.Println(`Registering worker '` + r.codes.Name + `'`)
+		r.codes.Name = r.codes.Image
+		if strings.ContainsRune(r.codes.Name, ':') {
+			arr := strings.SplitN(r.codes.Name, ":", 2)
+			r.codes.Name = arr[0]
+		}
 	}
 
-	code, err := r.pushCodes("", settings, r.codes)
-	if err != nil {
-		fmt.Println(err)
-		return
+	r.codes.MaxConcurrency = r.maxConc
+	r.codes.Retries = r.retries
+	r.codes.RetriesDelay = r.retriesDelay
+	r.codes.Config = r.config
+	r.codes.DefaultPriority = r.defaultPriority
+
+	if r.host != "" {
+		r.codes.Host = r.host
 	}
 
-	if code.Host != "" {
-		fmt.Println(`Hosted at: '` + code.Host + `'`)
-	} else {
-		fmt.Println(`Registered code package with id='` + code.Id + `'`)
+	if r.configFile != "" {
+		pload, err := ioutil.ReadFile(r.configFile)
+		if err != nil {
+			return err
+		}
+		r.codes.Config = string(pload)
 	}
+
+	return nil
 }

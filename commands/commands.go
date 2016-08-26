@@ -728,7 +728,7 @@ func (u *UploadCmd) Usage() {
 	u.flags.PrintDefaults()
 }
 
-func (u *UploadCmd) Run() {
+func (u *UploadCmd) Execute() {
 	if u.codes.Host != "" {
 		fmt.Println(LINES, `Spinning up '`+u.codes.Name+`'`)
 	} else {

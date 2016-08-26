@@ -55,7 +55,7 @@ func NewDockerLogin(settings *config.Settings) *DockerLogin {
 			},
 		},
 		Action: func(c *cli.Context) error {
-			err := dockerLogin.Login()
+			err := dockerLogin.login()
 			if err != nil {
 				return err
 			}
@@ -64,7 +64,7 @@ func NewDockerLogin(settings *config.Settings) *DockerLogin {
 				"auth": dockerLogin.RemoteAuth,
 			}
 
-			msg, err := dockerLogin.Run(settings, &auth)
+			msg, err := dockerLogin.Execute(settings, &auth)
 			if err != nil {
 				return err
 			}
@@ -82,7 +82,7 @@ func (r DockerLogin) GetCmd() cli.Command {
 	return r.Command
 }
 
-func (r *DockerLogin) Login() error {
+func (r *DockerLogin) login() error {
 	if r.Url == "" {
 		defaultUrl := "https://index.docker.io/v1/"
 		r.Url = defaultUrl
@@ -114,7 +114,7 @@ func (r *DockerLogin) Login() error {
 	return nil
 }
 
-func (r *DockerLogin) Run(settings *config.Settings, args *map[string]string) (msg string, err error) {
+func (r *DockerLogin) Execute(settings *config.Settings, args *map[string]string) (msg string, err error) {
 	data, err := json.Marshal(args)
 	reader := bytes.NewReader(data)
 
