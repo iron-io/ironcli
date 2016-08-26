@@ -13,12 +13,11 @@ func NewWorker(settings *config.Settings) *Worker {
 	worker := &Worker{
 		Command: cli.Command{
 			Name:      "worker",
-			Usage:     "do the doo",
-			UsageText: "doo - does the dooing",
+			Usage:     "manage workers",
 			ArgsUsage: "[command]",
 			Subcommands: cli.Commands{
 				NewWorkerUpload(settings).GetCmd(),
-				NewWorkerLog().GetCmd(),
+				NewWorkerLog(settings).GetCmd(),
 				NewWorkerQueue(settings).GetCmd(),
 				NewWorkerSchedule().GetCmd(),
 				NewWorkerStatus().GetCmd(),

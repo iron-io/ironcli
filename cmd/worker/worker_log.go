@@ -3,24 +3,36 @@ package worker
 import (
 	"fmt"
 
+	"github.com/iron-io/iron_go3/config"
+	"github.com/iron-io/ironcli/common"
 	"github.com/urfave/cli"
 )
 
 type WorkerLog struct {
+	wrkr common.Worker
+
 	cli.Command
 }
 
-func NewWorkerLog() *WorkerLog {
-	workerLog := &WorkerLog{
-		Command: cli.Command{
-			Name:      "log",
-			Usage:     "do the doo",
-			UsageText: "doo - does the dooing",
-			ArgsUsage: "[image] [args]",
-			Action: func(c *cli.Context) error {
-				fmt.Println("added task: test ", c.Args().First())
-				return nil
-			},
+func NewWorkerLog(settings *config.Settings) *WorkerLog {
+	workerLog := &WorkerLog{}
+
+	workerLog.Command = cli.Command{
+		Name:      "log",
+		Usage:     "get log from worker of queue",
+		ArgsUsage: "[task-id]",
+		Action: func(c *cli.Context) error {
+			workerLog.wrkr.Settings = *settings
+
+			fmt.Println("LINES", "Getting log for task with id='"+c.Args().First()+"'")
+			out, err := workerLog.wrkr.TaskLog(c.Args().First())
+			if err != nil {
+				return err
+			}
+
+			fmt.Println(string(out))
+
+			return nil
 		},
 	}
 

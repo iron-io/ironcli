@@ -32,8 +32,7 @@ func NewWorkerUpload(settings *config.Settings) *WorkerUpload {
 	workerUpload := &WorkerUpload{}
 	workerUpload.Command = cli.Command{
 		Name:      "upload",
-		Usage:     "do the doo",
-		UsageText: "doo - does the dooing",
+		Usage:     "upload worker",
 		ArgsUsage: "[image] [args]",
 		Flags: []cli.Flag{
 			cli.StringFlag{

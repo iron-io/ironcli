@@ -33,9 +33,8 @@ func NewWorkerQueue(settings *config.Settings) *WorkerQueue {
 
 	workerQueue.Command = cli.Command{
 		Name:      "queue",
-		Usage:     "do the doo",
-		UsageText: "doo - does the dooing",
-		ArgsUsage: "[image] [args]",
+		Usage:     "add worker to queue and run it",
+		ArgsUsage: "[CODE_PACKAGE_NAME] [args]",
 		Flags: []cli.Flag{
 			cli.StringFlag{
 				Name:        "payload",
