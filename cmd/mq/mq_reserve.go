@@ -1,33 +1,106 @@
 package mq
 
 import (
+	"encoding/json"
+	"errors"
 	"fmt"
+	"os"
 
 	"github.com/iron-io/iron_go3/config"
+	"github.com/iron-io/iron_go3/mq"
+	"github.com/iron-io/ironcli/common"
 	"github.com/urfave/cli"
 )
 
-type MqReverse struct {
+type MqReserve struct {
+	queue_name string
+	number     int
+	timeout    int
+	outputfile string
+	file       *os.File
+
 	cli.Command
 }
 
-func NewMqReverse(settings *config.Settings) *MqReverse {
-	mqReverse := &MqReverse{
-		Command: cli.Command{
-			Name:      "reverse",
-			Usage:     "do the doo",
-			UsageText: "doo - does the dooing",
-			ArgsUsage: "[image] [args]",
-			Action: func(c *cli.Context) error {
-				fmt.Println("added task: test ", c.Args().First())
-				return nil
+func NewMqReserve(settings *config.Settings) *MqReserve {
+	mqReserve := &MqReserve{}
+
+	mqReserve.Command = cli.Command{
+		Name:      "reserve",
+		Usage:     "reserve meesages by amount of queue",
+		ArgsUsage: "[QUEUE_NAME] [args]",
+		Flags: []cli.Flag{
+			cli.IntFlag{
+				Name:        "number, n",
+				Usage:       "number usage",
+				Destination: &mqReserve.number,
 			},
+			cli.IntFlag{
+				Name:        "timeout, t",
+				Usage:       "timeout usage",
+				Destination: &mqReserve.timeout,
+			},
+			cli.StringFlag{
+				Name:        "output, o",
+				Usage:       "output usage",
+				Destination: &mqReserve.outputfile,
+			},
+		},
+		Action: func(c *cli.Context) error {
+			if c.Args().First() == "" {
+				return errors.New(`reserve requires a queue name`)
+			}
+
+			if mqReserve.outputfile != "" {
+				f, err := os.Create(mqReserve.outputfile)
+				if err != nil {
+					return err
+				}
+
+				mqReserve.file = f
+			}
+
+			q := mq.ConfigNew(mqReserve.queue_name, settings)
+			messages, err := q.GetNWithTimeout(mqReserve.number, mqReserve.timeout)
+			if err != nil {
+				return err
+			}
+
+			// If anything here fails, we still want to print out what was reserved before exiting
+			if mqReserve.file != nil {
+				b, err := json.Marshal(messages)
+				if err != nil {
+					common.PrintReservedMessages(messages)
+
+					return err
+				}
+				_, err = mqReserve.file.Write(b)
+				if err != nil {
+					common.PrintReservedMessages(messages)
+
+					return err
+				}
+			}
+
+			if len(messages) < 1 {
+				return errors.New("Queue is empty")
+			}
+
+			if common.IsPipedOut() {
+				common.PrintReservedMessages(messages)
+			} else {
+				fmt.Println(common.LINES, "Messages successfully reserved")
+				fmt.Println("--------- ID ------|------- Reservation ID -------- | Body")
+				common.PrintReservedMessages(messages)
+			}
+
+			return nil
 		},
 	}
 
-	return mqReverse
+	return mqReserve
 }
 
-func (r MqReverse) GetCmd() cli.Command {
+func (r MqReserve) GetCmd() cli.Command {
 	return r.Command
 }

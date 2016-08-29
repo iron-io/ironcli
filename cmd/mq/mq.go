@@ -29,7 +29,7 @@ func NewMq(settings *config.Settings) *Mq {
 				NewMqList(&mqSettings).GetCmd(),
 				NewMqPeek(&mqSettings).GetCmd(),
 				NewMqPop(&mqSettings).GetCmd(),
-				NewMqReverse(&mqSettings).GetCmd(),
+				NewMqReserve(&mqSettings).GetCmd(),
 				NewMqRm(&mqSettings).GetCmd(),
 			},
 		},
