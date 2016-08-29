@@ -10,6 +10,10 @@ type Mq struct {
 }
 
 func NewMq(settings *config.Settings) *Mq {
+	mqSettings := config.ManualConfig("iron_mq", nil)
+	mqSettings.Token = settings.Token
+	mqSettings.ProjectId = settings.ProjectId
+
 	mq := &Mq{
 		Command: cli.Command{
 			Name:      "mq",
@@ -17,9 +21,9 @@ func NewMq(settings *config.Settings) *Mq {
 			UsageText: "doo - does the dooing",
 			ArgsUsage: "[image] [args]",
 			Subcommands: cli.Commands{
-				NewMqPush().GetCmd(),
+				NewMqPush(&mqSettings).GetCmd(),
 				NewMqClear().GetCmd(),
-				NewMqCreate().GetCmd(),
+				NewMqCreate(&mqSettings).GetCmd(),
 				NewMqDelete().GetCmd(),
 				NewMqInfo().GetCmd(),
 				NewMqList().GetCmd(),
