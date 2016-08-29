@@ -3,6 +3,7 @@ package mq
 import (
 	"fmt"
 
+	"github.com/iron-io/iron_go3/config"
 	"github.com/urfave/cli"
 )
 
@@ -10,7 +11,7 @@ type MqPeek struct {
 	cli.Command
 }
 
-func NewMqPeek() *MqPeek {
+func NewMqPeek(settings *config.Settings) *MqPeek {
 	mqPeek := &MqPeek{
 		Command: cli.Command{
 			Name:      "peek",

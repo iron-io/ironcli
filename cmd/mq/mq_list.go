@@ -3,6 +3,7 @@ package mq
 import (
 	"fmt"
 
+	"github.com/iron-io/iron_go3/config"
 	"github.com/urfave/cli"
 )
 
@@ -10,7 +11,7 @@ type MqList struct {
 	cli.Command
 }
 
-func NewMqList() *MqList {
+func NewMqList(settings *config.Settings) *MqList {
 	mqList := &MqList{
 		Command: cli.Command{
 			Name:      "list",

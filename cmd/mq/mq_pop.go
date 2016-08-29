@@ -3,6 +3,7 @@ package mq
 import (
 	"fmt"
 
+	"github.com/iron-io/iron_go3/config"
 	"github.com/urfave/cli"
 )
 
@@ -10,7 +11,7 @@ type MqPop struct {
 	cli.Command
 }
 
-func NewMqPop() *MqPop {
+func NewMqPop(settings *config.Settings) *MqPop {
 	mqPop := &MqPop{
 		Command: cli.Command{
 			Name:      "pop",

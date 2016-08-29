@@ -3,6 +3,7 @@ package mq
 import (
 	"fmt"
 
+	"github.com/iron-io/iron_go3/config"
 	"github.com/urfave/cli"
 )
 
@@ -10,7 +11,7 @@ type MqInfo struct {
 	cli.Command
 }
 
-func NewMqInfo() *MqInfo {
+func NewMqInfo(settings *config.Settings) *MqInfo {
 	mqInfo := &MqInfo{
 		Command: cli.Command{
 			Name:      "info",

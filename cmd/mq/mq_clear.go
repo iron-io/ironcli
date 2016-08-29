@@ -3,6 +3,7 @@ package mq
 import (
 	"fmt"
 
+	"github.com/iron-io/iron_go3/config"
 	"github.com/urfave/cli"
 )
 
@@ -10,7 +11,7 @@ type MqClear struct {
 	cli.Command
 }
 
-func NewMqClear() *MqClear {
+func NewMqClear(settings *config.Settings) *MqClear {
 	mqClear := &MqClear{
 		Command: cli.Command{
 			Name:      "clear",

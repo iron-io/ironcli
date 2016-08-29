@@ -3,6 +3,7 @@ package mq
 import (
 	"fmt"
 
+	"github.com/iron-io/iron_go3/config"
 	"github.com/urfave/cli"
 )
 
@@ -10,7 +11,7 @@ type MqRm struct {
 	cli.Command
 }
 
-func NewMqRm() *MqRm {
+func NewMqRm(settings *config.Settings) *MqRm {
 	mqRm := &MqRm{
 		Command: cli.Command{
 			Name:      "rm",

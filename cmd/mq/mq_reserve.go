@@ -3,6 +3,7 @@ package mq
 import (
 	"fmt"
 
+	"github.com/iron-io/iron_go3/config"
 	"github.com/urfave/cli"
 )
 
@@ -10,7 +11,7 @@ type MqReverse struct {
 	cli.Command
 }
 
-func NewMqReverse() *MqReverse {
+func NewMqReverse(settings *config.Settings) *MqReverse {
 	mqReverse := &MqReverse{
 		Command: cli.Command{
 			Name:      "reverse",
