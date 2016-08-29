@@ -72,6 +72,10 @@ func (r MqPush) GetCmd() cli.Command {
 }
 
 func (r *MqPush) Execute(queueName string, messages []string) error {
+	if queueName == "" {
+		return errors.New(`push requires a queue name`)
+	}
+
 	r.queue_name = queueName
 
 	if r.filename != "" {

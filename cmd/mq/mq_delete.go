@@ -24,7 +24,7 @@ func NewMqDelete(settings *config.Settings) *MqDelete {
 	mqDelete := &MqDelete{}
 	mqDelete.Command = cli.Command{
 		Name:      "delete",
-		Usage:     "delete messages by ID from queue",
+		Usage:     "delete messages by ID of queue",
 		ArgsUsage: "[QUEUE_NAME] [MSG_ID, ...] [args]",
 		Flags: []cli.Flag{
 			cli.StringFlag{
