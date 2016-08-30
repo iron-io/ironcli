@@ -122,7 +122,6 @@ func (r *DockerLogin) Execute(settings *config.Settings, args *map[string]string
 	}
 
 	req.Header.Set("Accept", "application/json")
-	req.Header.Set("Accept-Encoding", "gzip/deflate")
 	req.Header.Set("Authorization", "OAuth "+settings.Token)
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("User-Agent", settings.UserAgent)
