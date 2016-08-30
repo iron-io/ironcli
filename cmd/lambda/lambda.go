@@ -13,9 +13,8 @@ func NewLambda(settings *config.Settings) *Lambda {
 	lambda := &Lambda{
 		Command: cli.Command{
 			Name:      "lambda",
-			Usage:     "do the doo",
-			UsageText: "doo - does the dooing",
-			ArgsUsage: "[image] [args]",
+			Usage:     "manage lambda functions",
+			ArgsUsage: "[command]",
 			Subcommands: cli.Commands{
 				NewLambdaCreateFunction().GetCmd(),
 				NewLambdaAwsImport().GetCmd(),

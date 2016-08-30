@@ -30,7 +30,7 @@ func main() {
 		},
 	}
 	app.HelpName = "iron"
-	app.Usage = "Go version of the Iron.io command line tools"
+	app.Usage = "Iron.io command line tools"
 
 	app.Flags = []cli.Flag{
 		cli.StringFlag{Name: "project-id", Usage: "provide project ID"},
@@ -40,6 +40,7 @@ func main() {
 
 	// Init settings
 	app.Before = func(c *cli.Context) error {
+		// FIXME when someone will add a break changes for code
 		if c.GlobalString("project-id") != "" {
 			err := os.Setenv("IRON_PROJECT_ID", c.GlobalString("project-id"))
 			if err != nil {
@@ -47,6 +48,7 @@ func main() {
 			}
 		}
 
+		// FIXME when someone will add a break changes for code
 		if c.GlobalString("token") != "" {
 			err := os.Setenv("IRON_TOKEN", c.GlobalString("token"))
 			if err != nil {
@@ -60,7 +62,8 @@ func main() {
 	}
 
 	app.CommandNotFound = func(c *cli.Context, command string) {
-		fmt.Printf("%q command not found.\n", command)
+		// FIXME when there will be a logger
+		fmt.Fprintf(os.Stderr, "%q command not found.\n", command)
 	}
 
 	app.Commands = []cli.Command{
@@ -74,6 +77,7 @@ func main() {
 
 	err := app.Run(os.Args)
 	if err != nil {
-		fmt.Printf("WRONG: %#v\n", err)
+		// FIXME when there will be a logger
+		fmt.Fprintf(os.Stderr, "%v\n", err)
 	}
 }

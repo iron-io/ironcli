@@ -29,8 +29,7 @@ func NewDockerLogin(settings *config.Settings) *DockerLogin {
 	dockerLogin := &DockerLogin{}
 	dockerLogin.Command = cli.Command{
 		Name:      "login",
-		Usage:     "do the doo",
-		UsageText: "doo - does the dooing",
+		Usage:     "authentication in docker registry",
 		ArgsUsage: "[args]",
 		Flags: []cli.Flag{
 			cli.StringFlag{
@@ -101,7 +100,6 @@ func (r *DockerLogin) login() error {
 	}
 
 	req.Header.Set("Accept", "application/json")
-	req.Header.Set("Accept-Encoding", "gzip/deflate")
 	req.Header.Set("Authorization", "Basic "+r.TestAuth)
 	req.Header.Set("Content-Type", "application/json")
 

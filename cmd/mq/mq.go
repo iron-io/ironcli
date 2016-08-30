@@ -17,9 +17,8 @@ func NewMq(settings *config.Settings) *Mq {
 	mq := &Mq{
 		Command: cli.Command{
 			Name:      "mq",
-			Usage:     "do the doo",
-			UsageText: "doo - does the dooing",
-			ArgsUsage: "[image] [args]",
+			Usage:     "manage queues",
+			ArgsUsage: "[command]",
 			Subcommands: cli.Commands{
 				NewMqPush(&mqSettings).GetCmd(),
 				NewMqClear(&mqSettings).GetCmd(),
