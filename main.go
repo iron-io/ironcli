@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"os"
-	"time"
 
 	"github.com/iron-io/iron_go3/config"
 	"github.com/iron-io/ironcli/cmd"
@@ -22,7 +21,6 @@ func main() {
 	app := cli.NewApp()
 	app.Name = "Iron CLI"
 	app.Version = "0.3.0"
-	app.Compiled = time.Now()
 	app.Authors = []cli.Author{
 		cli.Author{
 			Name:  "iron.io",
