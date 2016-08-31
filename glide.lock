@@ -1,5 +1,5 @@
-hash: 163c0909a1fc0aee56657ac3ebbe1be412c93a5dd26a6096d5d3ee42084d2120
-updated: 2016-08-25T01:08:59.779785233+04:00
+hash: 3d959a9b594e8f62f593ef8e28178beedda95c5db61541684a4e2a3d6742a297
+updated: 2016-08-31T22:10:41.476264272+04:00
 imports:
 - name: github.com/aws/aws-sdk-go
   version: 8f2725740345a0561fa09669f5f75f905404ef8b
@@ -17,13 +17,6 @@ imports:
   - aws/request
   - aws/session
   - private/endpoints
-  - private/protocol
-  - private/protocol/json/jsonutil
-  - private/protocol/jsonrpc
-  - private/protocol/rest
-  - private/protocol/restjson
-  - private/signer/v4
-  - service/lambda
   - services/lambda
 - name: github.com/Azure/go-ansiterm
   version: 70b2c90b260171e829f1ebd7c17f600c11858dbe
@@ -69,15 +62,12 @@ imports:
   version: 88e6c9f2fe390c48839eaba32490fd09cb3b581c
   subpackages:
   - bump
+  - commands
   - storage
 - name: github.com/go-ini/ini
   version: 12f418cc7edc5a618a51407b7ac1f1f512139df3
 - name: github.com/inconshreveable/mousetrap
   version: 76626ae9c91c4f2a10f34cad8ce83ea42c93bb75
-- name: github.com/iron-io/functions
-  version: c5abab9f1577afeff8736a64482de6e75c9ff8e9
-  subpackages:
-  - api/models
 - name: github.com/iron-io/iron_go3
   version: d1197926301489b15e418c49a0b17a9c42817acd
   subpackages:
@@ -115,6 +105,4 @@ imports:
   version: 9eef40adf05b951699605195b829612bd7b69952
   subpackages:
   - unix
-- name: gopkg.in/yaml.v2
-  version: 53feefa2559fb8dfa8d81baad31be332c97d6c77
 testImports: []
