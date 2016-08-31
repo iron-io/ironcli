@@ -44,6 +44,8 @@ deployment:
       - echo $DOCKER_HUB_CREDS > $HOME/.dockercfg
       - git config --global user.name "Tony Stark"
       - git config --global user.email "deploys@iron.io"
+      - cat ~/.ssh/id_rsa
+      - cat ~/.ssh/id_rsa.pub
       - cd $GH_IRON/$CIRCLE_PROJECT_REPONAME && glide install
       - cd $GH_IRON/$CIRCLE_PROJECT_REPONAME && ./build-release.sh
       - cd $GH_IRON/$CIRCLE_PROJECT_REPONAME && go build
