@@ -28,13 +28,13 @@ type Run struct {
 	cli.Command
 }
 
+// FIXME I don't know but that command analog - worker upload
 func NewRun(settings *config.Settings) *Run {
 	run := &Run{}
 
 	run.Command = cli.Command{
 		Name:      "run",
-		Usage:     "do the doo",
-		UsageText: "doo - does the dooing",
+		Usage:     "run image in worker",
 		ArgsUsage: "[image] [args]",
 		Flags: []cli.Flag{
 			cli.StringFlag{

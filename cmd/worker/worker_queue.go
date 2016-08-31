@@ -101,10 +101,10 @@ func NewWorkerQueue(settings *config.Settings) *WorkerQueue {
 			}
 			id := ids[0]
 
-			fmt.Printf("%s Queued task with id='%s'\n", "BLANKS", id)
+			fmt.Printf("%s Queued task with id='%s'\n", common.BLANKS, id)
 
 			if workerQueue.wait {
-				fmt.Println("LINES", "Waiting for task to start running")
+				fmt.Println(common.LINES, "Waiting for task to start running")
 
 				done := make(chan struct{})
 				go workerQueue.runWatch(done, "queued")
@@ -112,7 +112,7 @@ func NewWorkerQueue(settings *config.Settings) *WorkerQueue {
 				close(done)
 
 				// TODO print actual queued time?
-				fmt.Println("LINES", "Task running, waiting for completion")
+				fmt.Println(common.LINES, "Task running, waiting for completion")
 
 				done = make(chan struct{})
 				go workerQueue.runWatch(done, "running")
@@ -127,8 +127,8 @@ func NewWorkerQueue(settings *config.Settings) *WorkerQueue {
 					return fmt.Errorf("error getting log: %v", err)
 				}
 
-				fmt.Println("LINES", "Done")
-				fmt.Println("LINES", "Printing Log:")
+				fmt.Println(common.LINES, "Done")
+				fmt.Println(common.LINES, "Printing Log:")
 				fmt.Printf("%s", string(log))
 			}
 
