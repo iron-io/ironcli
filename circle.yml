@@ -18,23 +18,16 @@ checkout:
 
 dependencies:
   pre:
-    # install go1.5
-    - wget https://storage.googleapis.com/golang/go1.5.linux-amd64.tar.gz
-    - tar -C $HOME -xvzf go1.5.linux-amd64.tar.gz
-    # install glide 0.9.3
+    # install go1.7
+    - wget https://storage.googleapis.com/golang/go1.7.linux-amd64.tar.gz
+    - tar -C $HOME -xvzf go1.7.linux-amd64.tar.gz
+    # install glide 0.12.0
     - wget https://github.com/Masterminds/glide/releases/download/v0.12.0/glide-v0.12.0-linux-amd64.tar.gz
     - tar -C $HOME/bin -xvzf glide-v0.12.0-linux-amd64.tar.gz --strip=1
   override:
     # this was being dumb, don't want it to auto detect we are a go repo b/c vendoring
     - which go
     - glide --version
-    - git config --global url."git@github.com:".insteadOf "https://github.com/"
-    - ls -al ~/.ssh
-    - cat ~/.ssh/authorized_keys
-    - cat ~/.ssh/build_key.rsa
-    - cat ~/.ssh/id_circleci_github
-    - cat ~/.ssh/config
-    - git clone git@github.com:iron-io/functions.git
 
 test:
   pre:
