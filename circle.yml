@@ -29,14 +29,13 @@ dependencies:
     - which go
     - glide --version
     - git config --global url."git@github.com:".insteadOf "https://github.com/"
+    - git clone git@github.com:iron-io/functions.git
 
 test:
   pre:
     - glide install:
         pwd: $GO_PROJECT/$CIRCLE_PROJECT_REPONAME
   override:
-    - cat ~/.ssh/id_rsa
-    - cat ~/.ssh/id_rsa.pub
     - go build .:
         pwd: $GO_PROJECT/$CIRCLE_PROJECT_REPONAME
 
