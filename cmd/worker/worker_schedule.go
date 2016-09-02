@@ -38,57 +38,57 @@ func NewWorkerSchedule(settings *config.Settings) *WorkerSchedule {
 		Flags: []cli.Flag{
 			cli.StringFlag{
 				Name:        "payload",
-				Usage:       "payload usage",
+				Usage:       "",
 				Destination: &workerSchedule.payload,
 			},
 			cli.StringFlag{
 				Name:        "payload-file",
-				Usage:       "payload-file usage",
+				Usage:       "",
 				Destination: &workerSchedule.payloadFile,
 			},
 			cli.IntFlag{
 				Name:        "priority",
-				Usage:       "priority usage",
+				Usage:       "",
 				Destination: &workerSchedule.priority,
 			},
 			cli.IntFlag{
 				Name:        "timeout",
-				Usage:       "timeout usage",
+				Usage:       "",
 				Destination: &workerSchedule.timeout,
 			},
 			cli.IntFlag{
 				Name:        "delay",
-				Usage:       "delay usage",
+				Usage:       "",
 				Destination: &workerSchedule.delay,
 			},
 			cli.IntFlag{
 				Name:        "run-every",
-				Usage:       "run-every usage",
+				Usage:       "",
 				Destination: &workerSchedule.runEvery,
 			},
 			cli.IntFlag{
 				Name:        "run-times",
-				Usage:       "run-times usage",
+				Usage:       "",
 				Destination: &workerSchedule.runTimes,
 			},
 			cli.StringFlag{
 				Name:        "cluster",
-				Usage:       "cluster usage",
+				Usage:       "",
 				Destination: &workerSchedule.cluster,
 			},
 			cli.StringFlag{
 				Name:        "label",
-				Usage:       "label usage",
+				Usage:       "",
 				Destination: &workerSchedule.label,
 			},
 			cli.StringFlag{
 				Name:        "start-at",
-				Usage:       "start-at usage",
+				Usage:       "",
 				Destination: &workerSchedule.startAt,
 			},
 			cli.StringFlag{
 				Name:        "end-at",
-				Usage:       "end-at usage",
+				Usage:       "",
 				Destination: &workerSchedule.endAt,
 			},
 		},

@@ -29,7 +29,7 @@ func NewMqDelete(settings *config.Settings) *MqDelete {
 		Flags: []cli.Flag{
 			cli.StringFlag{
 				Name:        "filequeue, i",
-				Usage:       "filequeue usage",
+				Usage:       "",
 				Destination: &mqDelete.filequeue_name,
 			},
 		},

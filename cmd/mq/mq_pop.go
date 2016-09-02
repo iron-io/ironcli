@@ -30,12 +30,12 @@ func NewMqPop(settings *config.Settings) *MqPop {
 		Flags: []cli.Flag{
 			cli.IntFlag{
 				Name:        "number, n",
-				Usage:       "number usage",
+				Usage:       "",
 				Destination: &mqPop.number,
 			},
 			cli.StringFlag{
 				Name:        "output, o",
-				Usage:       "output usage",
+				Usage:       "",
 				Destination: &mqPop.outputfile,
 			},
 		},

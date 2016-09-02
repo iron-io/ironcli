@@ -32,32 +32,33 @@ func NewLambdaAwsImport() *LambdaAwsImport {
 	lambdaAwsImport := &LambdaAwsImport{}
 
 	lambdaAwsImport.Command = cli.Command{
-		Name:  "aws-import",
-		Usage: "aws import for lambda",
+		Name: "aws-import",
+		Usage: `Converts an existing Lambda function to an image. The function code is downloaded to a directory in the current working directory
+that has the same name as the Lambda function.`,
 		Flags: []cli.Flag{
 			cli.StringFlag{
 				Name:        "version",
-				Usage:       "version usage",
+				Usage:       "",
 				Destination: &lambdaAwsImport.version,
 			},
 			cli.StringFlag{
 				Name:        "aws-profile",
-				Usage:       "aws-profile usage",
+				Usage:       "",
 				Destination: &lambdaAwsImport.awsProfile,
 			},
 			cli.StringFlag{
 				Name:        "image",
-				Usage:       "image usage",
+				Usage:       "",
 				Destination: &lambdaAwsImport.image,
 			},
 			cli.StringFlag{
 				Name:        "aws-region",
-				Usage:       "aws-region usage",
+				Usage:       "",
 				Destination: &lambdaAwsImport.awsRegion,
 			},
 			cli.BoolFlag{
 				Name:        "download-only",
-				Usage:       "download-only usage",
+				Usage:       "",
 				Destination: &lambdaAwsImport.downloadOnly,
 			},
 		},

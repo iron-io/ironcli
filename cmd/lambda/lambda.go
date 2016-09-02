@@ -12,9 +12,10 @@ type Lambda struct {
 func NewLambda(settings *config.Settings) *Lambda {
 	lambda := &Lambda{
 		Command: cli.Command{
-			Name:      "lambda",
-			Usage:     "manage lambda functions",
-			ArgsUsage: "[command]",
+			Name: "lambda",
+			Usage: `The Lambda commands allow packaging AWS Lambda compatible functions into Docker containers.
+They also allow importing certain Lambda functions. Please see (link to either blog post or iron-io/lambda docs) for more information.`,
+			ArgsUsage: "",
 			Subcommands: cli.Commands{
 				NewLambdaCreateFunction().GetCmd(),
 				NewLambdaAwsImport().GetCmd(),

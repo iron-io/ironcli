@@ -24,7 +24,7 @@ func NewLambdaPublishFunction() *LambdaPublishFunction {
 		Flags: []cli.Flag{
 			cli.StringFlag{
 				Name:        "function-name",
-				Usage:       "function-name usage",
+				Usage:       "",
 				Destination: &lambdaPublishFunction.functionName,
 			},
 		},

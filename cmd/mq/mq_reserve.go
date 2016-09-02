@@ -32,17 +32,17 @@ func NewMqReserve(settings *config.Settings) *MqReserve {
 		Flags: []cli.Flag{
 			cli.IntFlag{
 				Name:        "number, n",
-				Usage:       "number usage",
+				Usage:       "",
 				Destination: &mqReserve.number,
 			},
 			cli.IntFlag{
 				Name:        "timeout, t",
-				Usage:       "timeout usage",
+				Usage:       "",
 				Destination: &mqReserve.timeout,
 			},
 			cli.StringFlag{
 				Name:        "output, o",
-				Usage:       "output usage",
+				Usage:       "",
 				Destination: &mqReserve.outputfile,
 			},
 		},

@@ -30,17 +30,17 @@ func NewLambdaCreateFunction() *LambdaCreateFunction {
 		Flags: []cli.Flag{
 			cli.StringFlag{
 				Name:        "function-name",
-				Usage:       "function-name usage",
+				Usage:       "",
 				Destination: &lambdaCreateFunction.functionName,
 			},
 			cli.StringFlag{
 				Name:        "runtime",
-				Usage:       "runtime usage",
+				Usage:       "",
 				Destination: &lambdaCreateFunction.runtime,
 			},
 			cli.StringFlag{
 				Name:        "handler",
-				Usage:       "handler usage",
+				Usage:       "",
 				Destination: &lambdaCreateFunction.handler,
 			},
 		},

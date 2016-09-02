@@ -26,7 +26,7 @@ func NewMqPeek(settings *config.Settings) *MqPeek {
 		Flags: []cli.Flag{
 			cli.IntFlag{
 				Name:        "number, n",
-				Usage:       "number usage",
+				Usage:       "",
 				Destination: &mqPeek.number,
 			},
 		},

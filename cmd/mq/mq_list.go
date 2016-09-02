@@ -26,17 +26,17 @@ func NewMqList(settings *config.Settings) *MqList {
 		Flags: []cli.Flag{
 			cli.StringFlag{
 				Name:        "page",
-				Usage:       "page usage",
+				Usage:       "",
 				Destination: &mqList.page,
 			},
 			cli.IntFlag{
 				Name:        "perPage",
-				Usage:       "perPage usage",
+				Usage:       "",
 				Destination: &mqList.perPage,
 			},
 			cli.StringFlag{
 				Name:        "filter",
-				Usage:       "filter usage",
+				Usage:       "",
 				Destination: &mqList.filter,
 			},
 		},

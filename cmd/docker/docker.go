@@ -13,8 +13,8 @@ func NewDocker(settings *config.Settings) *Docker {
 	docker := &Docker{
 		Command: cli.Command{
 			Name:      "docker",
-			Usage:     "manage docker things",
-			ArgsUsage: "[command]",
+			Usage:     "manage docker credentials",
+			ArgsUsage: "",
 			Subcommands: cli.Commands{
 				NewDockerLogin(settings).GetCmd(),
 			},

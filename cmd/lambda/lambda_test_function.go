@@ -25,17 +25,17 @@ func NewLambdaTestFunction() *LambdaTestFunction {
 		Flags: []cli.Flag{
 			cli.StringFlag{
 				Name:        "function-name",
-				Usage:       "function-name usage",
+				Usage:       "",
 				Destination: &lambdaTestFunction.functionName,
 			},
 			cli.StringFlag{
 				Name:        "client-context",
-				Usage:       "client-context usage",
+				Usage:       "",
 				Destination: &lambdaTestFunction.clientContext,
 			},
 			cli.StringFlag{
 				Name:        "payload",
-				Usage:       "payload usage",
+				Usage:       "",
 				Destination: &lambdaTestFunction.payload,
 			},
 		},

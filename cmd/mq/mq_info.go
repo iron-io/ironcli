@@ -25,7 +25,7 @@ func NewMqInfo(settings *config.Settings) *MqInfo {
 		Flags: []cli.Flag{
 			cli.BoolFlag{
 				Name:        "subscriber-list",
-				Usage:       "subscriber-list usage",
+				Usage:       "",
 				Destination: &mqInfo.subscriberList,
 			},
 		},

@@ -38,52 +38,52 @@ func NewWorkerQueue(settings *config.Settings) *WorkerQueue {
 		Flags: []cli.Flag{
 			cli.StringFlag{
 				Name:        "payload",
-				Usage:       "payload usage",
+				Usage:       "",
 				Destination: &workerQueue.payload,
 			},
 			cli.StringFlag{
 				Name:        "payload-file",
-				Usage:       "payload-file usage",
+				Usage:       "",
 				Destination: &workerQueue.payloadFile,
 			},
 			cli.IntFlag{
 				Name:        "priority",
-				Usage:       "priority usage",
+				Usage:       "",
 				Destination: &workerQueue.priority,
 			},
 			cli.IntFlag{
 				Name:        "timeout",
-				Usage:       "timeout usage",
+				Usage:       "",
 				Destination: &workerQueue.timeout,
 			},
 			cli.IntFlag{
 				Name:        "delay",
-				Usage:       "delay usage",
+				Usage:       "",
 				Destination: &workerQueue.delay,
 			},
 			cli.BoolFlag{
 				Name:        "wait",
-				Usage:       "wait usage",
+				Usage:       "",
 				Destination: &workerQueue.wait,
 			},
 			cli.StringFlag{
 				Name:        "cluster",
-				Usage:       "cluster usage",
+				Usage:       "",
 				Destination: &workerQueue.cluster,
 			},
 			cli.StringFlag{
 				Name:        "label",
-				Usage:       "label usage",
+				Usage:       "",
 				Destination: &workerQueue.label,
 			},
 			cli.StringFlag{
 				Name:        "encryption-key",
-				Usage:       "encryption-key usage",
+				Usage:       "",
 				Destination: &workerQueue.encryptionKey,
 			},
 			cli.StringFlag{
 				Name:        "encryption-key-file",
-				Usage:       "encryption-key-file usage",
+				Usage:       "",
 				Destination: &workerQueue.encryptionKeyFile,
 			},
 		},

@@ -29,7 +29,7 @@ func NewMqPush(settings *config.Settings) *MqPush {
 		Flags: []cli.Flag{
 			cli.StringFlag{
 				Name:        "filename, f",
-				Usage:       "filename usage",
+				Usage:       "",
 				Destination: &mqPush.filename,
 			},
 		},
