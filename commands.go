@@ -152,6 +152,7 @@ type QueueCmd struct {
 	label             *string
 	encryptionKey     *string
 	encryptionKeyFile *string
+	n                 *int
 
 	// payload
 	task worker.Task
@@ -295,6 +296,7 @@ func (q *QueueCmd) Flags(args ...string) error {
 	q.label = q.flags.label()
 	q.encryptionKey = q.flags.encryptionKey()
 	q.encryptionKeyFile = q.flags.encryptionKeyFile()
+	q.n = q.flags.n()
 
 	err := q.flags.Parse(args)
 	if err != nil {
@@ -336,6 +338,10 @@ func (q *QueueCmd) Args() error {
 		}
 	}
 
+	if *q.n < 1 {
+		*q.n = 1
+	}
+
 	q.task = worker.Task{
 		CodeName: q.flags.Arg(0),
 		Payload:  payload,
@@ -365,7 +371,12 @@ func (q *QueueCmd) Usage() {
 func (q *QueueCmd) Run() {
 	fmt.Println(LINES, "Queueing task '"+q.task.CodeName+"'")
 
-	ids, err := q.wrkr.TaskQueue(q.task)
+	tasks := make([]worker.Task, *q.n)
+	for i := 0; i < *q.n; i++ {
+		tasks[i] = q.task
+	}
+
+	ids, err := q.wrkr.TaskQueue(tasks...)
 	if err != nil {
 		fmt.Println(BLANKS, err)
 		return

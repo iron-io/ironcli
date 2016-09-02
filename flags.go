@@ -127,6 +127,10 @@ func (wf *WorkerFlags) encryptionKeyFile() *string {
 	return wf.String("encryption-key-file", "", "optional: specify the location of a file containing an rsa public encryption key")
 }
 
+func (wf *WorkerFlags) n() *int {
+	return wf.Int("n", 1, "optional: how many of this task to queue. default: 1")
+}
+
 // -- envSlice Value
 type envVariable struct {
 	Name  string
