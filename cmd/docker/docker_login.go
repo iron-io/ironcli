@@ -34,22 +34,22 @@ func NewDockerLogin(settings *config.Settings) *DockerLogin {
 		Flags: []cli.Flag{
 			cli.StringFlag{
 				Name:        "email",
-				Usage:       "",
+				Usage:       "docker repo user email",
 				Destination: &dockerLogin.Email,
 			},
 			cli.StringFlag{
 				Name:        "password",
-				Usage:       "",
+				Usage:       "docker repo password",
 				Destination: &dockerLogin.Password,
 			},
 			cli.StringFlag{
 				Name:        "url",
-				Usage:       "",
+				Usage:       "docker repo url, if you're using custom repo",
 				Destination: &dockerLogin.Url,
 			},
 			cli.StringFlag{
 				Name:        "username",
-				Usage:       "",
+				Usage:       "docker repo user name",
 				Destination: &dockerLogin.Username,
 			},
 		},

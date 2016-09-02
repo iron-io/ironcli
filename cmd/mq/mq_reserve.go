@@ -37,7 +37,7 @@ func NewMqReserve(settings *config.Settings) *MqReserve {
 			},
 			cli.IntFlag{
 				Name:        "timeout, t",
-				Usage:       "",
+				Usage:       "0(default) - 3600 max runtime for task in seconds",
 				Destination: &mqReserve.timeout,
 			},
 			cli.StringFlag{

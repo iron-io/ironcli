@@ -27,54 +27,54 @@ type Register struct {
 
 func NewRegister(settings *config.Settings) *Register {
 	register := &Register{}
+
 	register.Command = cli.Command{
 		Name:      "register",
 		Usage:     "register worker in the project",
-		UsageText: "doo - does the dooing",
 		ArgsUsage: "[image] [command] [args]",
 		Flags: []cli.Flag{
 			cli.StringFlag{
 				Name:        "name",
-				Usage:       "",
+				Usage:       "override code package name",
 				Destination: &register.name,
 			},
 			cli.StringFlag{
 				Name:        "config",
-				Usage:       "",
+				Usage:       "provide config string (re: JSON/YAML) that will be available in file on upload",
 				Destination: &register.config,
 			},
 			cli.StringFlag{
 				Name:        "config-file",
-				Usage:       "",
+				Usage:       "upload file for worker config",
 				Destination: &register.configFile,
 			},
 			cli.IntFlag{
 				Name:        "max-conc",
-				Usage:       "",
+				Usage:       "max workers to run in parallel. default is no limit",
 				Value:       -1,
 				Destination: &register.maxConc,
 			},
 			cli.IntFlag{
 				Name:        "retries",
-				Usage:       "",
+				Usage:       "max times to retry failed task, max 10, default 0",
 				Value:       0,
 				Destination: &register.retries,
 			},
 			cli.IntFlag{
 				Name:        "retries-delay",
-				Usage:       "",
+				Usage:       "time between retries, in seconds. default 0",
 				Value:       0,
 				Destination: &register.retriesDelay,
 			},
 			cli.IntFlag{
 				Name:        "default-priority",
-				Usage:       "",
+				Usage:       "0(default), 1 or 2",
 				Value:       -3,
 				Destination: &register.defaultPriority,
 			},
 			cli.StringFlag{
 				Name:        "host",
-				Usage:       "",
+				Usage:       "paas host",
 				Destination: &register.host,
 			},
 		},

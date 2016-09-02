@@ -35,7 +35,7 @@ func NewLambdaTestFunction() *LambdaTestFunction {
 			},
 			cli.StringFlag{
 				Name:        "payload",
-				Usage:       "",
+				Usage:       "give function payload",
 				Destination: &lambdaTestFunction.payload,
 			},
 		},
