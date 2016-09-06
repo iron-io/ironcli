@@ -34,7 +34,7 @@ func NewWorkerSchedule(settings *config.Settings) *WorkerSchedule {
 
 	workerSchedule.Command = cli.Command{
 		Name:  "schedule",
-		Usage: "add worker as task on date to queue and run it",
+		Usage: "schedule a new task to run at a specified time.",
 		Flags: []cli.Flag{
 			cli.StringFlag{
 				Name:        "payload",

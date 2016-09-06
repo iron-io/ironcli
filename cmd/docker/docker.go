@@ -12,9 +12,8 @@ type Docker struct {
 func NewDocker(settings *config.Settings) *Docker {
 	docker := &Docker{
 		Command: cli.Command{
-			Name:      "docker",
-			Usage:     "manage docker credentials",
-			ArgsUsage: "",
+			Name:  "docker",
+			Usage: "manage Docker credentials.",
 			Subcommands: cli.Commands{
 				NewDockerLogin(settings).GetCmd(),
 			},

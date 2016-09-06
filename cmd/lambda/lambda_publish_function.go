@@ -20,11 +20,11 @@ func NewLambdaPublishFunction() *LambdaPublishFunction {
 
 	lambdaPublishFunction.Command = cli.Command{
 		Name:  "publish-function",
-		Usage: "publish function for lambda",
+		Usage: "pushes Lambda function to Docker Hub and registers with IronWorker. If you do not want to use IronWorker, simply run 'docker push NAME' instead.",
 		Flags: []cli.Flag{
 			cli.StringFlag{
 				Name:        "function-name",
-				Usage:       "",
+				Usage:       "name of function. This is usually follows Docker image naming conventions.",
 				Destination: &lambdaPublishFunction.functionName,
 			},
 		},

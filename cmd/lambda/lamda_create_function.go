@@ -5,11 +5,14 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"github.com/iron-io/ironcli/common"
 	"github.com/iron-io/lambda/lambda"
 	"github.com/urfave/cli"
 )
+
+var availableRuntimes = []string{"nodejs", "python2.7", "java8"}
 
 type LambdaCreateFunction struct {
 	functionName string
@@ -30,17 +33,17 @@ func NewLambdaCreateFunction() *LambdaCreateFunction {
 		Flags: []cli.Flag{
 			cli.StringFlag{
 				Name:        "function-name",
-				Usage:       "",
+				Usage:       "name of function. This is usually follows Docker image naming conventions.",
 				Destination: &lambdaCreateFunction.functionName,
 			},
 			cli.StringFlag{
 				Name:        "runtime",
-				Usage:       "",
+				Usage:       fmt.Sprintf("Runtime that your Lambda function depends on. Valid values are %s.", strings.Join(availableRuntimes, ", ")),
 				Destination: &lambdaCreateFunction.runtime,
 			},
 			cli.StringFlag{
 				Name:        "handler",
-				Usage:       "",
+				Usage:       "function/class that is the entrypoint for this function. Of the form <module name>.<function name> for nodejs/Python, <full class name>::<function name base> for Java.",
 				Destination: &lambdaCreateFunction.handler,
 			},
 		},

@@ -34,35 +34,37 @@ func NewLambdaAwsImport() *LambdaAwsImport {
 	lambdaAwsImport.Command = cli.Command{
 		Name: "aws-import",
 		Usage: `Converts an existing Lambda function to an image. The function code is downloaded to a directory in the current working directory
-that has the same name as the Lambda function.`,
+that has the same name as the Lambda function. About ARN - (http://docs.aws.amazon.com/general/latest/gr/aws-arns-and-namespaces.html).`,
 		Flags: []cli.Flag{
 			cli.StringFlag{
 				Name:        "version",
-				Usage:       "",
+				Usage:       "version of the function to import.",
+				Value:       "$LATEST",
 				Destination: &lambdaAwsImport.version,
 			},
 			cli.StringFlag{
 				Name:        "aws-profile",
-				Usage:       "",
+				Usage:       "AWS Profile to load from credentials file.",
 				Destination: &lambdaAwsImport.awsProfile,
 			},
 			cli.StringFlag{
 				Name:        "image",
-				Usage:       "",
+				Usage:       "by default the name of the Docker image is the name of the Lambda function. Use this to set a custom name.",
 				Destination: &lambdaAwsImport.image,
 			},
 			cli.StringFlag{
 				Name:        "aws-region",
-				Usage:       "",
+				Usage:       "AWS region to use.",
+				Value:       "us-east-1",
 				Destination: &lambdaAwsImport.awsRegion,
 			},
 			cli.BoolFlag{
 				Name:        "download-only",
-				Usage:       "",
+				Usage:       "Only download the function into a directory. Will not create a Docker image.",
 				Destination: &lambdaAwsImport.downloadOnly,
 			},
 		},
-		ArgsUsage: "[ARN] [args]",
+		ArgsUsage: "[ARN]",
 		Action: func(c *cli.Context) error {
 			function, err := lambdaAwsImport.getFunction(c.Args().First())
 			if err != nil {

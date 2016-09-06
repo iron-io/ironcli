@@ -19,7 +19,7 @@ func NewWorkerLog(settings *config.Settings) *WorkerLog {
 
 	workerLog.Command = cli.Command{
 		Name:      "log",
-		Usage:     "get log from task of queue",
+		Usage:     "get log output of a task that has finished executing.",
 		ArgsUsage: "[task-id]",
 		Action: func(c *cli.Context) error {
 			workerLog.wrkr.Settings = *settings

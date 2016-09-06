@@ -25,12 +25,11 @@ func NewLambdaTestFunction() *LambdaTestFunction {
 		Flags: []cli.Flag{
 			cli.StringFlag{
 				Name:        "function-name",
-				Usage:       "",
+				Usage:       "name of function. This is usually follows Docker image naming conventions.",
 				Destination: &lambdaTestFunction.functionName,
 			},
 			cli.StringFlag{
 				Name:        "client-context",
-				Usage:       "",
 				Destination: &lambdaTestFunction.clientContext,
 			},
 			cli.StringFlag{

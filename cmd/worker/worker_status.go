@@ -19,7 +19,7 @@ func NewWorkerStatus(settings *config.Settings) *WorkerStatus {
 
 	workerStatus.Command = cli.Command{
 		Name:      "status",
-		Usage:     "get status from task of queue",
+		Usage:     "get execution status of a task.",
 		ArgsUsage: "[task_id]",
 		Action: func(c *cli.Context) error {
 			workerStatus.wrkr.Settings = *settings

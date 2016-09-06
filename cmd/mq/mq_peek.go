@@ -21,7 +21,7 @@ func NewMqPeek(settings *config.Settings) *MqPeek {
 
 	mqPeek.Command = cli.Command{
 		Name:      "peek",
-		Usage:     "peek messages by amount of queue",
+		Usage:     "peek at messages in the queue without dequeuing them.",
 		ArgsUsage: "[QUEUE_NAME] [args]",
 		Flags: []cli.Flag{
 			cli.IntFlag{

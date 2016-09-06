@@ -13,7 +13,7 @@ func NewWorker(settings *config.Settings) *Worker {
 	worker := &Worker{
 		Command: cli.Command{
 			Name:      "worker",
-			Usage:     "manage workers",
+			Usage:     "commands to interact with IronWorker.",
 			ArgsUsage: "[command]",
 			Subcommands: cli.Commands{
 				NewWorkerUpload(settings).GetCmd(),

@@ -29,7 +29,7 @@ func NewDockerLogin(settings *config.Settings) *DockerLogin {
 	dockerLogin := &DockerLogin{}
 	dockerLogin.Command = cli.Command{
 		Name:      "login",
-		Usage:     "authentication in docker registry",
+		Usage:     "manage docker registry credentials.",
 		ArgsUsage: "[args]",
 		Flags: []cli.Flag{
 			cli.StringFlag{

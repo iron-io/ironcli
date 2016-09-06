@@ -33,8 +33,8 @@ func NewWorkerQueue(settings *config.Settings) *WorkerQueue {
 
 	workerQueue.Command = cli.Command{
 		Name:      "queue",
-		Usage:     "add worker as task to queue and run it",
-		ArgsUsage: "[CODE_PACKAGE_NAME] [args]",
+		Usage:     "queue a new task on IronWorker.",
+		ArgsUsage: "[code package name]",
 		Flags: []cli.Flag{
 			cli.StringFlag{
 				Name:        "payload",

@@ -14,8 +14,7 @@ func NewLambda(settings *config.Settings) *Lambda {
 		Command: cli.Command{
 			Name: "lambda",
 			Usage: `The Lambda commands allow packaging AWS Lambda compatible functions into Docker containers.
-They also allow importing certain Lambda functions. Please see (link to either blog post or iron-io/lambda docs) for more information.`,
-			ArgsUsage: "",
+They also allow importing certain Lambda functions. Please see (https://github.com/iron-io/lambda/blob/master/docs/getting-started.md) for more information.`,
 			Subcommands: cli.Commands{
 				NewLambdaCreateFunction().GetCmd(),
 				NewLambdaAwsImport().GetCmd(),
