@@ -7,7 +7,6 @@ import (
 	"os"
 	"strings"
 
-	"github.com/iron-io/iron_go3/config"
 	"github.com/iron-io/iron_go3/worker"
 	"github.com/iron-io/ironcli/common"
 	"github.com/urfave/cli"
@@ -28,7 +27,7 @@ type WorkerUpload struct {
 	cli.Command
 }
 
-func NewWorkerUpload(settings *config.Settings) *WorkerUpload {
+func NewWorkerUpload(settings *common.Settings) *WorkerUpload {
 	workerUpload := &WorkerUpload{}
 	workerUpload.Command = cli.Command{
 		Name:      "upload",
@@ -97,7 +96,7 @@ func NewWorkerUpload(settings *config.Settings) *WorkerUpload {
 				fmt.Println(`Registering worker '` + workerUpload.codes.Name + `'`)
 			}
 
-			code, err := common.PushCodes(workerUpload.zip, settings, workerUpload.codes)
+			code, err := common.PushCodes(workerUpload.zip, &settings.Worker, workerUpload.codes)
 			if err != nil {
 				return err
 			}

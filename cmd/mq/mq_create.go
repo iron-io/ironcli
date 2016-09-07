@@ -3,7 +3,6 @@ package mq
 import (
 	"fmt"
 
-	"github.com/iron-io/iron_go3/config"
 	"github.com/iron-io/iron_go3/mq"
 	"github.com/iron-io/ironcli/common"
 	"github.com/urfave/cli"
@@ -13,7 +12,7 @@ type MqCreate struct {
 	cli.Command
 }
 
-func NewMqCreate(settings *config.Settings) *MqCreate {
+func NewMqCreate(settings *common.Settings) *MqCreate {
 	mqCreate := &MqCreate{
 		Command: cli.Command{
 			Name:      "create",
@@ -22,7 +21,7 @@ func NewMqCreate(settings *config.Settings) *MqCreate {
 			Action: func(c *cli.Context) error {
 				fmt.Printf("%sCreating queue \"%s\"\n", common.BLANKS, c.Args().First())
 
-				q := mq.ConfigNew(c.Args().First(), settings)
+				q := mq.ConfigNew(c.Args().First(), &settings.Worker)
 				_, err := q.PushStrings("")
 				if err != nil {
 					return err

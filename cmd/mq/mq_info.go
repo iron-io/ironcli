@@ -4,7 +4,6 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/iron-io/iron_go3/config"
 	"github.com/iron-io/iron_go3/mq"
 	"github.com/iron-io/ironcli/common"
 	"github.com/urfave/cli"
@@ -16,7 +15,7 @@ type MqInfo struct {
 	cli.Command
 }
 
-func NewMqInfo(settings *config.Settings) *MqInfo {
+func NewMqInfo(settings *common.Settings) *MqInfo {
 	mqInfo := &MqInfo{}
 	mqInfo.Command = cli.Command{
 		Name:      "info",
@@ -34,7 +33,7 @@ func NewMqInfo(settings *config.Settings) *MqInfo {
 				return errors.New(`info requires a queue name`)
 			}
 
-			q := mq.ConfigNew(c.Args().First(), settings)
+			q := mq.ConfigNew(c.Args().First(), &settings.Worker)
 
 			info, err := q.Info()
 			if err != nil {

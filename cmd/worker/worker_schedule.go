@@ -5,7 +5,6 @@ import (
 	"io/ioutil"
 	"time"
 
-	"github.com/iron-io/iron_go3/config"
 	"github.com/iron-io/ironcli/common"
 	"github.com/urfave/cli"
 )
@@ -29,7 +28,7 @@ type WorkerSchedule struct {
 	cli.Command
 }
 
-func NewWorkerSchedule(settings *config.Settings) *WorkerSchedule {
+func NewWorkerSchedule(settings *common.Settings) *WorkerSchedule {
 	workerSchedule := &WorkerSchedule{}
 
 	workerSchedule.Command = cli.Command{
@@ -97,7 +96,7 @@ func NewWorkerSchedule(settings *config.Settings) *WorkerSchedule {
 			},
 		},
 		Action: func(c *cli.Context) error {
-			workerSchedule.wrkr.Settings = *settings
+			workerSchedule.wrkr.Settings = settings.Worker
 
 			err := workerSchedule.Execute(c.Args().First())
 			if err != nil {

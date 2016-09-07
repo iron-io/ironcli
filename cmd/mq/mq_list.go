@@ -3,7 +3,6 @@ package mq
 import (
 	"fmt"
 
-	"github.com/iron-io/iron_go3/config"
 	"github.com/iron-io/iron_go3/mq"
 	"github.com/iron-io/ironcli/common"
 	"github.com/urfave/cli"
@@ -17,7 +16,7 @@ type MqList struct {
 	cli.Command
 }
 
-func NewMqList(settings *config.Settings) *MqList {
+func NewMqList(settings *common.Settings) *MqList {
 	mqList := &MqList{}
 	mqList.Command = cli.Command{
 		Name:      "list",
@@ -56,11 +55,11 @@ func NewMqList(settings *config.Settings) *MqList {
 					fmt.Println(common.BLANKS, "*", q.Name)
 				}
 
-				if tag, err := common.GetHudTag(*settings); err == nil {
+				if tag, err := common.GetHudTag(settings.Worker); err == nil {
 					fmt.Printf("%s Go to hud-e.iron.io/mq/%s/projects/%s/queues for more info",
 						common.BLANKS,
 						tag,
-						settings.ProjectId)
+						settings.Worker.ProjectId)
 				}
 				fmt.Println()
 			}

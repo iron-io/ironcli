@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/iron-io/iron_go3/config"
 	"github.com/iron-io/iron_go3/mq"
 	"github.com/iron-io/ironcli/common"
 	"github.com/urfave/cli"
@@ -20,7 +19,7 @@ type MqPop struct {
 	cli.Command
 }
 
-func NewMqPop(settings *config.Settings) *MqPop {
+func NewMqPop(settings *common.Settings) *MqPop {
 	mqPop := &MqPop{}
 
 	mqPop.Command = cli.Command{
@@ -53,7 +52,7 @@ func NewMqPop(settings *config.Settings) *MqPop {
 				mqPop.file = f
 			}
 
-			q := mq.ConfigNew(c.Args().First(), settings)
+			q := mq.ConfigNew(c.Args().First(), &settings.Worker)
 
 			messages, err := q.PopN(mqPop.number)
 			if err != nil {

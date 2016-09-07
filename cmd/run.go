@@ -7,7 +7,6 @@ import (
 	"os"
 	"strings"
 
-	"github.com/iron-io/iron_go3/config"
 	"github.com/iron-io/iron_go3/worker"
 	"github.com/iron-io/ironcli/common"
 	"github.com/urfave/cli"
@@ -28,7 +27,7 @@ type Run struct {
 	cli.Command
 }
 
-func NewRun(settings *config.Settings) *Run {
+func NewRun(settings *common.Settings) *Run {
 	run := &Run{}
 
 	run.Command = cli.Command{
@@ -86,6 +85,12 @@ func NewRun(settings *config.Settings) *Run {
 				Destination: &run.host,
 			},
 		},
+		Before: func(c *cli.Context) error {
+			settings.Product = "iron_worker"
+			common.SetSettings(settings)
+
+			return nil
+		},
 		Action: func(c *cli.Context) error {
 			err := run.Execute(c.Args().Tail(), c.Args().First())
 			if err != nil {
@@ -98,7 +103,7 @@ func NewRun(settings *config.Settings) *Run {
 				fmt.Println(`Registering worker '` + run.codes.Name + `'`)
 			}
 
-			code, err := common.PushCodes(run.zip, settings, run.codes)
+			code, err := common.PushCodes(run.zip, &settings.Worker, run.codes)
 			if err != nil {
 				return err
 			}

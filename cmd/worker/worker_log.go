@@ -3,7 +3,6 @@ package worker
 import (
 	"fmt"
 
-	"github.com/iron-io/iron_go3/config"
 	"github.com/iron-io/ironcli/common"
 	"github.com/urfave/cli"
 )
@@ -14,7 +13,7 @@ type WorkerLog struct {
 	cli.Command
 }
 
-func NewWorkerLog(settings *config.Settings) *WorkerLog {
+func NewWorkerLog(settings *common.Settings) *WorkerLog {
 	workerLog := &WorkerLog{}
 
 	workerLog.Command = cli.Command{
@@ -22,7 +21,7 @@ func NewWorkerLog(settings *config.Settings) *WorkerLog {
 		Usage:     "get log output of a task that has finished executing.",
 		ArgsUsage: "[task-id]",
 		Action: func(c *cli.Context) error {
-			workerLog.wrkr.Settings = *settings
+			workerLog.wrkr.Settings = settings.Worker
 
 			fmt.Println("LINES", "Getting log for task with id='"+c.Args().First()+"'")
 

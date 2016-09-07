@@ -10,6 +10,7 @@ import (
 
 	"github.com/iron-io/iron_go3/api"
 	"github.com/iron-io/iron_go3/config"
+	"github.com/iron-io/ironcli/common"
 	"github.com/urfave/cli"
 )
 
@@ -25,7 +26,7 @@ type DockerLogin struct {
 	cli.Command
 }
 
-func NewDockerLogin(settings *config.Settings) *DockerLogin {
+func NewDockerLogin(settings *common.Settings) *DockerLogin {
 	dockerLogin := &DockerLogin{}
 	dockerLogin.Command = cli.Command{
 		Name:      "login",
@@ -63,7 +64,7 @@ func NewDockerLogin(settings *config.Settings) *DockerLogin {
 				"auth": dockerLogin.RemoteAuth,
 			}
 
-			msg, err := dockerLogin.Execute(settings, &auth)
+			msg, err := dockerLogin.Execute(&settings.Worker, &auth)
 			if err != nil {
 				return err
 			}

@@ -4,7 +4,6 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/iron-io/iron_go3/config"
 	"github.com/iron-io/iron_go3/mq"
 	"github.com/iron-io/ironcli/common"
 	"github.com/urfave/cli"
@@ -14,7 +13,7 @@ type MqClear struct {
 	cli.Command
 }
 
-func NewMqClear(settings *config.Settings) *MqClear {
+func NewMqClear(settings *common.Settings) *MqClear {
 	mqClear := &MqClear{
 		Command: cli.Command{
 			Name:      "clear",
@@ -25,7 +24,7 @@ func NewMqClear(settings *config.Settings) *MqClear {
 					return errors.New(`clear requires a queue name`)
 				}
 
-				q := mq.ConfigNew(c.Args().First(), settings)
+				q := mq.ConfigNew(c.Args().First(), &settings.Worker)
 
 				if err := q.Clear(); err != nil {
 					return err

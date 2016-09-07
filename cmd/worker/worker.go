@@ -1,7 +1,7 @@
 package worker
 
 import (
-	"github.com/iron-io/iron_go3/config"
+	"github.com/iron-io/ironcli/common"
 	"github.com/urfave/cli"
 )
 
@@ -9,12 +9,18 @@ type Worker struct {
 	cli.Command
 }
 
-func NewWorker(settings *config.Settings) *Worker {
+func NewWorker(settings *common.Settings) *Worker {
 	worker := &Worker{
 		Command: cli.Command{
 			Name:      "worker",
 			Usage:     "commands to interact with IronWorker.",
 			ArgsUsage: "[command]",
+			Before: func(c *cli.Context) error {
+				settings.Product = "iron_worker"
+				common.SetSettings(settings)
+
+				return nil
+			},
 			Subcommands: cli.Commands{
 				NewWorkerUpload(settings).GetCmd(),
 				NewWorkerLog(settings).GetCmd(),

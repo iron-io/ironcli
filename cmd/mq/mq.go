@@ -1,7 +1,7 @@
 package mq
 
 import (
-	"github.com/iron-io/iron_go3/config"
+	"github.com/iron-io/ironcli/common"
 	"github.com/urfave/cli"
 )
 
@@ -9,27 +9,29 @@ type Mq struct {
 	cli.Command
 }
 
-func NewMq(settings *config.Settings) *Mq {
-	mqSettings := config.ManualConfig("iron_mq", nil)
-	mqSettings.Token = settings.Token
-	mqSettings.ProjectId = settings.ProjectId
-
+func NewMq(settings *common.Settings) *Mq {
 	mq := &Mq{
 		Command: cli.Command{
 			Name:      "mq",
 			Usage:     "manage queues",
 			ArgsUsage: "[command]",
+			Before: func(c *cli.Context) error {
+				settings.Product = "iron_mq"
+				common.SetSettings(settings)
+
+				return nil
+			},
 			Subcommands: cli.Commands{
-				NewMqPush(&mqSettings).GetCmd(),
-				NewMqClear(&mqSettings).GetCmd(),
-				NewMqCreate(&mqSettings).GetCmd(),
-				NewMqDelete(&mqSettings).GetCmd(),
-				NewMqInfo(&mqSettings).GetCmd(),
-				NewMqList(&mqSettings).GetCmd(),
-				NewMqPeek(&mqSettings).GetCmd(),
-				NewMqPop(&mqSettings).GetCmd(),
-				NewMqReserve(&mqSettings).GetCmd(),
-				NewMqRm(&mqSettings).GetCmd(),
+				NewMqPush(settings).GetCmd(),
+				NewMqClear(settings).GetCmd(),
+				NewMqCreate(settings).GetCmd(),
+				NewMqDelete(settings).GetCmd(),
+				NewMqInfo(settings).GetCmd(),
+				NewMqList(settings).GetCmd(),
+				NewMqPeek(settings).GetCmd(),
+				NewMqPop(settings).GetCmd(),
+				NewMqReserve(settings).GetCmd(),
+				NewMqRm(settings).GetCmd(),
 			},
 		},
 	}

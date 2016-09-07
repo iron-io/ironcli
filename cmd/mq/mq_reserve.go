@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/iron-io/iron_go3/config"
 	"github.com/iron-io/iron_go3/mq"
 	"github.com/iron-io/ironcli/common"
 	"github.com/urfave/cli"
@@ -22,7 +21,7 @@ type MqReserve struct {
 	cli.Command
 }
 
-func NewMqReserve(settings *config.Settings) *MqReserve {
+func NewMqReserve(settings *common.Settings) *MqReserve {
 	mqReserve := &MqReserve{}
 
 	mqReserve.Command = cli.Command{
@@ -60,7 +59,7 @@ func NewMqReserve(settings *config.Settings) *MqReserve {
 				mqReserve.file = f
 			}
 
-			q := mq.ConfigNew(mqReserve.queue_name, settings)
+			q := mq.ConfigNew(mqReserve.queue_name, &settings.Worker)
 			messages, err := q.GetNWithTimeout(mqReserve.number, mqReserve.timeout)
 			if err != nil {
 				return err

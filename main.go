@@ -4,18 +4,18 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/iron-io/iron_go3/config"
 	"github.com/iron-io/ironcli/cmd"
 	"github.com/iron-io/ironcli/cmd/docker"
 	"github.com/iron-io/ironcli/cmd/lambda"
 	"github.com/iron-io/ironcli/cmd/mq"
 	"github.com/iron-io/ironcli/cmd/worker"
+	"github.com/iron-io/ironcli/common"
 	"github.com/urfave/cli"
 )
 
 func main() {
 	var (
-		settings config.Settings
+		settings = &common.Settings{}
 	)
 
 	app := cli.NewApp()
@@ -38,23 +38,15 @@ func main() {
 
 	// Init settings
 	app.Before = func(c *cli.Context) error {
-		// FIXME when someone will add a break changes for code
+		settings.Env = c.GlobalString("env")
+
 		if c.GlobalString("project-id") != "" {
-			err := os.Setenv("IRON_PROJECT_ID", c.GlobalString("project-id"))
-			if err != nil {
-				return err
-			}
+			settings.Worker.ProjectId = c.GlobalString("project-id")
 		}
 
-		// FIXME when someone will add a break changes for code
 		if c.GlobalString("token") != "" {
-			err := os.Setenv("IRON_TOKEN", c.GlobalString("token"))
-			if err != nil {
-				return err
-			}
+			settings.Worker.Token = c.GlobalString("token")
 		}
-
-		settings = config.ConfigWithEnv("iron_worker", c.GlobalString("env"))
 
 		return nil
 	}
@@ -65,12 +57,12 @@ func main() {
 	}
 
 	app.Commands = []cli.Command{
-		cmd.NewRegister(&settings).GetCmd(),
-		cmd.NewRun(&settings).GetCmd(),
-		worker.NewWorker(&settings).GetCmd(),
-		mq.NewMq(&settings).GetCmd(),
-		docker.NewDocker(&settings).GetCmd(),
-		lambda.NewLambda(&settings).GetCmd(),
+		cmd.NewRegister(settings).GetCmd(),
+		cmd.NewRun(settings).GetCmd(),
+		worker.NewWorker(settings).GetCmd(),
+		mq.NewMq(settings).GetCmd(),
+		docker.NewDocker(settings).GetCmd(),
+		lambda.NewLambda(settings).GetCmd(),
 	}
 
 	err := app.Run(os.Args)

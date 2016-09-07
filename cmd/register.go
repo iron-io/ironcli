@@ -5,7 +5,6 @@ import (
 	"io/ioutil"
 	"strings"
 
-	"github.com/iron-io/iron_go3/config"
 	"github.com/iron-io/iron_go3/worker"
 	"github.com/iron-io/ironcli/common"
 	"github.com/urfave/cli"
@@ -25,7 +24,7 @@ type Register struct {
 	cli.Command
 }
 
-func NewRegister(settings *config.Settings) *Register {
+func NewRegister(settings *common.Settings) *Register {
 	register := &Register{}
 
 	register.Command = cli.Command{
@@ -78,7 +77,15 @@ func NewRegister(settings *config.Settings) *Register {
 				Destination: &register.host,
 			},
 		},
+		Before: func(c *cli.Context) error {
+			settings.Product = "iron_worker"
+			common.SetSettings(settings)
+
+			return nil
+		},
 		Action: func(c *cli.Context) error {
+			common.SetSettings(settings)
+
 			err := register.Execute(c.Args().Tail(), c.Args().First())
 			if err != nil {
 				return err
@@ -90,7 +97,7 @@ func NewRegister(settings *config.Settings) *Register {
 				fmt.Println(`Registering worker '` + register.codes.Name + `'`)
 			}
 
-			code, err := common.PushCodes("", settings, register.codes)
+			code, err := common.PushCodes("", &settings.Worker, register.codes)
 			if err != nil {
 				return err
 			}
@@ -110,6 +117,10 @@ func NewRegister(settings *config.Settings) *Register {
 
 func (r Register) GetCmd() cli.Command {
 	return r.Command
+}
+
+func (r *Register) Settings() {
+
 }
 
 func (r *Register) Execute(cmd []string, image string) error {

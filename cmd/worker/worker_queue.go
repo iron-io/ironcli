@@ -6,7 +6,6 @@ import (
 	"os"
 	"time"
 
-	"github.com/iron-io/iron_go3/config"
 	"github.com/iron-io/ironcli/common"
 	"github.com/urfave/cli"
 )
@@ -28,7 +27,7 @@ type WorkerQueue struct {
 	cli.Command
 }
 
-func NewWorkerQueue(settings *config.Settings) *WorkerQueue {
+func NewWorkerQueue(settings *common.Settings) *WorkerQueue {
 	workerQueue := &WorkerQueue{}
 
 	workerQueue.Command = cli.Command{
@@ -90,7 +89,7 @@ func NewWorkerQueue(settings *config.Settings) *WorkerQueue {
 			},
 		},
 		Action: func(c *cli.Context) error {
-			workerQueue.wrkr.Settings = *settings
+			workerQueue.wrkr.Settings = settings.Worker
 
 			err := workerQueue.Execute(c.Args().First())
 			if err != nil {

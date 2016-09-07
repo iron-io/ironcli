@@ -3,7 +3,6 @@ package worker
 import (
 	"fmt"
 
-	"github.com/iron-io/iron_go3/config"
 	"github.com/iron-io/ironcli/common"
 	"github.com/urfave/cli"
 )
@@ -14,7 +13,7 @@ type WorkerStatus struct {
 	cli.Command
 }
 
-func NewWorkerStatus(settings *config.Settings) *WorkerStatus {
+func NewWorkerStatus(settings *common.Settings) *WorkerStatus {
 	workerStatus := &WorkerStatus{}
 
 	workerStatus.Command = cli.Command{
@@ -22,7 +21,7 @@ func NewWorkerStatus(settings *config.Settings) *WorkerStatus {
 		Usage:     "get execution status of a task.",
 		ArgsUsage: "[task_id]",
 		Action: func(c *cli.Context) error {
-			workerStatus.wrkr.Settings = *settings
+			workerStatus.wrkr.Settings = settings.Worker
 
 			fmt.Println("LINES", `Getting status of task with id='`+c.Args().First()+`'`)
 

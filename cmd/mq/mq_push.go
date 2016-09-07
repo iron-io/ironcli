@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"io/ioutil"
 
-	"github.com/iron-io/iron_go3/config"
 	"github.com/iron-io/iron_go3/mq"
 	"github.com/iron-io/ironcli/common"
 	"github.com/urfave/cli"
@@ -20,7 +19,7 @@ type MqPush struct {
 	cli.Command
 }
 
-func NewMqPush(settings *config.Settings) *MqPush {
+func NewMqPush(settings *common.Settings) *MqPush {
 	mqPush := &MqPush{}
 	mqPush.Command = cli.Command{
 		Name:      "push",
@@ -39,7 +38,7 @@ func NewMqPush(settings *config.Settings) *MqPush {
 				return err
 			}
 
-			q := mq.ConfigNew(mqPush.queue_name, settings)
+			q := mq.ConfigNew(mqPush.queue_name, &settings.Worker)
 
 			ids, err := q.PushStrings(mqPush.messages...)
 			if err != nil {

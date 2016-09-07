@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"io/ioutil"
 
-	"github.com/iron-io/iron_go3/config"
 	"github.com/iron-io/iron_go3/mq"
 	"github.com/iron-io/ironcli/common"
 	"github.com/urfave/cli"
@@ -20,7 +19,7 @@ type MqDelete struct {
 	cli.Command
 }
 
-func NewMqDelete(settings *config.Settings) *MqDelete {
+func NewMqDelete(settings *common.Settings) *MqDelete {
 	mqDelete := &MqDelete{}
 	mqDelete.Command = cli.Command{
 		Name:      "delete",
@@ -39,7 +38,7 @@ func NewMqDelete(settings *config.Settings) *MqDelete {
 				return err
 			}
 
-			q := mq.ConfigNew(mqDelete.queue_name, settings)
+			q := mq.ConfigNew(mqDelete.queue_name, &settings.Worker)
 
 			err = q.DeleteMessages(mqDelete.ids)
 			if err != nil {

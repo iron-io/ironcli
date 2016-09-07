@@ -4,7 +4,6 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/iron-io/iron_go3/config"
 	"github.com/iron-io/iron_go3/mq"
 	"github.com/iron-io/ironcli/common"
 	"github.com/urfave/cli"
@@ -16,7 +15,7 @@ type MqPeek struct {
 	cli.Command
 }
 
-func NewMqPeek(settings *config.Settings) *MqPeek {
+func NewMqPeek(settings *common.Settings) *MqPeek {
 	mqPeek := &MqPeek{}
 
 	mqPeek.Command = cli.Command{
@@ -35,7 +34,7 @@ func NewMqPeek(settings *config.Settings) *MqPeek {
 				return errors.New(`peek requires one arg`)
 			}
 
-			q := mq.ConfigNew(c.Args().First(), settings)
+			q := mq.ConfigNew(c.Args().First(), &settings.Worker)
 
 			msgs, err := q.PeekN(mqPeek.number)
 			if err != nil {

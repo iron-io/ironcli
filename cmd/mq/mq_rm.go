@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/iron-io/iron_go3/config"
 	"github.com/iron-io/iron_go3/mq"
 	"github.com/iron-io/ironcli/common"
 	"github.com/urfave/cli"
@@ -16,7 +15,7 @@ type MqRm struct {
 	cli.Command
 }
 
-func NewMqRm(settings *config.Settings) *MqRm {
+func NewMqRm(settings *common.Settings) *MqRm {
 	mqRm := &MqRm{
 		Command: cli.Command{
 			Name:      "rm",
@@ -33,13 +32,13 @@ func NewMqRm(settings *config.Settings) *MqRm {
 					scanner := bufio.NewScanner(os.Stdin)
 					for scanner.Scan() {
 						name := scanner.Text()
-						queues = append(queues, mq.ConfigNew(name, settings))
+						queues = append(queues, mq.ConfigNew(name, &settings.Worker))
 					}
 					if err := scanner.Err(); err != nil {
 						fmt.Fprintln(os.Stderr, err)
 					}
 				} else {
-					queues = append(queues, mq.ConfigNew(c.Args().First(), settings))
+					queues = append(queues, mq.ConfigNew(c.Args().First(), &settings.Worker))
 				}
 
 				for _, q := range queues {
