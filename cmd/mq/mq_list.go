@@ -19,9 +19,8 @@ type MqList struct {
 func NewMqList(settings *common.Settings) *MqList {
 	mqList := &MqList{}
 	mqList.Command = cli.Command{
-		Name:      "list",
-		Usage:     "list of queues",
-		ArgsUsage: "[args]",
+		Name:  "list",
+		Usage: "list of queues",
 		Flags: []cli.Flag{
 			cli.StringFlag{
 				Name:        "page",

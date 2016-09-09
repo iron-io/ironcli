@@ -96,6 +96,8 @@ func NewWorkerQueue(settings *common.Settings) *WorkerQueue {
 				return err
 			}
 
+			fmt.Println(common.LINES, "Queueing task '"+workerQueue.task.CodeName+"'")
+
 			ids, err := workerQueue.wrkr.TaskQueue(workerQueue.task)
 			if err != nil {
 				return err
@@ -103,9 +105,10 @@ func NewWorkerQueue(settings *common.Settings) *WorkerQueue {
 			id := ids[0]
 
 			fmt.Printf("%s Queued task with id='%s'\n", common.BLANKS, id)
+			fmt.Println(common.BLANKS, settings.HUDUrlStr+"jobs/"+id+common.INFO)
 
 			if workerQueue.wait {
-				fmt.Println(common.LINES, "Waiting for task to start running")
+				fmt.Println(common.LINES, common.Yellow("Waiting for task to start running"))
 
 				done := make(chan struct{})
 				go workerQueue.runWatch(done, "queued")
@@ -113,7 +116,7 @@ func NewWorkerQueue(settings *common.Settings) *WorkerQueue {
 				close(done)
 
 				// TODO print actual queued time?
-				fmt.Println(common.LINES, "Task running, waiting for completion")
+				fmt.Println(common.LINES, common.Yellow("Task running, waiting for completion"))
 
 				done = make(chan struct{})
 				go workerQueue.runWatch(done, "running")
@@ -128,7 +131,7 @@ func NewWorkerQueue(settings *common.Settings) *WorkerQueue {
 					return fmt.Errorf("error getting log: %v", err)
 				}
 
-				fmt.Println(common.LINES, "Done")
+				fmt.Println(common.LINES, common.Green("Done"))
 				fmt.Println(common.LINES, "Printing Log:")
 				fmt.Printf("%s", string(log))
 			}

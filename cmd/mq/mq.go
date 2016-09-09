@@ -17,7 +17,9 @@ func NewMq(settings *common.Settings) *Mq {
 			ArgsUsage: "[command]",
 			Before: func(c *cli.Context) error {
 				settings.Product = "iron_mq"
-				common.SetSettings(settings)
+				if err := common.SetSettings(settings); err != nil {
+					return err
+				}
 
 				return nil
 			},

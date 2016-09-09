@@ -20,7 +20,7 @@ func NewMqInfo(settings *common.Settings) *MqInfo {
 	mqInfo.Command = cli.Command{
 		Name:      "info",
 		Usage:     "get info about queue",
-		ArgsUsage: "[QUEUE_NAME] [args]",
+		ArgsUsage: "[QUEUE_NAME]",
 		Flags: []cli.Flag{
 			cli.BoolFlag{
 				Name:        "subscriber-list",

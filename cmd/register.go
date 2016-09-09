@@ -79,22 +79,22 @@ func NewRegister(settings *common.Settings) *Register {
 		},
 		Before: func(c *cli.Context) error {
 			settings.Product = "iron_worker"
-			common.SetSettings(settings)
+			if err := common.SetSettings(settings); err != nil {
+				return err
+			}
 
 			return nil
 		},
 		Action: func(c *cli.Context) error {
-			common.SetSettings(settings)
-
 			err := register.Execute(c.Args().Tail(), c.Args().First())
 			if err != nil {
 				return err
 			}
 
 			if register.codes.Host != "" {
-				fmt.Println(`Spinning up '` + register.codes.Name + `'`)
+				fmt.Println(common.LINES, `Spinning up '`+register.codes.Name+`'`)
 			} else {
-				fmt.Println(`Registering worker '` + register.codes.Name + `'`)
+				fmt.Println(common.LINES, `Registering worker '`+register.codes.Name+`'`)
 			}
 
 			code, err := common.PushCodes("", &settings.Worker, register.codes)
@@ -103,10 +103,12 @@ func NewRegister(settings *common.Settings) *Register {
 			}
 
 			if code.Host != "" {
-				fmt.Println(`Hosted at: '` + code.Host + `'`)
+				fmt.Println(common.BLANKS, common.Green(`Hosted at: '`+code.Host+`'`))
 			} else {
-				fmt.Println(`Registered code package with id='` + code.Id + `'`)
+				fmt.Println(common.BLANKS, common.Green(`Registered code package with id='`+code.Id+`'`))
 			}
+
+			fmt.Println(common.BLANKS, common.Green(settings.HUDUrlStr+"code/"+code.Id+common.INFO))
 
 			return nil
 		},

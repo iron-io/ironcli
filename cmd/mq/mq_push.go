@@ -24,7 +24,7 @@ func NewMqPush(settings *common.Settings) *MqPush {
 	mqPush.Command = cli.Command{
 		Name:      "push",
 		Usage:     "push messages to queue",
-		ArgsUsage: "[QUEUE_NAME] [MESSAGE, ...] [args]",
+		ArgsUsage: "[QUEUE_NAME] [MESSAGE, ...]",
 		Flags: []cli.Flag{
 			cli.StringFlag{
 				Name:        "filename, f",
@@ -50,7 +50,9 @@ func NewMqPush(settings *common.Settings) *MqPush {
 					fmt.Println(id)
 				}
 			} else {
-				fmt.Println("Message succesfully pushed!")
+				fmt.Println(common.Green(common.LINES, "Message succesfully pushed!"))
+				fmt.Printf("%sMessage IDs:\n", common.BLANKS)
+				fmt.Printf("%s", common.BLANKS)
 
 				for _, id := range ids {
 					fmt.Printf("%s ", id)

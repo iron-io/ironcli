@@ -3,7 +3,9 @@ package main
 import (
 	"fmt"
 	"os"
+	"runtime"
 
+	"github.com/fatih/color"
 	"github.com/iron-io/ironcli/cmd"
 	"github.com/iron-io/ironcli/cmd/docker"
 	"github.com/iron-io/ironcli/cmd/lambda"
@@ -38,6 +40,17 @@ func main() {
 
 	// Init settings
 	app.Before = func(c *cli.Context) error {
+		// Setting old variables for color
+		if runtime.GOOS == "windows" {
+			common.Red = fmt.Sprint
+			common.Yellow = fmt.Sprint
+			common.Green = fmt.Sprint
+		} else {
+			common.Red = color.New(color.FgRed).SprintFunc()
+			common.Yellow = color.New(color.FgYellow).SprintFunc()
+			common.Green = color.New(color.FgGreen).SprintFunc()
+		}
+
 		settings.Env = c.GlobalString("env")
 
 		if c.GlobalString("project-id") != "" {
@@ -68,6 +81,6 @@ func main() {
 	err := app.Run(os.Args)
 	if err != nil {
 		// FIXME when there will be a logger
-		fmt.Fprintf(os.Stderr, "%v\n", err)
+		fmt.Fprint(os.Stderr, common.Red(common.BLANKS, err))
 	}
 }

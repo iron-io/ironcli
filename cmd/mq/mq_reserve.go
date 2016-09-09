@@ -27,7 +27,7 @@ func NewMqReserve(settings *common.Settings) *MqReserve {
 	mqReserve.Command = cli.Command{
 		Name:      "reserve",
 		Usage:     "reserve meesages by amount of queue",
-		ArgsUsage: "[QUEUE_NAME] [args]",
+		ArgsUsage: "[QUEUE_NAME]",
 		Flags: []cli.Flag{
 			cli.IntFlag{
 				Name:        "number, n",

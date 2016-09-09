@@ -30,7 +30,7 @@ func NewMqClear(settings *common.Settings) *MqClear {
 					return err
 				}
 
-				fmt.Println(common.LINES, "Queue ", q.Name, " has been successfully cleared")
+				fmt.Println(common.Green(common.LINES, "Queue ", q.Name, " has been successfully cleared"))
 
 				return nil
 			},

@@ -87,7 +87,9 @@ func NewRun(settings *common.Settings) *Run {
 		},
 		Before: func(c *cli.Context) error {
 			settings.Product = "iron_worker"
-			common.SetSettings(settings)
+			if err := common.SetSettings(settings); err != nil {
+				return err
+			}
 
 			return nil
 		},
@@ -98,9 +100,9 @@ func NewRun(settings *common.Settings) *Run {
 			}
 
 			if run.codes.Host != "" {
-				fmt.Println(`Spinning up '` + run.codes.Name + `'`)
+				fmt.Println(common.LINES, `Spinning up '`+run.codes.Name+`'`)
 			} else {
-				fmt.Println(`Registering worker '` + run.codes.Name + `'`)
+				fmt.Println(common.LINES, `Uploading worker '`+run.codes.Name+`'`)
 			}
 
 			code, err := common.PushCodes(run.zip, &settings.Worker, run.codes)
@@ -109,10 +111,12 @@ func NewRun(settings *common.Settings) *Run {
 			}
 
 			if code.Host != "" {
-				fmt.Println(`Hosted at: '` + code.Host + `'`)
+				fmt.Println(common.BLANKS, common.Green(`Hosted at: '`+code.Host+`'`))
 			} else {
-				fmt.Println(`Registered code package with id='` + code.Id + `'`)
+				fmt.Println(common.BLANKS, common.Green(`Uploaded code package with id='`+code.Id+`'`))
 			}
+
+			fmt.Println(common.BLANKS, common.Green(settings.HUDUrlStr+"code/"+code.Id+common.INFO))
 
 			return nil
 		},

@@ -32,7 +32,7 @@ func NewMqCreate(settings *common.Settings) *MqCreate {
 					return err
 				}
 
-				fmt.Println(common.LINES, "Queue ", q.Name, " has been successfully created.")
+				fmt.Println(common.LINES, "Queue", q.Name, "has been successfully created.")
 				common.PrintQueueHudURL(common.BLANKS, q)
 
 				return nil

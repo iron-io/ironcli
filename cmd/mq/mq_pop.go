@@ -25,7 +25,7 @@ func NewMqPop(settings *common.Settings) *MqPop {
 	mqPop.Command = cli.Command{
 		Name:      "pop",
 		Usage:     "pop messages by amount of queue",
-		ArgsUsage: "[QUEUE_NAME] [args]",
+		ArgsUsage: "[QUEUE_NAME]",
 		Flags: []cli.Flag{
 			cli.IntFlag{
 				Name:        "number, n",
