@@ -44,9 +44,9 @@ func NewMqRm(settings *common.Settings) *MqRm {
 				for _, q := range queues {
 					err := q.Delete()
 					if err != nil {
-						fmt.Println("Error deleting queue ", q.Name, ": ", err)
+						fmt.Println(common.Red("Error deleting queue ", q.Name, ": ", err))
 					} else {
-						fmt.Println(common.LINES, q.Name, " has been sucessfully deleted.")
+						fmt.Println(common.Green(common.LINES, q.Name, " has been sucessfully deleted."))
 					}
 				}
 

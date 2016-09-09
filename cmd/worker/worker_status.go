@@ -23,14 +23,14 @@ func NewWorkerStatus(settings *common.Settings) *WorkerStatus {
 		Action: func(c *cli.Context) error {
 			workerStatus.wrkr.Settings = settings.Worker
 
-			fmt.Println("LINES", `Getting status of task with id='`+c.Args().First()+`'`)
+			fmt.Println(common.LINES, `Getting status of task with id='`+c.Args().First()+`'`)
 
 			taskInfo, err := workerStatus.wrkr.TaskInfo(c.Args().First())
 			if err != nil {
 				return err
 			}
 
-			fmt.Println("BLANKS", taskInfo.Status)
+			fmt.Println(common.BLANKS, taskInfo.Status)
 
 			return nil
 		},

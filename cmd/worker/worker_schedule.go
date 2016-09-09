@@ -103,7 +103,7 @@ func NewWorkerSchedule(settings *common.Settings) *WorkerSchedule {
 				return err
 			}
 
-			fmt.Println("LINES", "Scheduling task '"+workerSchedule.sched.CodeName+"'")
+			fmt.Println(common.LINES, "Scheduling task '"+workerSchedule.sched.CodeName+"'")
 
 			ids, err := workerSchedule.wrkr.Schedule(workerSchedule.sched)
 			if err != nil {
@@ -112,7 +112,8 @@ func NewWorkerSchedule(settings *common.Settings) *WorkerSchedule {
 
 			id := ids[0]
 
-			fmt.Printf("%s Scheduled task with id='%s'\n", "BLANKS", id)
+			fmt.Printf("%s Scheduled task with id='%s'\n", common.BLANKS, id)
+			fmt.Println(common.BLANKS, settings.HUDUrlStr+"scheduled_jobs/"+id+common.INFO)
 
 			return nil
 		},

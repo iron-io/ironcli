@@ -12,7 +12,6 @@ import (
 )
 
 type MqReserve struct {
-	queue_name string
 	number     int
 	timeout    int
 	outputfile string
@@ -59,7 +58,7 @@ func NewMqReserve(settings *common.Settings) *MqReserve {
 				mqReserve.file = f
 			}
 
-			q := mq.ConfigNew(mqReserve.queue_name, &settings.Worker)
+			q := mq.ConfigNew(c.Args().First(), &settings.Worker)
 			messages, err := q.GetNWithTimeout(mqReserve.number, mqReserve.timeout)
 			if err != nil {
 				return err
@@ -88,7 +87,7 @@ func NewMqReserve(settings *common.Settings) *MqReserve {
 			if common.IsPipedOut() {
 				common.PrintReservedMessages(messages)
 			} else {
-				fmt.Println(common.LINES, "Messages successfully reserved")
+				fmt.Println(common.Green(common.LINES, "Messages successfully reserved"))
 				fmt.Println("--------- ID ------|------- Reservation ID -------- | Body")
 				common.PrintReservedMessages(messages)
 			}

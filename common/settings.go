@@ -14,10 +14,10 @@ type Settings struct {
 	Worker config.Settings
 }
 
-func SetSettings(settings *Settings) error {
+func settingValues(settings *Settings) {
 	oldSettings := *settings
 
-	newSettings := config.ConfigWithEnv("iron_worker", settings.Env)
+	newSettings := config.ConfigWithEnv(settings.Product, settings.Env)
 	settings.Worker = newSettings
 
 	if oldSettings.Worker.Token != "" {
@@ -31,6 +31,33 @@ func SetSettings(settings *Settings) error {
 	if settings.Worker.ProjectId != "" {
 		settings.HUDUrlStr = `Check https://hud.iron.io/tq/projects/` + settings.Worker.ProjectId + "/"
 	}
+}
+
+func setMq(settings *Settings) error {
+	settingValues(settings)
+
+	if !IsPipedOut() {
+		fmt.Printf("%sConfiguring client\n", LINES)
+
+		pName, err := MqProjectName(settings.Worker)
+		if err != nil {
+			return err
+		}
+
+		if pName == "" {
+			fmt.Printf("%sCould not find project name.", BLANKS)
+		} else {
+			fmt.Printf(`%sProject '%s' with id='%s'`, BLANKS, pName, settings.Worker.ProjectId)
+		}
+
+		fmt.Println()
+	}
+
+	return nil
+}
+
+func setProject(settings *Settings) error {
+	settingValues(settings)
 
 	fmt.Println(LINES, `Configuring client`)
 
@@ -42,8 +69,18 @@ func SetSettings(settings *Settings) error {
 	fmt.Printf(`%s Project '%s' with id='%s'`, BLANKS, pName, settings.Worker.ProjectId)
 	fmt.Println()
 
-	newSettings = config.ConfigWithEnv(settings.Product, settings.Env)
-	settings.Worker = newSettings
-
 	return nil
+}
+
+func SetSettings(settings *Settings) error {
+	var err error
+
+	switch settings.Product {
+	case "iron_worker":
+		err = setProject(settings)
+	case "iron_mq":
+		err = setMq(settings)
+	}
+
+	return err
 }

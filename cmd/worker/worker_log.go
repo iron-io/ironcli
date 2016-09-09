@@ -23,7 +23,7 @@ func NewWorkerLog(settings *common.Settings) *WorkerLog {
 		Action: func(c *cli.Context) error {
 			workerLog.wrkr.Settings = settings.Worker
 
-			fmt.Println("LINES", "Getting log for task with id='"+c.Args().First()+"'")
+			fmt.Println(common.LINES, "Getting log for task with id='"+c.Args().First()+"'")
 
 			out, err := workerLog.wrkr.TaskLog(c.Args().First())
 			if err != nil {

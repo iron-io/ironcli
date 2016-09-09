@@ -91,9 +91,9 @@ func NewWorkerUpload(settings *common.Settings) *WorkerUpload {
 			}
 
 			if workerUpload.codes.Host != "" {
-				fmt.Println(`Spinning up '` + workerUpload.codes.Name + `'`)
+				fmt.Println(common.LINES, `Spinning up '`+workerUpload.codes.Name+`'`)
 			} else {
-				fmt.Println(`Registering worker '` + workerUpload.codes.Name + `'`)
+				fmt.Println(common.LINES, `Uploading worker '`+workerUpload.codes.Name+`'`)
 			}
 
 			code, err := common.PushCodes(workerUpload.zip, &settings.Worker, workerUpload.codes)
@@ -102,10 +102,12 @@ func NewWorkerUpload(settings *common.Settings) *WorkerUpload {
 			}
 
 			if code.Host != "" {
-				fmt.Println(`Hosted at: '` + code.Host + `'`)
+				fmt.Println(common.BLANKS, common.Green(`Hosted at: '`+code.Host+`'`))
 			} else {
-				fmt.Println(`Registered code package with id='` + code.Id + `'`)
+				fmt.Println(common.BLANKS, common.Green(`Uploaded code package with id='`+code.Id+`'`))
 			}
+
+			fmt.Println(common.BLANKS, common.Green(settings.HUDUrlStr+"code/"+code.Id+common.INFO))
 
 			return nil
 		},
