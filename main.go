@@ -21,7 +21,7 @@ func main() {
 	)
 
 	app := cli.NewApp()
-	app.Name = "Iron CLI"
+	app.Name = "iron"
 	app.Version = "0.3.0"
 	app.Authors = []cli.Author{
 		cli.Author{

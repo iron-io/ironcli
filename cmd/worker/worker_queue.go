@@ -171,7 +171,7 @@ func (r *WorkerQueue) runWatch(done <-chan struct{}, state string) {
 		select {
 		case <-time.After(time.Millisecond):
 		case <-done:
-			fmt.Println("LINES", state+":", fmt.Sprintf("%v:%v:%v:%v\r", h, m, s, ms))
+			fmt.Println(common.LINES, state+":", fmt.Sprintf("%v:%v:%v:%v\r", h, m, s, ms))
 			return
 		}
 		elapsed = time.Since(start)
@@ -181,7 +181,7 @@ func (r *WorkerQueue) runWatch(done <-chan struct{}, state string) {
 		s = common.Mod(elapsed.Seconds(), 60)
 		ms = common.Mod(float64(elapsed.Nanoseconds())/1000, 100)
 
-		fmt.Println("LINES", " "+state+":", fmt.Sprintf(" %v:%v:%v:%v\r", h, m, s, ms))
+		fmt.Fprint(os.Stdout, common.LINES, " "+state+":", fmt.Sprintf(" %v:%v:%v:%v\r", h, m, s, ms))
 	}
 }
 
