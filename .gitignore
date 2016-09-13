@@ -34,3 +34,7 @@ ironcli-*
 mytoken.txt
 /iron
 install
+main
+
+env/config.yaml
+vendor
