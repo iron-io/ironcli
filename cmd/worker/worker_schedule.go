@@ -113,7 +113,7 @@ func NewWorkerSchedule(settings *common.Settings) *WorkerSchedule {
 			id := ids[0]
 
 			fmt.Printf("%s Scheduled task with id='%s'\n", common.BLANKS, id)
-			fmt.Println(common.BLANKS, settings.HUDUrlStr+"scheduled_jobs/"+id+common.INFO)
+			fmt.Println(common.BLANKS, settings.HUDUrlStr+"scheduled_tasks/"+id+common.INFO)
 
 			return nil
 		},

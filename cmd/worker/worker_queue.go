@@ -105,7 +105,7 @@ func NewWorkerQueue(settings *common.Settings) *WorkerQueue {
 			id := ids[0]
 
 			fmt.Printf("%s Queued task with id='%s'\n", common.BLANKS, id)
-			fmt.Println(common.BLANKS, settings.HUDUrlStr+"jobs/"+id+common.INFO)
+			fmt.Println(common.BLANKS, settings.HUDUrlStr+"tasks/"+id+common.INFO)
 
 			if workerQueue.wait {
 				fmt.Println(common.LINES, common.Yellow("Waiting for task to start running"))
