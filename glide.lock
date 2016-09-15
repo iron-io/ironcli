@@ -1,5 +1,5 @@
-hash: 3d959a9b594e8f62f593ef8e28178beedda95c5db61541684a4e2a3d6742a297
-updated: 2016-08-31T22:10:41.476264272+04:00
+hash: d4b0ea2dc7506a736b5441ff42c8399baabe877ddab48265c52ca5a1fd9d2c0b
+updated: 2016-09-15T23:18:18.9704639+04:00
 imports:
 - name: github.com/aws/aws-sdk-go
   version: 8f2725740345a0561fa09669f5f75f905404ef8b
@@ -17,15 +17,18 @@ imports:
   - aws/request
   - aws/session
   - private/endpoints
+  - private/protocol
+  - private/protocol/json/jsonutil
+  - private/protocol/jsonrpc
+  - private/protocol/rest
+  - private/protocol/restjson
+  - private/signer/v4
+  - service/lambda
   - services/lambda
 - name: github.com/Azure/go-ansiterm
   version: 70b2c90b260171e829f1ebd7c17f600c11858dbe
   subpackages:
   - winterm
-- name: github.com/coreos/go-semver
-  version: 8ab6407b697782a06568d4b7f1db25550ec2e4c6
-  subpackages:
-  - semver
 - name: github.com/docker/docker
   version: 65370be888d940899593a001024f53d6b83b4bb0
   subpackages:
@@ -60,14 +63,8 @@ imports:
   - external/golang.org/x/sys/unix
 - name: github.com/giantswarm/semver-bump
   version: 88e6c9f2fe390c48839eaba32490fd09cb3b581c
-  subpackages:
-  - bump
-  - commands
-  - storage
 - name: github.com/go-ini/ini
   version: 12f418cc7edc5a618a51407b7ac1f1f512139df3
-- name: github.com/inconshreveable/mousetrap
-  version: 76626ae9c91c4f2a10f34cad8ce83ea42c93bb75
 - name: github.com/iron-io/iron_go3
   version: d1197926301489b15e418c49a0b17a9c42817acd
   subpackages:
@@ -81,10 +78,6 @@ imports:
   - lambda
 - name: github.com/jmespath/go-jmespath
   version: 0b12d6b521d83fc7f755e7cfc1b1fbdd35a01a74
-- name: github.com/juju/errgo
-  version: 08cceb5d0b5331634b9826762a8fd53b29b86ad8
-  subpackages:
-  - errors
 - name: github.com/mattn/go-colorable
   version: 9cbef7c35391cca05f15f8181dc0b18bc9736dbb
   repo: https://github.com/mattn/go-colorable
@@ -97,8 +90,8 @@ imports:
   version: 4b6ea7319e214d98c938f12692336f7ca9348d6b
 - name: github.com/spf13/cobra
   version: 1f4717172e07e12150feb061b2ab847c3054f53f
-- name: github.com/spf13/pflag
-  version: 103ce5cd2042f2fe629c1957abb64ab3e7f50235
+- name: github.com/stretchr/testify
+  version: f390dcf405f7b83c997eac1b06768bb9f44dec18
 - name: github.com/urfave/cli
   version: 1efa31f08b9333f1bd4882d61f9d668a70cd902e
 - name: golang.org/x/sys
