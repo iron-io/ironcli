@@ -29,7 +29,7 @@ func settingValues(settings *Settings) {
 	}
 
 	if settings.Worker.ProjectId != "" {
-		settings.HUDUrlStr = `Check https://hud.iron.io/tq/projects/` + settings.Worker.ProjectId + "/"
+		settings.HUDUrlStr = `Check https://hud-e.iron.io/tq/projects/` + settings.Worker.ProjectId + "/"
 	}
 }
 
