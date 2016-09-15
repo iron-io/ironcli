@@ -107,7 +107,7 @@ func NewWorkerUpload(settings *common.Settings) *WorkerUpload {
 				fmt.Println(common.BLANKS, common.Green(`Uploaded code package with id='`+code.Id+`'`))
 			}
 
-			fmt.Println(common.BLANKS, common.Green(settings.HUDUrlStr+"code/"+code.Id+common.INFO))
+			fmt.Println(common.BLANKS, common.Green(settings.HUDUrlStr+"codes/"+code.Id+common.INFO))
 
 			return nil
 		},
