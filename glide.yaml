@@ -29,5 +29,3 @@ import:
 - package: github.com/spf13/cobra
 - package: github.com/urfave/cli
   version: v1.18.0
-- package: github.com/stretchr/testify
-  version: v1.1.3

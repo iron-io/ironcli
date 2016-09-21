@@ -1,5 +1,5 @@
-hash: d4b0ea2dc7506a736b5441ff42c8399baabe877ddab48265c52ca5a1fd9d2c0b
-updated: 2016-09-15T23:18:18.9704639+04:00
+hash: 3d959a9b594e8f62f593ef8e28178beedda95c5db61541684a4e2a3d6742a297
+updated: 2016-09-22T01:40:20.029535+04:00
 imports:
 - name: github.com/aws/aws-sdk-go
   version: 8f2725740345a0561fa09669f5f75f905404ef8b
@@ -90,8 +90,6 @@ imports:
   version: 4b6ea7319e214d98c938f12692336f7ca9348d6b
 - name: github.com/spf13/cobra
   version: 1f4717172e07e12150feb061b2ab847c3054f53f
-- name: github.com/stretchr/testify
-  version: f390dcf405f7b83c997eac1b06768bb9f44dec18
 - name: github.com/urfave/cli
   version: 1efa31f08b9333f1bd4882d61f9d668a70cd902e
 - name: golang.org/x/sys

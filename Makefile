@@ -3,4 +3,8 @@ build:
 
 .PHONY: test_docker
 test_docker:
-	go test -v ./cmd/docker --email="${email}" --password="${password}" --username="${username}"
+	go test -v ./cmd/docker
+
+.PHONY: test_lambda
+test_lambda:
+	go test -v ./cmd/lambda
