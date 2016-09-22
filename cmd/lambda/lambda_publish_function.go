@@ -10,7 +10,7 @@ import (
 )
 
 type LambdaPublishFunction struct {
-	functionName string
+	FunctionName string
 
 	cli.Command
 }
@@ -25,30 +25,12 @@ func NewLambdaPublishFunction() *LambdaPublishFunction {
 			cli.StringFlag{
 				Name:        "function-name",
 				Usage:       "name of function. This is usually follows Docker image naming conventions.",
-				Destination: &lambdaPublishFunction.functionName,
+				Destination: &lambdaPublishFunction.FunctionName,
 			},
 		},
-		ArgsUsage: "[NAME] [args]",
+		ArgsUsage: "",
 		Action: func(c *cli.Context) error {
-			exists, err := lambda.ImageExists(lambdaPublishFunction.functionName)
-			if err != nil {
-				return err
-			}
-
-			if !exists {
-				return fmt.Errorf("Function %s does not exist:", lambdaPublishFunction.functionName)
-			}
-
-			err = lambda.PushImage(lambda.PushImageOptions{
-				NameVersion:   lambdaPublishFunction.functionName,
-				OutputStream:  common.NewDockerJsonWriter(os.Stdout),
-				RawJSONStream: true,
-			})
-			if err != nil {
-				return err
-			}
-
-			err = lambda.RegisterWithIron(lambdaPublishFunction.functionName)
+			err := lambdaPublishFunction.Action()
 			if err != nil {
 				return err
 			}
@@ -60,6 +42,33 @@ func NewLambdaPublishFunction() *LambdaPublishFunction {
 	return lambdaPublishFunction
 }
 
-func (r LambdaPublishFunction) GetCmd() cli.Command {
-	return r.Command
+func (l LambdaPublishFunction) GetCmd() cli.Command {
+	return l.Command
+}
+
+func (l *LambdaPublishFunction) Action() error {
+	exists, err := lambda.ImageExists(l.FunctionName)
+	if err != nil {
+		return err
+	}
+
+	if !exists {
+		return fmt.Errorf("Function %s does not exist:", l.FunctionName)
+	}
+
+	err = lambda.PushImage(lambda.PushImageOptions{
+		NameVersion:   l.FunctionName,
+		OutputStream:  common.NewDockerJsonWriter(os.Stdout),
+		RawJSONStream: true,
+	})
+	if err != nil {
+		return err
+	}
+
+	err = lambda.RegisterWithIron(l.FunctionName)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

@@ -17,6 +17,7 @@ type MqInfo struct {
 
 func NewMqInfo(settings *common.Settings) *MqInfo {
 	mqInfo := &MqInfo{}
+
 	mqInfo.Command = cli.Command{
 		Name:      "info",
 		Usage:     "get info about queue",
@@ -29,36 +30,10 @@ func NewMqInfo(settings *common.Settings) *MqInfo {
 			},
 		},
 		Action: func(c *cli.Context) error {
-			if c.Args().First() == "" {
-				return errors.New(`info requires a queue name`)
-			}
-
-			q := mq.ConfigNew(c.Args().First(), &settings.Worker)
-
-			info, err := q.Info()
+			err := mqInfo.Action(c.Args().First(), settings)
 			if err != nil {
 				return err
 			}
-
-			fmt.Printf("%sName: %s\n", common.BLANKS, info.Name)
-			fmt.Printf("%sCurrent Size: %d\n", common.BLANKS, info.Size)
-			fmt.Printf("%sTotal messages: %d\n", common.BLANKS, info.TotalMessages)
-			fmt.Printf("%sMessage expiration: %d\n", common.BLANKS, info.MessageExpiration)
-			fmt.Printf("%sMessage timeout: %d\n", common.BLANKS, info.MessageTimeout)
-
-			if info.Push != nil {
-				fmt.Printf("%sType: %s\n", common.BLANKS, info.Type)
-				fmt.Printf("%sSubscribers: %d\n", common.BLANKS, len(info.Push.Subscribers))
-				fmt.Printf("%sRetries: %d\n", common.BLANKS, info.Push.Retries)
-				fmt.Printf("%sRetries delay: %d\n", common.BLANKS, info.Push.RetriesDelay)
-
-				if mqInfo.subscriberList {
-					fmt.Printf("%sSubscriber list\n", common.LINES)
-					common.PrintSubscribers(info)
-					fmt.Println()
-				}
-			}
-			common.PrintQueueHudURL(common.BLANKS, q)
 
 			return nil
 		},
@@ -67,6 +42,41 @@ func NewMqInfo(settings *common.Settings) *MqInfo {
 	return mqInfo
 }
 
-func (r MqInfo) GetCmd() cli.Command {
-	return r.Command
+func (m MqInfo) GetCmd() cli.Command {
+	return m.Command
+}
+
+func (m *MqInfo) Action(queueName string, settings *common.Settings) error {
+	if queueName == "" {
+		return errors.New(`info requires a queue name`)
+	}
+
+	q := mq.ConfigNew(queueName, &settings.Worker)
+
+	info, err := q.Info()
+	if err != nil {
+		return err
+	}
+
+	fmt.Printf("%sName: %s\n", common.BLANKS, info.Name)
+	fmt.Printf("%sCurrent Size: %d\n", common.BLANKS, info.Size)
+	fmt.Printf("%sTotal messages: %d\n", common.BLANKS, info.TotalMessages)
+	fmt.Printf("%sMessage expiration: %d\n", common.BLANKS, info.MessageExpiration)
+	fmt.Printf("%sMessage timeout: %d\n", common.BLANKS, info.MessageTimeout)
+
+	if info.Push != nil {
+		fmt.Printf("%sType: %s\n", common.BLANKS, info.Type)
+		fmt.Printf("%sSubscribers: %d\n", common.BLANKS, len(info.Push.Subscribers))
+		fmt.Printf("%sRetries: %d\n", common.BLANKS, info.Push.Retries)
+		fmt.Printf("%sRetries delay: %d\n", common.BLANKS, info.Push.RetriesDelay)
+
+		if m.subscriberList {
+			fmt.Printf("%sSubscriber list\n", common.LINES)
+			common.PrintSubscribers(info)
+			fmt.Println()
+		}
+	}
+	common.PrintQueueHudURL(common.BLANKS, q)
+
+	return nil
 }
