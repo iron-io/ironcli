@@ -33,32 +33,9 @@ func NewMqPush(settings *common.Settings) *MqPush {
 			},
 		},
 		Action: func(c *cli.Context) error {
-			err := mqPush.Execute(c.Args().First(), c.Args().Tail())
+			err := mqPush.Action(c.Args().First(), c.Args().Tail(), settings)
 			if err != nil {
 				return err
-			}
-
-			q := mq.ConfigNew(mqPush.queue_name, &settings.Worker)
-
-			ids, err := q.PushStrings(mqPush.messages...)
-			if err != nil {
-				return err
-			}
-
-			if common.IsPipedOut() {
-				for _, id := range ids {
-					fmt.Println(id)
-				}
-			} else {
-				fmt.Println(common.Green(common.LINES, "Message succesfully pushed!"))
-				fmt.Printf("%sMessage IDs:\n", common.BLANKS)
-				fmt.Printf("%s", common.BLANKS)
-
-				for _, id := range ids {
-					fmt.Printf("%s ", id)
-				}
-
-				fmt.Println()
 			}
 
 			return nil
@@ -68,19 +45,19 @@ func NewMqPush(settings *common.Settings) *MqPush {
 	return mqPush
 }
 
-func (r MqPush) GetCmd() cli.Command {
-	return r.Command
+func (m MqPush) GetCmd() cli.Command {
+	return m.Command
 }
 
-func (r *MqPush) Execute(queueName string, messages []string) error {
+func (m *MqPush) Execute(queueName string, messages []string) error {
 	if queueName == "" {
 		return errors.New(`push requires a queue name`)
 	}
 
-	r.queue_name = queueName
+	m.queue_name = queueName
 
-	if r.filename != "" {
-		b, err := ioutil.ReadFile(r.filename)
+	if m.filename != "" {
+		b, err := ioutil.ReadFile(m.filename)
 		if err != nil {
 			return err
 		}
@@ -93,13 +70,45 @@ func (r *MqPush) Execute(queueName string, messages []string) error {
 			return err
 		}
 
-		r.messages = append(r.messages, messageStruct.Messages...)
+		m.messages = append(m.messages, messageStruct.Messages...)
 	}
 
 	if len(messages) < 1 {
 		return errors.New(`push requires at least one message`)
 	} else {
-		r.messages = messages
+		m.messages = messages
+	}
+
+	return nil
+}
+
+func (m *MqPush) Action(queueName string, messages []string, settings *common.Settings) error {
+	err := m.Execute(queueName, messages)
+	if err != nil {
+		return err
+	}
+
+	q := mq.ConfigNew(m.queue_name, &settings.Worker)
+
+	ids, err := q.PushStrings(m.messages...)
+	if err != nil {
+		return err
+	}
+
+	if common.IsPipedOut() {
+		for _, id := range ids {
+			fmt.Println(id)
+		}
+	} else {
+		fmt.Println(common.Green(common.LINES, "Message succesfully pushed!"))
+		fmt.Printf("%sMessage IDs:\n", common.BLANKS)
+		fmt.Printf("%s", common.BLANKS)
+
+		for _, id := range ids {
+			fmt.Printf("%s ", id)
+		}
+
+		fmt.Println()
 	}
 
 	return nil
