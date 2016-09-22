@@ -13,6 +13,7 @@ func TestDockerLogin(t *testing.T) {
 	)
 
 	common.SetSettings(settings)
+
 	dockerLogin := NewDockerLogin(settings)
 	dockerLogin.Email = os.Getenv("TEST_DOCKER_EMAIL")
 	dockerLogin.Username = os.Getenv("TEST_DOCKER_USERNAME")

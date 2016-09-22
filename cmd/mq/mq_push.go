@@ -15,6 +15,7 @@ type MqPush struct {
 	filename   string
 	messages   []string
 	queue_name string
+	ResultIds  []string
 
 	cli.Command
 }
@@ -100,6 +101,8 @@ func (m *MqPush) Action(queueName string, messages []string, settings *common.Se
 			fmt.Println(id)
 		}
 	} else {
+		m.ResultIds = ids
+
 		fmt.Println(common.Green(common.LINES, "Message succesfully pushed!"))
 		fmt.Printf("%sMessage IDs:\n", common.BLANKS)
 		fmt.Printf("%s", common.BLANKS)
