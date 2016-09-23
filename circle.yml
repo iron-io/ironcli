@@ -29,6 +29,7 @@ dependencies:
     - which go
     - glide --version
     - echo $DOCKER_HUB_CREDS > $HOME/.dockercfg
+    - echo $HOME/.dockercfg
 
 test:
   pre:
