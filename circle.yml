@@ -28,11 +28,10 @@ dependencies:
     # this was being dumb, don't want it to auto detect we are a go repo b/c vendoring
     - which go
     - glide --version
-    - echo $DOCKER_HUB_CREDS > $HOME/.dockercfg
-    - cat $HOME/.dockercfg
 
 test:
   pre:
+    - echo $TEST_DOCKER_HUB_CREDS > $HOME/.dockercfg
     - glide install:
         pwd: $GO_PROJECT/$CIRCLE_PROJECT_REPONAME
   override:
@@ -45,6 +44,7 @@ deployment:
   this:
     branch: release
     commands:
+      - echo $DOCKER_HUB_CREDS > $HOME/.dockercfg
       - git config --global user.name "Tony Stark"
       - git config --global user.email "deploys@iron.io"
       - cd $GH_IRON/$CIRCLE_PROJECT_REPONAME && glide install
