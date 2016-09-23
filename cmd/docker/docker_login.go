@@ -73,7 +73,7 @@ func (d DockerLogin) GetCmd() cli.Command {
 
 func (d *DockerLogin) login() error {
 	if d.Url == "" {
-		defaultUrl := "https://index.docked.io/v1/"
+		defaultUrl := "https://index.docker.io/v1/"
 		d.Url = defaultUrl
 	}
 
