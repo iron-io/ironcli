@@ -4,7 +4,7 @@ import "testing"
 
 func TestLambdaCreateFunction(t *testing.T) {
 	lambdaCreateFunction := NewLambdaCreateFunction()
-	lambdaCreateFunction.FunctionName = "test"
+	lambdaCreateFunction.FunctionName = "irontesting/test"
 	lambdaCreateFunction.Runtime = "nodejs"
 	lambdaCreateFunction.Handler = "runtime.function"
 	lambdaCreateFunction.FileNames = []string{"../../tests/test.js"}
@@ -17,7 +17,7 @@ func TestLambdaCreateFunction(t *testing.T) {
 
 func TestLambdaTestFunction(t *testing.T) {
 	lambdaTestFunction := NewLambdaTestFunction()
-	lambdaTestFunction.FunctionName = "test"
+	lambdaTestFunction.FunctionName = "irontesting/test"
 
 	err := lambdaTestFunction.Action()
 	if err != nil {
@@ -27,7 +27,7 @@ func TestLambdaTestFunction(t *testing.T) {
 
 func TestLambdaPublishFunction(t *testing.T) {
 	lambdaPublishFunction := NewLambdaPublishFunction()
-	lambdaPublishFunction.FunctionName = "test:latest"
+	lambdaPublishFunction.FunctionName = "irontesting/test:latest"
 
 	err := lambdaPublishFunction.Action()
 	if err != nil {
