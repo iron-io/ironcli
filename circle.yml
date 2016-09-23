@@ -34,6 +34,8 @@ test:
     - glide install:
         pwd: $GO_PROJECT/$CIRCLE_PROJECT_REPONAME
   override:
+    - make test_mq:
+        pwd: $GO_PROJECT/$CIRCLE_PROJECT_REPONAME
     - go build .:
         pwd: $GO_PROJECT/$CIRCLE_PROJECT_REPONAME
 
