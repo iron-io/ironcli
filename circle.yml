@@ -34,7 +34,10 @@ test:
     - glide install:
         pwd: $GO_PROJECT/$CIRCLE_PROJECT_REPONAME
   override:
-    - make test_docker
+    - ls
+    - ls vendor/github.com/iron-io/iron_go3
+    - make test_docker:
+        pwd: $GO_PROJECT/$CIRCLE_PROJECT_REPONAME
     - go build .:
         pwd: $GO_PROJECT/$CIRCLE_PROJECT_REPONAME
 
