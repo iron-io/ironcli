@@ -18,8 +18,6 @@ func TestLambdaCreateFunction(t *testing.T) {
 func TestLambdaTestFunction(t *testing.T) {
 	lambdaTestFunction := NewLambdaTestFunction()
 	lambdaTestFunction.FunctionName = "test"
-	lambdaTestFunction.ClientContext = "client context"
-	lambdaTestFunction.Payload = "test payload"
 
 	err := lambdaTestFunction.Action()
 	if err != nil {
