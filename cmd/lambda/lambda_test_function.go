@@ -8,9 +8,9 @@ import (
 )
 
 type LambdaTestFunction struct {
-	functionName  string
-	clientContext string
-	payload       string
+	FunctionName  string
+	ClientContext string
+	Payload       string
 
 	cli.Command
 }
@@ -26,35 +26,20 @@ func NewLambdaTestFunction() *LambdaTestFunction {
 			cli.StringFlag{
 				Name:        "function-name",
 				Usage:       "name of function. This is usually follows Docker image naming conventions.",
-				Destination: &lambdaTestFunction.functionName,
+				Destination: &lambdaTestFunction.FunctionName,
 			},
 			cli.StringFlag{
 				Name:        "client-context",
-				Destination: &lambdaTestFunction.clientContext,
+				Destination: &lambdaTestFunction.ClientContext,
 			},
 			cli.StringFlag{
-				Name:        "payload",
-				Usage:       "give function payload",
-				Destination: &lambdaTestFunction.payload,
+				Name:        "Payload",
+				Usage:       "give function Payload",
+				Destination: &lambdaTestFunction.Payload,
 			},
 		},
 		Action: func(c *cli.Context) error {
-			exists, err := lambda.ImageExists(lambdaTestFunction.functionName)
-			if err != nil {
-				return err
-			}
-
-			if !exists {
-				return fmt.Errorf("Function %s does not exist.", lambdaTestFunction.functionName)
-			}
-
-			payload := ""
-			if lambdaTestFunction.payload != "" {
-				payload = lambdaTestFunction.payload
-			}
-
-			// Redirect output to stdout.
-			err = lambda.RunImageWithPayload(lambdaTestFunction.functionName, payload)
+			err := lambdaTestFunction.Action()
 			if err != nil {
 				return err
 			}
@@ -66,6 +51,30 @@ func NewLambdaTestFunction() *LambdaTestFunction {
 	return lambdaTestFunction
 }
 
-func (r LambdaTestFunction) GetCmd() cli.Command {
-	return r.Command
+func (l LambdaTestFunction) GetCmd() cli.Command {
+	return l.Command
+}
+
+func (l *LambdaTestFunction) Action() error {
+	exists, err := lambda.ImageExists(l.FunctionName)
+	if err != nil {
+		return err
+	}
+
+	if !exists {
+		return fmt.Errorf("Function %s does not exist.", l.FunctionName)
+	}
+
+	payload := ""
+	if l.Payload != "" {
+		payload = l.Payload
+	}
+
+	// Redirect output to stdout.
+	err = lambda.RunImageWithPayload(l.FunctionName, payload)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
