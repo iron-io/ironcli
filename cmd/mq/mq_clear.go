@@ -14,32 +14,41 @@ type MqClear struct {
 }
 
 func NewMqClear(settings *common.Settings) *MqClear {
-	mqClear := &MqClear{
-		Command: cli.Command{
-			Name:      "clear",
-			Usage:     "clear all messages of queue",
-			ArgsUsage: "[QUEUE_NAME]",
-			Action: func(c *cli.Context) error {
-				if c.Args().First() == "" {
-					return errors.New(`clear requires a queue name`)
-				}
+	mqClear := &MqClear{}
 
-				q := mq.ConfigNew(c.Args().First(), &settings.Worker)
+	mqClear.Command = cli.Command{
+		Name:      "clear",
+		Usage:     "clear all messages of queue",
+		ArgsUsage: "[QUEUE_NAME]",
+		Action: func(c *cli.Context) error {
+			err := mqClear.Action(c.Args().First(), settings)
+			if err != nil {
+				return err
+			}
 
-				if err := q.Clear(); err != nil {
-					return err
-				}
-
-				fmt.Println(common.Green(common.LINES, "Queue ", q.Name, " has been successfully cleared"))
-
-				return nil
-			},
+			return nil
 		},
 	}
 
 	return mqClear
 }
 
-func (r MqClear) GetCmd() cli.Command {
-	return r.Command
+func (m MqClear) GetCmd() cli.Command {
+	return m.Command
+}
+
+func (m *MqClear) Action(queueName string, settings *common.Settings) error {
+	if queueName == "" {
+		return errors.New(`clear requires a queue name`)
+	}
+
+	q := mq.ConfigNew(queueName, &settings.Worker)
+
+	if err := q.Clear(); err != nil {
+		return err
+	}
+
+	fmt.Println(common.Green(common.LINES, "Queue ", q.Name, " has been successfully cleared"))
+
+	return nil
 }
