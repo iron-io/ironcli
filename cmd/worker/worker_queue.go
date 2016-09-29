@@ -23,6 +23,7 @@ type WorkerQueue struct {
 	encryptionKeyFile string
 	task              common.Task
 	wrkr              common.Worker
+	TaskID            string
 
 	cli.Command
 }
@@ -89,51 +90,9 @@ func NewWorkerQueue(settings *common.Settings) *WorkerQueue {
 			},
 		},
 		Action: func(c *cli.Context) error {
-			workerQueue.wrkr.Settings = settings.Worker
-
-			err := workerQueue.Execute(c.Args().First())
+			err := workerQueue.Action(c.Args().First(), settings)
 			if err != nil {
 				return err
-			}
-
-			fmt.Println(common.LINES, "Queueing task '"+workerQueue.task.CodeName+"'")
-
-			ids, err := workerQueue.wrkr.TaskQueue(workerQueue.task)
-			if err != nil {
-				return err
-			}
-			id := ids[0]
-
-			fmt.Printf("%s Queued task with id='%s'\n", common.BLANKS, id)
-			fmt.Println(common.BLANKS, settings.HUDUrlStr+"tasks/"+id+common.INFO)
-
-			if workerQueue.wait {
-				fmt.Println(common.LINES, common.Yellow("Waiting for task to start running"))
-
-				done := make(chan struct{})
-				go workerQueue.runWatch(done, "queued")
-				workerQueue.waitForRunning(id)
-				close(done)
-
-				// TODO print actual queued time?
-				fmt.Println(common.LINES, common.Yellow("Task running, waiting for completion"))
-
-				done = make(chan struct{})
-				go workerQueue.runWatch(done, "running")
-				ti := <-workerQueue.wrkr.WaitForTask(id)
-				close(done)
-				if ti.Msg != "" {
-					return fmt.Errorf("error running task: %v", ti.Msg)
-				}
-
-				log, err := workerQueue.wrkr.TaskLog(id)
-				if err != nil {
-					return fmt.Errorf("error getting log: %v", err)
-				}
-
-				fmt.Println(common.LINES, common.Green("Done"))
-				fmt.Println(common.LINES, "Printing Log:")
-				fmt.Printf("%s", string(log))
 			}
 
 			return nil
@@ -229,6 +188,59 @@ func (r *WorkerQueue) Execute(codePackageName string) error {
 		Cluster:  r.cluster,
 		Label:    r.label,
 	}
+
+	return nil
+}
+
+func (w *WorkerQueue) Action(codePackageName string, settings *common.Settings) error {
+	w.wrkr.Settings = settings.Worker
+
+	err := w.Execute(codePackageName)
+	if err != nil {
+		return err
+	}
+
+	fmt.Println(common.LINES, "Queueing task '"+w.task.CodeName+"'")
+
+	ids, err := w.wrkr.TaskQueue(w.task)
+	if err != nil {
+		return err
+	}
+	id := ids[0]
+
+	fmt.Printf("%s Queued task with id='%s'\n", common.BLANKS, id)
+	fmt.Println(common.BLANKS, settings.HUDUrlStr+"tasks/"+id+common.INFO)
+
+	if w.wait {
+		fmt.Println(common.LINES, common.Yellow("Waiting for task to start running"))
+
+		done := make(chan struct{})
+		go w.runWatch(done, "queued")
+		w.waitForRunning(id)
+		close(done)
+
+		// TODO print actual queued time?
+		fmt.Println(common.LINES, common.Yellow("Task running, waiting for completion"))
+
+		done = make(chan struct{})
+		go w.runWatch(done, "running")
+		ti := <-w.wrkr.WaitForTask(id)
+		close(done)
+		if ti.Msg != "" {
+			return fmt.Errorf("error running task: %v", ti.Msg)
+		}
+
+		log, err := w.wrkr.TaskLog(id)
+		if err != nil {
+			return fmt.Errorf("error getting log: %v", err)
+		}
+
+		fmt.Println(common.LINES, common.Green("Done"))
+		fmt.Println(common.LINES, "Printing Log:")
+		fmt.Printf("%s", string(log))
+	}
+
+	w.TaskID = id
 
 	return nil
 }

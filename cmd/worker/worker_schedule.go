@@ -24,6 +24,7 @@ type WorkerSchedule struct {
 	label       string
 	sched       common.Schedule
 	wrkr        common.Worker
+	TaskID      string
 
 	cli.Command
 }
@@ -32,8 +33,9 @@ func NewWorkerSchedule(settings *common.Settings) *WorkerSchedule {
 	workerSchedule := &WorkerSchedule{}
 
 	workerSchedule.Command = cli.Command{
-		Name:  "schedule",
-		Usage: "schedule a new task to run at a specified time.",
+		Name:      "schedule",
+		Usage:     "schedule a new task to run at a specified time.",
+		ArgsUsage: "[code package name]",
 		Flags: []cli.Flag{
 			cli.StringFlag{
 				Name:        "payload",
@@ -96,24 +98,10 @@ func NewWorkerSchedule(settings *common.Settings) *WorkerSchedule {
 			},
 		},
 		Action: func(c *cli.Context) error {
-			workerSchedule.wrkr.Settings = settings.Worker
-
-			err := workerSchedule.Execute(c.Args().First())
+			err := workerSchedule.Action(c.Args().First(), settings)
 			if err != nil {
 				return err
 			}
-
-			fmt.Println(common.LINES, "Scheduling task '"+workerSchedule.sched.CodeName+"'")
-
-			ids, err := workerSchedule.wrkr.Schedule(workerSchedule.sched)
-			if err != nil {
-				return err
-			}
-
-			id := ids[0]
-
-			fmt.Printf("%s Scheduled task with id='%s'\n", common.BLANKS, id)
-			fmt.Println(common.BLANKS, settings.HUDUrlStr+"scheduled_tasks/"+id+common.INFO)
 
 			return nil
 		},
@@ -173,6 +161,31 @@ func (r *WorkerSchedule) Execute(codePackageName string) error {
 	if r.runEvery > 0 {
 		r.sched.RunEvery = &r.runEvery
 	}
+
+	return nil
+}
+
+func (w *WorkerSchedule) Action(codePackageName string, settings *common.Settings) error {
+	w.wrkr.Settings = settings.Worker
+
+	err := w.Execute(codePackageName)
+	if err != nil {
+		return err
+	}
+
+	fmt.Println(common.LINES, "Scheduling task '"+w.sched.CodeName+"'")
+
+	ids, err := w.wrkr.Schedule(w.sched)
+	if err != nil {
+		return err
+	}
+
+	id := ids[0]
+
+	fmt.Printf("%s Scheduled task with id='%s'\n", common.BLANKS, id)
+	fmt.Println(common.BLANKS, settings.HUDUrlStr+"scheduled_tasks/"+id+common.INFO)
+
+	w.TaskID = id
 
 	return nil
 }

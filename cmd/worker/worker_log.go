@@ -21,16 +21,10 @@ func NewWorkerLog(settings *common.Settings) *WorkerLog {
 		Usage:     "get log output of a task that has finished executing.",
 		ArgsUsage: "[task-id]",
 		Action: func(c *cli.Context) error {
-			workerLog.wrkr.Settings = settings.Worker
-
-			fmt.Println(common.LINES, "Getting log for task with id='"+c.Args().First()+"'")
-
-			out, err := workerLog.wrkr.TaskLog(c.Args().First())
+			err := workerLog.Action(c.Args().First(), settings)
 			if err != nil {
 				return err
 			}
-
-			fmt.Println(string(out))
 
 			return nil
 		},
@@ -41,4 +35,19 @@ func NewWorkerLog(settings *common.Settings) *WorkerLog {
 
 func (r WorkerLog) GetCmd() cli.Command {
 	return r.Command
+}
+
+func (w *WorkerLog) Action(taskID string, settings *common.Settings) error {
+	w.wrkr.Settings = settings.Worker
+
+	fmt.Println(common.LINES, "Getting log for task with id='"+taskID+"'")
+
+	out, err := w.wrkr.TaskLog(taskID)
+	if err != nil {
+		return err
+	}
+
+	fmt.Println(string(out))
+
+	return nil
 }
