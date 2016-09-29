@@ -1,6 +1,10 @@
 build:
 	go build main.go
 
+.PHONY: test_base
+test_base:
+	go test -v ./cmd
+
 .PHONY: test_docker
 test_docker:
 	go test -v ./cmd/docker

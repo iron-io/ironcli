@@ -30,7 +30,7 @@ func NewRegister(settings *common.Settings) *Register {
 	register.Command = cli.Command{
 		Name:      "register",
 		Usage:     "register worker in the project",
-		ArgsUsage: "[image] [command] [args]",
+		ArgsUsage: "[image] [command]",
 		Flags: []cli.Flag{
 			cli.StringFlag{
 				Name:        "name",
@@ -86,29 +86,10 @@ func NewRegister(settings *common.Settings) *Register {
 			return nil
 		},
 		Action: func(c *cli.Context) error {
-			err := register.Execute(c.Args().Tail(), c.Args().First())
+			err := register.Action(c.Args().First(), c.Args().Tail(), settings)
 			if err != nil {
 				return err
 			}
-
-			if register.codes.Host != "" {
-				fmt.Println(common.LINES, `Spinning up '`+register.codes.Name+`'`)
-			} else {
-				fmt.Println(common.LINES, `Registering worker '`+register.codes.Name+`'`)
-			}
-
-			code, err := common.PushCodes("", &settings.Worker, register.codes)
-			if err != nil {
-				return err
-			}
-
-			if code.Host != "" {
-				fmt.Println(common.BLANKS, common.Green(`Hosted at: '`+code.Host+`'`))
-			} else {
-				fmt.Println(common.BLANKS, common.Green(`Registered code package with id='`+code.Id+`'`))
-			}
-
-			fmt.Println(common.BLANKS, common.Green(settings.HUDUrlStr+"codes/"+code.Id+common.INFO))
 
 			return nil
 		},
@@ -157,6 +138,34 @@ func (r *Register) Execute(cmd []string, image string) error {
 		}
 		r.codes.Config = string(pload)
 	}
+
+	return nil
+}
+
+func (r *Register) Action(image string, cmd []string, settings *common.Settings) error {
+	err := r.Execute(cmd, image)
+	if err != nil {
+		return err
+	}
+
+	if r.codes.Host != "" {
+		fmt.Println(common.LINES, `Spinning up '`+r.codes.Name+`'`)
+	} else {
+		fmt.Println(common.LINES, `Registering worker '`+r.codes.Name+`'`)
+	}
+
+	code, err := common.PushCodes("", &settings.Worker, r.codes)
+	if err != nil {
+		return err
+	}
+
+	if code.Host != "" {
+		fmt.Println(common.BLANKS, common.Green(`Hosted at: '`+code.Host+`'`))
+	} else {
+		fmt.Println(common.BLANKS, common.Green(`Registered code package with id='`+code.Id+`'`))
+	}
+
+	fmt.Println(common.BLANKS, common.Green(settings.HUDUrlStr+"codes/"+code.Id+common.INFO))
 
 	return nil
 }

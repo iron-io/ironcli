@@ -33,7 +33,7 @@ func NewRun(settings *common.Settings) *Run {
 	run.Command = cli.Command{
 		Name:      "run",
 		Usage:     "run a new task.",
-		ArgsUsage: "[image] [args]",
+		ArgsUsage: "[image] [command]",
 		Flags: []cli.Flag{
 			cli.StringFlag{
 				Name:        "name",
@@ -94,29 +94,10 @@ func NewRun(settings *common.Settings) *Run {
 			return nil
 		},
 		Action: func(c *cli.Context) error {
-			err := run.Execute(c.Args().Tail(), c.Args().First())
+			err := run.Action(c.Args().First(), c.Args().Tail(), settings)
 			if err != nil {
 				return err
 			}
-
-			if run.codes.Host != "" {
-				fmt.Println(common.LINES, `Spinning up '`+run.codes.Name+`'`)
-			} else {
-				fmt.Println(common.LINES, `Uploading worker '`+run.codes.Name+`'`)
-			}
-
-			code, err := common.PushCodes(run.zip, &settings.Worker, run.codes)
-			if err != nil {
-				return err
-			}
-
-			if code.Host != "" {
-				fmt.Println(common.BLANKS, common.Green(`Hosted at: '`+code.Host+`'`))
-			} else {
-				fmt.Println(common.BLANKS, common.Green(`Uploaded code package with id='`+code.Id+`'`))
-			}
-
-			fmt.Println(common.BLANKS, common.Green(settings.HUDUrlStr+"codes/"+code.Id+common.INFO))
 
 			return nil
 		},
@@ -171,6 +152,34 @@ func (r *Run) Execute(cmd []string, image string) error {
 		}
 		r.codes.Config = string(pload)
 	}
+
+	return nil
+}
+
+func (r *Run) Action(image string, cmd []string, settings *common.Settings) error {
+	err := r.Execute(cmd, image)
+	if err != nil {
+		return err
+	}
+
+	if r.codes.Host != "" {
+		fmt.Println(common.LINES, `Spinning up '`+r.codes.Name+`'`)
+	} else {
+		fmt.Println(common.LINES, `Uploading worker '`+r.codes.Name+`'`)
+	}
+
+	code, err := common.PushCodes(r.zip, &settings.Worker, r.codes)
+	if err != nil {
+		return err
+	}
+
+	if code.Host != "" {
+		fmt.Println(common.BLANKS, common.Green(`Hosted at: '`+code.Host+`'`))
+	} else {
+		fmt.Println(common.BLANKS, common.Green(`Uploaded code package with id='`+code.Id+`'`))
+	}
+
+	fmt.Println(common.BLANKS, common.Green(settings.HUDUrlStr+"codes/"+code.Id+common.INFO))
 
 	return nil
 }

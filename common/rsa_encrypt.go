@@ -9,10 +9,15 @@ import (
 	"crypto/x509"
 	"encoding/base64"
 	"encoding/pem"
+	"errors"
 )
 
 func RsaEncrypt(publicKey []byte, payloadPlain string) (string, error) {
 	rsablock, _ := pem.Decode(publicKey)
+	if rsablock == nil {
+		return "", errors.New("failed to find any PEM data in key input")
+	}
+
 	rsaKey, err := x509.ParsePKIXPublicKey(rsablock.Bytes)
 	if err != nil {
 		return "", err
