@@ -38,6 +38,13 @@ func NewMqList(settings *common.Settings) *MqList {
 				Destination: &mqList.filter,
 			},
 		},
+		Before: func(c *cli.Context) error {
+			if err := common.SetSettings(settings); err != nil {
+				return err
+			}
+
+			return nil
+		},
 		Action: func(c *cli.Context) error {
 			queues, err := mq.FilterPage(mqList.filter, mqList.page, mqList.perPage)
 			if err != nil {

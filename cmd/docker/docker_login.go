@@ -54,6 +54,13 @@ func NewDockerLogin(settings *common.Settings) *DockerLogin {
 				Destination: &dockerLogin.Username,
 			},
 		},
+		Before: func(c *cli.Context) error {
+			if err := common.SetSettings(settings); err != nil {
+				return err
+			}
+
+			return nil
+		},
 		Action: func(c *cli.Context) error {
 			err := dockerLogin.login()
 			if err != nil {
