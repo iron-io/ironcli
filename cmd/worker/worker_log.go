@@ -8,6 +8,7 @@ import (
 )
 
 type WorkerLog struct {
+	Log  string
 	wrkr common.Worker
 
 	cli.Command
@@ -33,8 +34,8 @@ func NewWorkerLog(settings *common.Settings) *WorkerLog {
 	return workerLog
 }
 
-func (r WorkerLog) GetCmd() cli.Command {
-	return r.Command
+func (w WorkerLog) GetCmd() cli.Command {
+	return w.Command
 }
 
 func (w *WorkerLog) Action(taskID string, settings *common.Settings) error {
@@ -48,6 +49,8 @@ func (w *WorkerLog) Action(taskID string, settings *common.Settings) error {
 	}
 
 	fmt.Println(string(out))
+
+	w.Log = string(out)
 
 	return nil
 }

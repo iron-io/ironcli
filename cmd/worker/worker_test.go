@@ -1,6 +1,7 @@
 package worker
 
 import (
+	"strings"
 	"testing"
 	"time"
 
@@ -67,11 +68,18 @@ func TestWorkerStatus(t *testing.T) {
 		t.Error(err)
 	}
 
+	// Wait a new task to getting a complete status
+	time.Sleep(5 * time.Second)
+
 	workerStatus := NewWorkerStatus(settings)
 
 	err = workerStatus.Action(workerQueue.TaskID, settings)
 	if err != nil {
 		t.Error(err)
+	}
+
+	if workerStatus.Status != "complete" {
+		t.Error("Status should be complete")
 	}
 }
 
@@ -97,5 +105,9 @@ func TestWorkerLog(t *testing.T) {
 	err = workerLog.Action(workerQueue.TaskID, settings)
 	if err != nil {
 		t.Error(err)
+	}
+
+	if !strings.Contains(workerLog.Log, "test") {
+		t.Error("Log has another output from script")
 	}
 }

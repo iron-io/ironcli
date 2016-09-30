@@ -8,7 +8,8 @@ import (
 )
 
 type WorkerStatus struct {
-	wrkr common.Worker
+	Status string
+	wrkr   common.Worker
 
 	cli.Command
 }
@@ -48,6 +49,8 @@ func (w *WorkerStatus) Action(taskID string, settings *common.Settings) error {
 	}
 
 	fmt.Println(common.BLANKS, taskInfo.Status)
+
+	w.Status = taskInfo.Status
 
 	return nil
 }
