@@ -7,9 +7,7 @@ import (
 )
 
 func TestMqCreate(t *testing.T) {
-	var (
-		settings = &common.Settings{Product: "iron_mq"}
-	)
+	var settings = &common.Settings{Product: "iron_mq"}
 
 	common.SetSettings(settings)
 
@@ -22,9 +20,7 @@ func TestMqCreate(t *testing.T) {
 }
 
 func TestMqClear(t *testing.T) {
-	var (
-		settings = &common.Settings{Product: "iron_mq"}
-	)
+	var settings = &common.Settings{Product: "iron_mq"}
 
 	common.SetSettings(settings)
 
@@ -37,9 +33,7 @@ func TestMqClear(t *testing.T) {
 }
 
 func TestMqPush(t *testing.T) {
-	var (
-		settings = &common.Settings{Product: "iron_mq"}
-	)
+	var settings = &common.Settings{Product: "iron_mq"}
 
 	common.SetSettings(settings)
 
@@ -52,9 +46,7 @@ func TestMqPush(t *testing.T) {
 }
 
 func TestMqPop(t *testing.T) {
-	var (
-		settings = &common.Settings{Product: "iron_mq"}
-	)
+	var settings = &common.Settings{Product: "iron_mq"}
 
 	common.SetSettings(settings)
 
@@ -67,9 +59,7 @@ func TestMqPop(t *testing.T) {
 }
 
 func TestMqReserve(t *testing.T) {
-	var (
-		settings = &common.Settings{Product: "iron_mq"}
-	)
+	var settings = &common.Settings{Product: "iron_mq"}
 
 	common.SetSettings(settings)
 
@@ -82,9 +72,7 @@ func TestMqReserve(t *testing.T) {
 }
 
 func TestMqPeek(t *testing.T) {
-	var (
-		settings = &common.Settings{Product: "iron_mq"}
-	)
+	var settings = &common.Settings{Product: "iron_mq"}
 
 	common.SetSettings(settings)
 
@@ -97,9 +85,7 @@ func TestMqPeek(t *testing.T) {
 }
 
 func TestMqList(t *testing.T) {
-	var (
-		settings = &common.Settings{Product: "iron_mq"}
-	)
+	var settings = &common.Settings{Product: "iron_mq"}
 
 	common.SetSettings(settings)
 
@@ -112,9 +98,7 @@ func TestMqList(t *testing.T) {
 }
 
 func TestMqInfo(t *testing.T) {
-	var (
-		settings = &common.Settings{Product: "iron_mq"}
-	)
+	var settings = &common.Settings{Product: "iron_mq"}
 
 	common.SetSettings(settings)
 
@@ -127,9 +111,7 @@ func TestMqInfo(t *testing.T) {
 }
 
 func TestMqDelete(t *testing.T) {
-	var (
-		settings = &common.Settings{Product: "iron_mq"}
-	)
+	var settings = &common.Settings{Product: "iron_mq"}
 
 	common.SetSettings(settings)
 
@@ -147,9 +129,7 @@ func TestMqDelete(t *testing.T) {
 }
 
 func TestMqRm(t *testing.T) {
-	var (
-		settings = &common.Settings{Product: "iron_mq"}
-	)
+	var settings = &common.Settings{Product: "iron_mq"}
 
 	common.SetSettings(settings)
 
