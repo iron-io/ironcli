@@ -117,6 +117,16 @@ that has the same name as the Lambda function. About ARN - (http://docs.aws.amaz
 
 			if lambdaAwsImport.image != "" {
 				opts.Name = lambdaAwsImport.image
+			} else {
+				fmt.Fprintln(os.Stderr, fmt.Sprintf(`Creating Docker image "%s" from Lambda function "%s".
+			If you intend to upload this image to Docker Hub, or use it with IronWorker, you
+			should use the '-image' flag to ensure your Docker Hub username is part of the
+			image name. For example 'iron/%s'.
+			
+			    iron aws-import %s -image <Docker Hub username>/%s
+			
+			You can also rename using  "docker tag %s <Docker Hub username>/%s && docker rmi %s" if you have
+			already imported the function.`, functionName, functionName, functionName, functionName, functionName, functionName, functionName, functionName))
 			}
 
 			if *function.Configuration.Runtime == "java8" {
