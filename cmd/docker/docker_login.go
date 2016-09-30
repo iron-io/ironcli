@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"encoding/base64"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"net/http"
 
@@ -95,7 +94,7 @@ func (d *DockerLogin) login() error {
 
 	res, err := http.DefaultClient.Do(req)
 	if err != nil || res.StatusCode != 200 {
-		return errors.New("Docker repo auth failed, err - " + err.Error())
+		return fmt.Errorf("Docker repo auth failed: %v", err)
 	}
 
 	return nil
