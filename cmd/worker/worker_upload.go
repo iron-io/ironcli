@@ -20,7 +20,7 @@ type WorkerUpload struct {
 	retries         int
 	retriesDelay    int
 	defaultPriority int
-	zip             string
+	Zip             string
 	host            string
 	codes           worker.Code
 	WorkerID        string
@@ -77,7 +77,7 @@ func NewWorkerUpload(settings *common.Settings) *WorkerUpload {
 			cli.StringFlag{
 				Name:        "zip",
 				Usage:       "optional: name of zip file where code resides",
-				Destination: &workerUpload.zip,
+				Destination: &workerUpload.Zip,
 			},
 			cli.StringFlag{
 				Name:        "host",
@@ -117,12 +117,12 @@ func (w *WorkerUpload) Execute(cmd []string, image string) error {
 		}
 	}
 
-	if w.zip != "" {
-		if !strings.HasSuffix(w.zip, ".zip") {
-			return errors.New("file extension must be .zip, got: " + w.zip)
+	if w.Zip != "" {
+		if !strings.HasSuffix(w.Zip, ".zip") {
+			return errors.New("file extension must be .zip, got: " + w.Zip)
 		}
 
-		if _, err := os.Stat(w.zip); err != nil {
+		if _, err := os.Stat(w.Zip); err != nil {
 			return err
 		}
 	}
@@ -160,7 +160,7 @@ func (w *WorkerUpload) Action(image string, cmd []string, settings *common.Setti
 		fmt.Println(common.LINES, `Uploading worker '`+w.codes.Name+`'`)
 	}
 
-	code, err := common.PushCodes(w.zip, &settings.Worker, w.codes)
+	code, err := common.PushCodes(w.Zip, &settings.Worker, w.codes)
 	if err != nil {
 		return err
 	}

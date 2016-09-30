@@ -15,8 +15,9 @@ func TestWorkerUpload(t *testing.T) {
 	common.SetSettings(settings)
 
 	workerUpload := NewWorkerUpload(settings)
+	workerUpload.Zip = "../../testdata/test.zip"
 
-	err := workerUpload.Action("test", []string{}, settings)
+	err := workerUpload.Action("iron/node:latest", []string{"node", "test.js"}, settings)
 	if err != nil {
 		t.Error(err)
 	}
@@ -31,7 +32,7 @@ func TestWorkerSchedule(t *testing.T) {
 
 	workerSchedule := NewWorkerSchedule(settings)
 
-	err := workerSchedule.Action("test", settings)
+	err := workerSchedule.Action("iron/node", settings)
 	if err != nil {
 		t.Error(err)
 	}
@@ -46,7 +47,7 @@ func TestWorkerQueue(t *testing.T) {
 
 	workerQueue := NewWorkerQueue(settings)
 
-	err := workerQueue.Action("test", settings)
+	err := workerQueue.Action("iron/node", settings)
 	if err != nil {
 		t.Error(err)
 	}
@@ -61,7 +62,7 @@ func TestWorkerStatus(t *testing.T) {
 
 	workerQueue := NewWorkerQueue(settings)
 
-	err := workerQueue.Action("test", settings)
+	err := workerQueue.Action("iron/node", settings)
 	if err != nil {
 		t.Error(err)
 	}
@@ -83,7 +84,7 @@ func TestWorkerLog(t *testing.T) {
 
 	workerQueue := NewWorkerQueue(settings)
 
-	err := workerQueue.Action("test", settings)
+	err := workerQueue.Action("iron/node", settings)
 	if err != nil {
 		t.Error(err)
 	}
