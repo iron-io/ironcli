@@ -20,9 +20,10 @@ type Run struct {
 	retries         int
 	retriesDelay    int
 	defaultPriority int
-	zip             string
+	Zip             string
 	host            string
 	codes           worker.Code
+	CodeID          string
 
 	cli.Command
 }
@@ -77,7 +78,7 @@ func NewRun(settings *common.Settings) *Run {
 			cli.StringFlag{
 				Name:        "zip",
 				Usage:       "optional: name of zip file where code resides",
-				Destination: &run.zip,
+				Destination: &run.Zip,
 			},
 			cli.StringFlag{
 				Name:        "host",
@@ -125,12 +126,12 @@ func (r *Run) Execute(cmd []string, image string) error {
 		}
 	}
 
-	if r.zip != "" {
-		if !strings.HasSuffix(r.zip, ".zip") {
-			return errors.New("file extension must be .zip, got: " + r.zip)
+	if r.Zip != "" {
+		if !strings.HasSuffix(r.Zip, ".zip") {
+			return errors.New("file extension must be .zip, got: " + r.Zip)
 		}
 
-		if _, err := os.Stat(r.zip); err != nil {
+		if _, err := os.Stat(r.Zip); err != nil {
 			return err
 		}
 	}
@@ -168,7 +169,7 @@ func (r *Run) Action(image string, cmd []string, settings *common.Settings) erro
 		fmt.Println(common.LINES, `Uploading worker '`+r.codes.Name+`'`)
 	}
 
-	code, err := common.PushCodes(r.zip, &settings.Worker, r.codes)
+	code, err := common.PushCodes(r.Zip, &settings.Worker, r.codes)
 	if err != nil {
 		return err
 	}
@@ -180,6 +181,8 @@ func (r *Run) Action(image string, cmd []string, settings *common.Settings) erro
 	}
 
 	fmt.Println(common.BLANKS, common.Green(settings.HUDUrlStr+"codes/"+code.Id+common.INFO))
+
+	r.CodeID = code.Id
 
 	return nil
 }

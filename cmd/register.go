@@ -20,6 +20,7 @@ type Register struct {
 	defaultPriority int
 	host            string
 	codes           worker.Code
+	CodeID          string
 
 	cli.Command
 }
@@ -166,6 +167,8 @@ func (r *Register) Action(image string, cmd []string, settings *common.Settings)
 	}
 
 	fmt.Println(common.BLANKS, common.Green(settings.HUDUrlStr+"codes/"+code.Id+common.INFO))
+
+	r.CodeID = code.Id
 
 	return nil
 }
