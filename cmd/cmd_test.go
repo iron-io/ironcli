@@ -7,9 +7,7 @@ import (
 )
 
 func TestRun(t *testing.T) {
-	var (
-		settings = &common.Settings{Product: "iron_worker"}
-	)
+	var settings = &common.Settings{Product: "iron_worker"}
 
 	common.SetSettings(settings)
 

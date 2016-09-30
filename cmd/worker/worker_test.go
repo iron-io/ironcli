@@ -9,9 +9,7 @@ import (
 )
 
 func TestWorkerUpload(t *testing.T) {
-	var (
-		settings = &common.Settings{Product: "iron_worker"}
-	)
+	var settings = &common.Settings{Product: "iron_worker"}
 
 	common.SetSettings(settings)
 
@@ -25,9 +23,7 @@ func TestWorkerUpload(t *testing.T) {
 }
 
 func TestWorkerSchedule(t *testing.T) {
-	var (
-		settings = &common.Settings{Product: "iron_worker"}
-	)
+	var settings = &common.Settings{Product: "iron_worker"}
 
 	common.SetSettings(settings)
 
@@ -40,9 +36,7 @@ func TestWorkerSchedule(t *testing.T) {
 }
 
 func TestWorkerQueue(t *testing.T) {
-	var (
-		settings = &common.Settings{Product: "iron_worker"}
-	)
+	var settings = &common.Settings{Product: "iron_worker"}
 
 	common.SetSettings(settings)
 
@@ -55,9 +49,7 @@ func TestWorkerQueue(t *testing.T) {
 }
 
 func TestWorkerStatus(t *testing.T) {
-	var (
-		settings = &common.Settings{Product: "iron_worker"}
-	)
+	var settings = &common.Settings{Product: "iron_worker"}
 
 	common.SetSettings(settings)
 
@@ -84,9 +76,7 @@ func TestWorkerStatus(t *testing.T) {
 }
 
 func TestWorkerLog(t *testing.T) {
-	var (
-		settings = &common.Settings{Product: "iron_worker"}
-	)
+	var settings = &common.Settings{Product: "iron_worker"}
 
 	common.SetSettings(settings)
 
