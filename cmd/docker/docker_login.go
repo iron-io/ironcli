@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"encoding/base64"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"net/http"
 
@@ -62,21 +61,10 @@ func NewDockerLogin(settings *common.Settings) *DockerLogin {
 			return nil
 		},
 		Action: func(c *cli.Context) error {
-			err := dockerLogin.login()
+			err := dockerLogin.Action(settings)
 			if err != nil {
 				return err
 			}
-
-			auth := map[string]string{
-				"auth": dockerLogin.RemoteAuth,
-			}
-
-			msg, err := dockerLogin.Execute(&settings.Worker, &auth)
-			if err != nil {
-				return err
-			}
-
-			fmt.Println(`Added docker repo credentials: ` + msg)
 
 			return nil
 		},
@@ -85,42 +73,41 @@ func NewDockerLogin(settings *common.Settings) *DockerLogin {
 	return dockerLogin
 }
 
-func (r DockerLogin) GetCmd() cli.Command {
-	return r.Command
+func (d DockerLogin) GetCmd() cli.Command {
+	return d.Command
 }
 
-func (r *DockerLogin) login() error {
-	if r.Url == "" {
+func (d *DockerLogin) login() error {
+	if d.Url == "" {
 		defaultUrl := "https://index.docker.io/v1/"
-		r.Url = defaultUrl
+		d.Url = defaultUrl
 	}
 
-	auth := base64.StdEncoding.EncodeToString([]byte(r.Username + ":" + r.Password))
-	r.TestAuth = auth
+	auth := base64.StdEncoding.EncodeToString([]byte(d.Username + ":" + d.Password))
+	d.TestAuth = auth
 
-	bytes, _ := json.Marshal(*r)
+	bytes, _ := json.Marshal(*d)
 	authString := base64.StdEncoding.EncodeToString(bytes)
-	r.RemoteAuth = authString
+	d.RemoteAuth = authString
 
-	req, err := http.NewRequest("GET", r.Url+"users/", nil)
+	req, err := http.NewRequest("GET", d.Url+"users/", nil)
 	if err != nil {
 		return fmt.Errorf("error authenticating docker login: %v", err)
 	}
 
 	req.Header.Set("Accept", "application/json")
-	req.Header.Set("Authorization", "Basic "+r.TestAuth)
+	req.Header.Set("Authorization", "Basic "+d.TestAuth)
 	req.Header.Set("Content-Type", "application/json")
 
 	res, err := http.DefaultClient.Do(req)
-
 	if err != nil || res.StatusCode != 200 {
-		return errors.New("Docker repo auth failed")
+		return fmt.Errorf("Docker repo auth failed: %v", err)
 	}
 
 	return nil
 }
 
-func (r *DockerLogin) Execute(settings *config.Settings, args *map[string]string) (msg string, err error) {
+func (d *DockerLogin) Execute(settings *config.Settings, args *map[string]string) (msg string, err error) {
 	data, err := json.Marshal(args)
 	reader := bytes.NewReader(data)
 
@@ -150,4 +137,24 @@ func (r *DockerLogin) Execute(settings *config.Settings, args *map[string]string
 	err = json.NewDecoder(response.Body).Decode(&res)
 
 	return res.Msg, err
+}
+
+func (d *DockerLogin) Action(settings *common.Settings) error {
+	err := d.login()
+	if err != nil {
+		return err
+	}
+
+	auth := map[string]string{
+		"auth": d.RemoteAuth,
+	}
+
+	msg, err := d.Execute(&settings.Worker, &auth)
+	if err != nil {
+		return err
+	}
+
+	fmt.Println(`Added docker repo credentials: ` + msg)
+
+	return nil
 }
