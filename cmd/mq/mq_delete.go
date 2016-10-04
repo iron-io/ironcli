@@ -32,6 +32,13 @@ func NewMqDelete(settings *common.Settings) *MqDelete {
 				Destination: &mqDelete.filequeue_name,
 			},
 		},
+		Before: func(c *cli.Context) error {
+			if err := common.SetSettings(settings); err != nil {
+				return err
+			}
+
+			return nil
+		},
 		Action: func(c *cli.Context) error {
 			err := mqDelete.Execute(c.Args().First(), c.Args().Tail())
 			if err != nil {

@@ -19,6 +19,13 @@ func NewMqClear(settings *common.Settings) *MqClear {
 			Name:      "clear",
 			Usage:     "clear all messages of queue",
 			ArgsUsage: "[QUEUE_NAME]",
+			Before: func(c *cli.Context) error {
+				if err := common.SetSettings(settings); err != nil {
+					return err
+				}
+
+				return nil
+			},
 			Action: func(c *cli.Context) error {
 				if c.Args().First() == "" {
 					return errors.New(`clear requires a queue name`)

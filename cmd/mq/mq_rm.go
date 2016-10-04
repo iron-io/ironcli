@@ -21,6 +21,13 @@ func NewMqRm(settings *common.Settings) *MqRm {
 			Name:      "rm",
 			Usage:     "rm queues by name",
 			ArgsUsage: "[QUEUE_NAME]",
+			Before: func(c *cli.Context) error {
+				if err := common.SetSettings(settings); err != nil {
+					return err
+				}
+
+				return nil
+			},
 			Action: func(c *cli.Context) error {
 				if c.Args().First() == "" {
 					return errors.New(`rm requires a queue name`)

@@ -29,6 +29,13 @@ func NewMqPeek(settings *common.Settings) *MqPeek {
 				Destination: &mqPeek.number,
 			},
 		},
+		Before: func(c *cli.Context) error {
+			if err := common.SetSettings(settings); err != nil {
+				return err
+			}
+
+			return nil
+		},
 		Action: func(c *cli.Context) error {
 			if c.Args().First() == "" {
 				return errors.New(`peek requires one arg`)
