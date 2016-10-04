@@ -88,6 +88,13 @@ func NewWorkerQueue(settings *common.Settings) *WorkerQueue {
 				Destination: &workerQueue.encryptionKeyFile,
 			},
 		},
+		Before: func(c *cli.Context) error {
+			if err := common.SetSettings(settings); err != nil {
+				return err
+			}
+
+			return nil
+		},
 		Action: func(c *cli.Context) error {
 			workerQueue.wrkr.Settings = settings.Worker
 

@@ -29,6 +29,13 @@ func NewMqInfo(settings *common.Settings) *MqInfo {
 				Destination: &mqInfo.subscriberList,
 			},
 		},
+		Before: func(c *cli.Context) error {
+			if err := common.SetSettings(settings); err != nil {
+				return err
+			}
+
+			return nil
+		},
 		Action: func(c *cli.Context) error {
 			err := mqInfo.Action(c.Args().First(), settings)
 			if err != nil {

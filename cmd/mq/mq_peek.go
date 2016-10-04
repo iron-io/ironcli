@@ -29,6 +29,13 @@ func NewMqPeek(settings *common.Settings) *MqPeek {
 				Destination: &mqPeek.number,
 			},
 		},
+		Before: func(c *cli.Context) error {
+			if err := common.SetSettings(settings); err != nil {
+				return err
+			}
+
+			return nil
+		},
 		Action: func(c *cli.Context) error {
 			err := mqPeek.Action(c.Args().First(), settings)
 			if err != nil {
