@@ -18,6 +18,7 @@ type MqList struct {
 
 func NewMqList(settings *common.Settings) *MqList {
 	mqList := &MqList{}
+
 	mqList.Command = cli.Command{
 		Name:  "list",
 		Usage: "list of queues",
@@ -38,29 +39,17 @@ func NewMqList(settings *common.Settings) *MqList {
 				Destination: &mqList.filter,
 			},
 		},
-		Action: func(c *cli.Context) error {
-			queues, err := mq.FilterPage(mqList.filter, mqList.page, mqList.perPage)
-			if err != nil {
+		Before: func(c *cli.Context) error {
+			if err := common.SetSettings(settings); err != nil {
 				return err
 			}
 
-			if common.IsPipedOut() {
-				for _, q := range queues {
-					fmt.Println(q.Name)
-				}
-			} else {
-				fmt.Println(common.LINES, "Listing queues")
-				for _, q := range queues {
-					fmt.Println(common.BLANKS, "*", q.Name)
-				}
-
-				if tag, err := common.GetHudTag(settings.Worker); err == nil {
-					fmt.Printf("%s Go to hud-e.iron.io/mq/%s/projects/%s/queues for more info",
-						common.BLANKS,
-						tag,
-						settings.Worker.ProjectId)
-				}
-				fmt.Println()
+			return nil
+		},
+		Action: func(c *cli.Context) error {
+			err := mqList.Action(settings)
+			if err != nil {
+				return err
 			}
 
 			return nil
@@ -70,6 +59,34 @@ func NewMqList(settings *common.Settings) *MqList {
 	return mqList
 }
 
-func (r MqList) GetCmd() cli.Command {
-	return r.Command
+func (m MqList) GetCmd() cli.Command {
+	return m.Command
+}
+
+func (m *MqList) Action(settings *common.Settings) error {
+	queues, err := mq.FilterPage(m.filter, m.page, m.perPage)
+	if err != nil {
+		return err
+	}
+
+	if common.IsPipedOut() {
+		for _, q := range queues {
+			fmt.Println(q.Name)
+		}
+	} else {
+		fmt.Println(common.LINES, "Listing queues")
+		for _, q := range queues {
+			fmt.Println(common.BLANKS, "*", q.Name)
+		}
+
+		if tag, err := common.GetHudTag(settings.Worker); err == nil {
+			fmt.Printf("%s Go to hud-e.iron.io/mq/%s/projects/%s/queues for more info",
+				common.BLANKS,
+				tag,
+				settings.Worker.ProjectId)
+		}
+		fmt.Println()
+	}
+
+	return nil
 }

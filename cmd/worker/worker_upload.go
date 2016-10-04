@@ -85,6 +85,13 @@ func NewWorkerUpload(settings *common.Settings) *WorkerUpload {
 				Destination: &workerUpload.host,
 			},
 		},
+		Before: func(c *cli.Context) error {
+			if err := common.SetSettings(settings); err != nil {
+				return err
+			}
+
+			return nil
+		},
 		Action: func(c *cli.Context) error {
 			err := workerUpload.Action(c.Args().First(), c.Args().Tail(), settings)
 			if err != nil {

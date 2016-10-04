@@ -97,6 +97,13 @@ func NewWorkerSchedule(settings *common.Settings) *WorkerSchedule {
 				Destination: &workerSchedule.endAt,
 			},
 		},
+		Before: func(c *cli.Context) error {
+			if err := common.SetSettings(settings); err != nil {
+				return err
+			}
+
+			return nil
+		},
 		Action: func(c *cli.Context) error {
 			err := workerSchedule.Action(c.Args().First(), settings)
 			if err != nil {

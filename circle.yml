@@ -31,9 +31,20 @@ dependencies:
 
 test:
   pre:
+    - echo $TEST_DOCKER_HUB_CREDS > $HOME/.dockercfg
     - glide install:
         pwd: $GO_PROJECT/$CIRCLE_PROJECT_REPONAME
   override:
+    - make test_docker:
+        pwd: $GO_PROJECT/$CIRCLE_PROJECT_REPONAME
+    - make test_lambda:
+        pwd: $GO_PROJECT/$CIRCLE_PROJECT_REPONAME
+    - make test_base:
+        pwd: $GO_PROJECT/$CIRCLE_PROJECT_REPONAME
+    - make test_mq:
+        pwd: $GO_PROJECT/$CIRCLE_PROJECT_REPONAME
+    - make test_worker:
+        pwd: $GO_PROJECT/$CIRCLE_PROJECT_REPONAME
     - go build .:
         pwd: $GO_PROJECT/$CIRCLE_PROJECT_REPONAME
 
