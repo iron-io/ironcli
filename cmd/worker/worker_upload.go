@@ -20,9 +20,10 @@ type WorkerUpload struct {
 	retries         int
 	retriesDelay    int
 	defaultPriority int
-	zip             string
+	Zip             string
 	host            string
 	codes           worker.Code
+	WorkerID        string
 
 	cli.Command
 }
@@ -76,7 +77,7 @@ func NewWorkerUpload(settings *common.Settings) *WorkerUpload {
 			cli.StringFlag{
 				Name:        "zip",
 				Usage:       "optional: name of zip file where code resides",
-				Destination: &workerUpload.zip,
+				Destination: &workerUpload.Zip,
 			},
 			cli.StringFlag{
 				Name:        "host",
@@ -92,29 +93,10 @@ func NewWorkerUpload(settings *common.Settings) *WorkerUpload {
 			return nil
 		},
 		Action: func(c *cli.Context) error {
-			err := workerUpload.Execute(c.Args().Tail(), c.Args().First())
+			err := workerUpload.Action(c.Args().First(), c.Args().Tail(), settings)
 			if err != nil {
 				return err
 			}
-
-			if workerUpload.codes.Host != "" {
-				fmt.Println(common.LINES, `Spinning up '`+workerUpload.codes.Name+`'`)
-			} else {
-				fmt.Println(common.LINES, `Uploading worker '`+workerUpload.codes.Name+`'`)
-			}
-
-			code, err := common.PushCodes(workerUpload.zip, &settings.Worker, workerUpload.codes)
-			if err != nil {
-				return err
-			}
-
-			if code.Host != "" {
-				fmt.Println(common.BLANKS, common.Green(`Hosted at: '`+code.Host+`'`))
-			} else {
-				fmt.Println(common.BLANKS, common.Green(`Uploaded code package with id='`+code.Id+`'`))
-			}
-
-			fmt.Println(common.BLANKS, common.Green(settings.HUDUrlStr+"codes/"+code.Id+common.INFO))
 
 			return nil
 		},
@@ -123,52 +105,84 @@ func NewWorkerUpload(settings *common.Settings) *WorkerUpload {
 	return workerUpload
 }
 
-func (r WorkerUpload) GetCmd() cli.Command {
-	return r.Command
+func (w WorkerUpload) GetCmd() cli.Command {
+	return w.Command
 }
 
-func (r *WorkerUpload) Execute(cmd []string, image string) error {
-	r.codes.Command = strings.TrimSpace(strings.Join(cmd, " "))
-	r.codes.Image = image
-	r.codes.Name = image
+func (w *WorkerUpload) Execute(cmd []string, image string) error {
+	w.codes.Command = strings.TrimSpace(strings.Join(cmd, " "))
+	w.codes.Image = image
+	w.codes.Name = image
 
-	if r.name != "" {
-		r.codes.Name = r.name
+	if w.name != "" {
+		w.codes.Name = w.name
 	} else {
-		r.codes.Name = r.codes.Image
-		if strings.ContainsRune(r.codes.Name, ':') {
-			arr := strings.SplitN(r.codes.Name, ":", 2)
-			r.codes.Name = arr[0]
+		w.codes.Name = w.codes.Image
+		if strings.ContainsRune(w.codes.Name, ':') {
+			arr := strings.SplitN(w.codes.Name, ":", 2)
+			w.codes.Name = arr[0]
 		}
 	}
 
-	if r.zip != "" {
-		if !strings.HasSuffix(r.zip, ".zip") {
-			return errors.New("file extension must be .zip, got: " + r.zip)
+	if w.Zip != "" {
+		if !strings.HasSuffix(w.Zip, ".zip") {
+			return errors.New("file extension must be .zip, got: " + w.Zip)
 		}
 
-		if _, err := os.Stat(r.zip); err != nil {
+		if _, err := os.Stat(w.Zip); err != nil {
 			return err
 		}
 	}
 
-	r.codes.MaxConcurrency = r.maxConc
-	r.codes.Retries = r.retries
-	r.codes.RetriesDelay = r.retriesDelay
-	r.codes.Config = r.config
-	r.codes.DefaultPriority = r.defaultPriority
+	w.codes.MaxConcurrency = w.maxConc
+	w.codes.Retries = w.retries
+	w.codes.RetriesDelay = w.retriesDelay
+	w.codes.Config = w.config
+	w.codes.DefaultPriority = w.defaultPriority
 
-	if r.host != "" {
-		r.codes.Host = r.host
+	if w.host != "" {
+		w.codes.Host = w.host
 	}
 
-	if r.configFile != "" {
-		pload, err := ioutil.ReadFile(r.configFile)
+	if w.configFile != "" {
+		pload, err := ioutil.ReadFile(w.configFile)
 		if err != nil {
 			return err
 		}
-		r.codes.Config = string(pload)
+		w.codes.Config = string(pload)
 	}
+
+	return nil
+}
+
+func (w *WorkerUpload) Action(image string, cmd []string, settings *common.Settings) error {
+	err := w.Execute(cmd, image)
+	if err != nil {
+		return err
+	}
+
+	if w.codes.Host != "" {
+		fmt.Println(common.LINES, `Spinning up '`+w.codes.Name+`'`)
+	} else {
+		fmt.Println(common.LINES, `Uploading worker '`+w.codes.Name+`'`)
+	}
+
+	code, err := common.PushCodes(w.Zip, &settings.Worker, w.codes)
+	if err != nil {
+		return err
+	}
+
+	fmt.Println(code)
+
+	if code.Host != "" {
+		fmt.Println(common.BLANKS, common.Green(`Hosted at: '`+code.Host+`'`))
+	} else {
+		fmt.Println(common.BLANKS, common.Green(`Uploaded code package with id='`+code.Id+`'`))
+	}
+
+	fmt.Println(common.BLANKS, common.Green(settings.HUDUrlStr+"codes/"+code.Id+common.INFO))
+
+	w.WorkerID = code.Id
 
 	return nil
 }

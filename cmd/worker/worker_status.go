@@ -8,7 +8,8 @@ import (
 )
 
 type WorkerStatus struct {
-	wrkr common.Worker
+	Status string
+	wrkr   common.Worker
 
 	cli.Command
 }
@@ -28,16 +29,10 @@ func NewWorkerStatus(settings *common.Settings) *WorkerStatus {
 			return nil
 		},
 		Action: func(c *cli.Context) error {
-			workerStatus.wrkr.Settings = settings.Worker
-
-			fmt.Println(common.LINES, `Getting status of task with id='`+c.Args().First()+`'`)
-
-			taskInfo, err := workerStatus.wrkr.TaskInfo(c.Args().First())
+			err := workerStatus.Action(c.Args().First(), settings)
 			if err != nil {
 				return err
 			}
-
-			fmt.Println(common.BLANKS, taskInfo.Status)
 
 			return nil
 		},
@@ -46,6 +41,23 @@ func NewWorkerStatus(settings *common.Settings) *WorkerStatus {
 	return workerStatus
 }
 
-func (r WorkerStatus) GetCmd() cli.Command {
-	return r.Command
+func (w WorkerStatus) GetCmd() cli.Command {
+	return w.Command
+}
+
+func (w *WorkerStatus) Action(taskID string, settings *common.Settings) error {
+	w.wrkr.Settings = settings.Worker
+
+	fmt.Println(common.LINES, `Getting status of task with id='`+taskID+`'`)
+
+	taskInfo, err := w.wrkr.TaskInfo(taskID)
+	if err != nil {
+		return err
+	}
+
+	fmt.Println(common.BLANKS, taskInfo.Status)
+
+	w.Status = taskInfo.Status
+
+	return nil
 }
