@@ -37,32 +37,10 @@ func NewMqPeek(settings *common.Settings) *MqPeek {
 			return nil
 		},
 		Action: func(c *cli.Context) error {
-			if c.Args().First() == "" {
-				return errors.New(`peek requires one arg`)
-			}
-
-			q := mq.ConfigNew(c.Args().First(), &settings.Worker)
-
-			msgs, err := q.PeekN(mqPeek.number)
+			err := mqPeek.Action(c.Args().First(), settings)
 			if err != nil {
 				return err
 			}
-
-			if len(msgs) < 1 {
-				return errors.New("Queue is empty.")
-			}
-
-			if !common.IsPipedOut() {
-				plural := ""
-				if mqPeek.number > 1 {
-					plural = "s"
-				}
-
-				fmt.Println(common.LINES, "Message", plural, " successfully peeked")
-				fmt.Println()
-				fmt.Println("-------- ID ------ | Body")
-			}
-			common.PrintMessages(msgs)
 
 			return nil
 		},
@@ -71,6 +49,37 @@ func NewMqPeek(settings *common.Settings) *MqPeek {
 	return mqPeek
 }
 
-func (r MqPeek) GetCmd() cli.Command {
-	return r.Command
+func (m MqPeek) GetCmd() cli.Command {
+	return m.Command
+}
+
+func (m *MqPeek) Action(queueName string, settings *common.Settings) error {
+	if queueName == "" {
+		return errors.New(`peek requires one arg`)
+	}
+
+	q := mq.ConfigNew(queueName, &settings.Worker)
+
+	msgs, err := q.PeekN(m.number)
+	if err != nil {
+		return err
+	}
+
+	if len(msgs) < 1 {
+		return errors.New("Queue is empty.")
+	}
+
+	if !common.IsPipedOut() {
+		plural := ""
+		if m.number > 1 {
+			plural = "s"
+		}
+
+		fmt.Println(common.LINES, "Message", plural, " successfully peeked")
+		fmt.Println()
+		fmt.Println("-------- ID ------ | Body")
+	}
+	common.PrintMessages(msgs)
+
+	return nil
 }

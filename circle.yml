@@ -39,6 +39,8 @@ test:
         pwd: $GO_PROJECT/$CIRCLE_PROJECT_REPONAME
     - make test_lambda:
         pwd: $GO_PROJECT/$CIRCLE_PROJECT_REPONAME
+    - make test_mq:
+        pwd: $GO_PROJECT/$CIRCLE_PROJECT_REPONAME
     - go build .:
         pwd: $GO_PROJECT/$CIRCLE_PROJECT_REPONAME
 

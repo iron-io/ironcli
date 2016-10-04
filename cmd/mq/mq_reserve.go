@@ -52,51 +52,9 @@ func NewMqReserve(settings *common.Settings) *MqReserve {
 			return nil
 		},
 		Action: func(c *cli.Context) error {
-			if c.Args().First() == "" {
-				return errors.New(`reserve requires a queue name`)
-			}
-
-			if mqReserve.outputfile != "" {
-				f, err := os.Create(mqReserve.outputfile)
-				if err != nil {
-					return err
-				}
-
-				mqReserve.file = f
-			}
-
-			q := mq.ConfigNew(c.Args().First(), &settings.Worker)
-			messages, err := q.GetNWithTimeout(mqReserve.number, mqReserve.timeout)
+			err := mqReserve.Action(c.Args().First(), settings)
 			if err != nil {
 				return err
-			}
-
-			// If anything here fails, we still want to print out what was reserved before exiting
-			if mqReserve.file != nil {
-				b, err := json.Marshal(messages)
-				if err != nil {
-					common.PrintReservedMessages(messages)
-
-					return err
-				}
-				_, err = mqReserve.file.Write(b)
-				if err != nil {
-					common.PrintReservedMessages(messages)
-
-					return err
-				}
-			}
-
-			if len(messages) < 1 {
-				return errors.New("Queue is empty")
-			}
-
-			if common.IsPipedOut() {
-				common.PrintReservedMessages(messages)
-			} else {
-				fmt.Println(common.Green(common.LINES, "Messages successfully reserved"))
-				fmt.Println("--------- ID ------|------- Reservation ID -------- | Body")
-				common.PrintReservedMessages(messages)
 			}
 
 			return nil
@@ -106,6 +64,57 @@ func NewMqReserve(settings *common.Settings) *MqReserve {
 	return mqReserve
 }
 
-func (r MqReserve) GetCmd() cli.Command {
-	return r.Command
+func (m MqReserve) GetCmd() cli.Command {
+	return m.Command
+}
+
+func (m *MqReserve) Action(queueName string, settings *common.Settings) error {
+	if queueName == "" {
+		return errors.New(`reserve requires a queue name`)
+	}
+
+	if m.outputfile != "" {
+		f, err := os.Create(m.outputfile)
+		if err != nil {
+			return err
+		}
+
+		m.file = f
+	}
+
+	q := mq.ConfigNew(queueName, &settings.Worker)
+	messages, err := q.GetNWithTimeout(m.number, m.timeout)
+	if err != nil {
+		return err
+	}
+
+	// If anything here fails, we still want to print out what was reserved before exiting
+	if m.file != nil {
+		b, err := json.Marshal(messages)
+		if err != nil {
+			common.PrintReservedMessages(messages)
+
+			return err
+		}
+		_, err = m.file.Write(b)
+		if err != nil {
+			common.PrintReservedMessages(messages)
+
+			return err
+		}
+	}
+
+	if len(messages) < 1 {
+		return errors.New("Queue is empty")
+	}
+
+	if common.IsPipedOut() {
+		common.PrintReservedMessages(messages)
+	} else {
+		fmt.Println(common.Green(common.LINES, "Messages successfully reserved"))
+		fmt.Println("--------- ID ------|------- Reservation ID -------- | Body")
+		common.PrintReservedMessages(messages)
+	}
+
+	return nil
 }
