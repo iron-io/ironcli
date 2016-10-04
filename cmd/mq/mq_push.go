@@ -32,6 +32,13 @@ func NewMqPush(settings *common.Settings) *MqPush {
 				Destination: &mqPush.filename,
 			},
 		},
+		Before: func(c *cli.Context) error {
+			if err := common.SetSettings(settings); err != nil {
+				return err
+			}
+
+			return nil
+		},
 		Action: func(c *cli.Context) error {
 			err := mqPush.Execute(c.Args().First(), c.Args().Tail())
 			if err != nil {

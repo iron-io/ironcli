@@ -20,6 +20,13 @@ func NewWorkerLog(settings *common.Settings) *WorkerLog {
 		Name:      "log",
 		Usage:     "get log output of a task that has finished executing.",
 		ArgsUsage: "[task-id]",
+		Before: func(c *cli.Context) error {
+			if err := common.SetSettings(settings); err != nil {
+				return err
+			}
+
+			return nil
+		},
 		Action: func(c *cli.Context) error {
 			workerLog.wrkr.Settings = settings.Worker
 

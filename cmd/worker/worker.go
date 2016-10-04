@@ -17,9 +17,6 @@ func NewWorker(settings *common.Settings) *Worker {
 			ArgsUsage: "[command]",
 			Before: func(c *cli.Context) error {
 				settings.Product = "iron_worker"
-				if err := common.SetSettings(settings); err != nil {
-					return err
-				}
 
 				return nil
 			},

@@ -20,6 +20,13 @@ func NewWorkerStatus(settings *common.Settings) *WorkerStatus {
 		Name:      "status",
 		Usage:     "get execution status of a task.",
 		ArgsUsage: "[task_id]",
+		Before: func(c *cli.Context) error {
+			if err := common.SetSettings(settings); err != nil {
+				return err
+			}
+
+			return nil
+		},
 		Action: func(c *cli.Context) error {
 			workerStatus.wrkr.Settings = settings.Worker
 
