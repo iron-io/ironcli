@@ -60,18 +60,26 @@ func TestWorkerStatus(t *testing.T) {
 		t.Error(err)
 	}
 
+	startTime := time.Now()
+
 	// Wait a new task to getting a complete status
-	time.Sleep(15 * time.Second)
+	for {
+		workerStatus := NewWorkerStatus(settings)
 
-	workerStatus := NewWorkerStatus(settings)
+		err = workerStatus.Action(workerQueue.TaskID, settings)
+		if err != nil {
+			t.Error(err)
+		}
 
-	err = workerStatus.Action(workerQueue.TaskID, settings)
-	if err != nil {
-		t.Error(err)
-	}
+		if workerStatus.Status != "complete" && time.Now().Sub(startTime).Seconds() > 60 ||
+			(workerStatus.Status == "error" || workerStatus.Status == "cancelled") {
+			t.Error("Status should be complete")
+			break
+		} else if workerStatus.Status == "complete" {
+			break
+		}
 
-	if workerStatus.Status != "complete" {
-		t.Error("Status should be complete")
+		time.Sleep(2 * time.Second)
 	}
 }
 
@@ -87,17 +95,20 @@ func TestWorkerLog(t *testing.T) {
 		t.Error(err)
 	}
 
+	startTime := time.Now()
+
 	// Wait a new task to getting a log
-	time.Sleep(15 * time.Second)
+	for {
+		workerLog := NewWorkerLog(settings)
+		workerLog.Action(workerQueue.TaskID, settings)
 
-	workerLog := NewWorkerLog(settings)
+		if !strings.Contains(workerLog.Log, "test") && time.Now().Sub(startTime).Seconds() > 60 {
+			t.Error("Log has another output from script")
+			break
+		} else if strings.Contains(workerLog.Log, "test") {
+			break
+		}
 
-	err = workerLog.Action(workerQueue.TaskID, settings)
-	if err != nil {
-		t.Error(err)
-	}
-
-	if !strings.Contains(workerLog.Log, "test") {
-		t.Error("Log has another output from script")
+		time.Sleep(2 * time.Second)
 	}
 }
