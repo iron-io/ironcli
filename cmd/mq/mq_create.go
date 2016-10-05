@@ -49,12 +49,12 @@ func (m *MqCreate) Action(queueName string, settings *common.Settings) error {
 	q := mq.ConfigNew(queueName, &settings.Worker)
 	_, err := q.PushStrings("")
 	if err != nil {
-		return err
+		return fmt.Errorf("create error: %v", err)
 	}
 
 	err = q.Clear()
 	if err != nil {
-		return err
+		return fmt.Errorf("create error: %v", err)
 	}
 
 	fmt.Println(common.LINES, "Queue", q.Name, "has been successfully created.")

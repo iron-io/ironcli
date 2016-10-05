@@ -58,7 +58,7 @@ func (l LambdaTestFunction) GetCmd() cli.Command {
 func (l *LambdaTestFunction) Action() error {
 	exists, err := lambda.ImageExists(l.FunctionName)
 	if err != nil {
-		return err
+		return fmt.Errorf("Error communicating with Docker daemon: %v", err)
 	}
 
 	if !exists {

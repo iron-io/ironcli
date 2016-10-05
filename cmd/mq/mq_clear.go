@@ -52,7 +52,7 @@ func (m *MqClear) Action(queueName string, settings *common.Settings) error {
 	q := mq.ConfigNew(queueName, &settings.Worker)
 
 	if err := q.Clear(); err != nil {
-		return err
+		return fmt.Errorf("create error: %v", err)
 	}
 
 	fmt.Println(common.Green(common.LINES, "Queue ", q.Name, " has been successfully cleared"))

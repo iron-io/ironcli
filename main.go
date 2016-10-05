@@ -68,6 +68,6 @@ func main() {
 	err := app.Run(os.Args)
 	if err != nil {
 		// FIXME when there will be a logger
-		fmt.Fprint(os.Stderr, common.Red(common.BLANKS, err))
+		fmt.Fprintln(os.Stderr, common.Red(common.BLANKS, err))
 	}
 }

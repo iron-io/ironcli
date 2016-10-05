@@ -1,7 +1,6 @@
 package lambda
 
 import (
-	"errors"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -79,17 +78,17 @@ func (l *LambdaCreateFunction) Action() error {
 	}
 
 	if l.Handler == "" {
-		return errors.New("No handler specified.")
+		return fmt.Errorf("No handler specified.")
 	}
 
 	// For Java we allow only 1 file and it MUST be a JAR.
 	if l.Runtime == "java8" {
 		if len(l.FileNames) != 1 {
-			return errors.New("Java Lambda functions can only include 1 file and it must be a JAR file.")
+			return fmt.Errorf("Java Lambda functions can only include 1 file and it must be a JAR file.")
 		}
 
 		if filepath.Ext(l.FileNames[0]) != ".jar" {
-			return errors.New("Java Lambda function package must be a JAR file.")
+			return fmt.Errorf("Java Lambda function package must be a JAR file.")
 		}
 
 		opts.Package = filepath.Base(l.FileNames[0])
