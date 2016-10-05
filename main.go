@@ -20,7 +20,7 @@ func main() {
 
 	app := cli.NewApp()
 	app.Name = "iron"
-	app.Version = "0.1.4"
+	app.Version = "0.2.0"
 	app.Authors = []cli.Author{
 		cli.Author{
 			Name:  "iron.io",
