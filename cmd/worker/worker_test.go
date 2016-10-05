@@ -88,7 +88,7 @@ func TestWorkerLog(t *testing.T) {
 	}
 
 	// Wait a new task to getting a log
-	time.Sleep(5 * time.Second)
+	time.Sleep(15 * time.Second)
 
 	workerLog := NewWorkerLog(settings)
 
