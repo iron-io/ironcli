@@ -61,7 +61,7 @@ func TestWorkerStatus(t *testing.T) {
 	}
 
 	// Wait a new task to getting a complete status
-	time.Sleep(5 * time.Second)
+	time.Sleep(15 * time.Second)
 
 	workerStatus := NewWorkerStatus(settings)
 
