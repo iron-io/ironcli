@@ -1,6 +1,7 @@
 package worker
 
 import (
+	"errors"
 	"fmt"
 
 	"github.com/iron-io/ironcli/common"
@@ -29,12 +30,16 @@ func NewWorkerLog(settings *common.Settings) *WorkerLog {
 			return nil
 		},
 		Action: func(c *cli.Context) error {
-			err := workerLog.Action(c.Args().First(), settings)
-			if err != nil {
-				return err
-			}
+			return errors.New("test")
 
-			return nil
+			/*
+				err := workerLog.Action(c.Args().First(), settings)
+				if err != nil {
+					return err
+				}
+
+				return nil
+			*/
 		},
 	}
 

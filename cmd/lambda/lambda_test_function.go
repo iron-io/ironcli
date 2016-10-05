@@ -3,7 +3,6 @@ package lambda
 import (
 	"fmt"
 
-	"github.com/iron-io/ironcli/common"
 	"github.com/iron-io/lambda/lambda"
 	"github.com/urfave/cli"
 )
@@ -59,7 +58,7 @@ func (l LambdaTestFunction) GetCmd() cli.Command {
 func (l *LambdaTestFunction) Action() error {
 	exists, err := lambda.ImageExists(l.FunctionName)
 	if err != nil {
-		return fmt.Errorf(common.Red("Error communicating with Docker daemon: %v"), err)
+		return fmt.Errorf("Error communicating with Docker daemon: %v", err)
 	}
 
 	if !exists {

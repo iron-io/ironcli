@@ -68,18 +68,18 @@ that has the same name as the Lambda function. About ARN - (http://docs.aws.amaz
 		Action: func(c *cli.Context) error {
 			function, err := lambdaAwsImport.getFunction(c.Args().First())
 			if err != nil {
-				return fmt.Errorf(common.Red("Error getting function information: %v"), err)
+				return fmt.Errorf("Error getting function information: %v", err)
 			}
 			functionName := *function.Configuration.FunctionName
 
 			err = os.Mkdir(fmt.Sprintf("./%s", functionName), os.ModePerm)
 			if err != nil {
-				return fmt.Errorf(common.Red("Error creating directory, function - %s: %v"), functionName, err)
+				return fmt.Errorf("Error creating directory: %v", err)
 			}
 
 			tmpFileName, err := lambdaAwsImport.downloadToFile(*function.Code.Location)
 			if err != nil {
-				return fmt.Errorf(common.Red("Error downloading code: %v"), err)
+				return fmt.Errorf("Error downloading code: %v", err)
 			}
 			defer os.Remove(tmpFileName)
 
@@ -135,7 +135,7 @@ that has the same name as the Lambda function. About ARN - (http://docs.aws.amaz
 
 			err = lambda.CreateImage(opts, files...)
 			if err != nil {
-				return fmt.Errorf(common.Red("Error creating image: %v"), err)
+				return fmt.Errorf("Error creating image: %v", err)
 			}
 
 			return nil
