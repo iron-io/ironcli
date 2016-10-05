@@ -7,7 +7,7 @@ func TestLambdaCreateFunction(t *testing.T) {
 	lambdaCreateFunction.FunctionName = "irontesting/test"
 	lambdaCreateFunction.Runtime = "nodejs"
 	lambdaCreateFunction.Handler = "runtime.function"
-	lambdaCreateFunction.FileNames = []string{"../../tests/test.js"}
+	lambdaCreateFunction.FileNames = []string{"../../testdata/test.js"}
 
 	err := lambdaCreateFunction.Action()
 	if err != nil {
