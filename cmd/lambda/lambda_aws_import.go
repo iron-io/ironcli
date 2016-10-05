@@ -68,18 +68,18 @@ that has the same name as the Lambda function. About ARN - (http://docs.aws.amaz
 		Action: func(c *cli.Context) error {
 			function, err := lambdaAwsImport.getFunction(c.Args().First())
 			if err != nil {
-				return err
+				return fmt.Errorf(common.Red("Error getting function information: %v"), err)
 			}
 			functionName := *function.Configuration.FunctionName
 
 			err = os.Mkdir(fmt.Sprintf("./%s", functionName), os.ModePerm)
 			if err != nil {
-				return err
+				return fmt.Errorf(common.Red("Error creating directory, function - %s: %v"), functionName, err)
 			}
 
 			tmpFileName, err := lambdaAwsImport.downloadToFile(*function.Code.Location)
 			if err != nil {
-				return err
+				return fmt.Errorf(common.Red("Error downloading code: %v"), err)
 			}
 			defer os.Remove(tmpFileName)
 
@@ -122,9 +122,9 @@ that has the same name as the Lambda function. About ARN - (http://docs.aws.amaz
 			If you intend to upload this image to Docker Hub, or use it with IronWorker, you
 			should use the '-image' flag to ensure your Docker Hub username is part of the
 			image name. For example 'iron/%s'.
-			
+
 			    iron aws-import %s -image <Docker Hub username>/%s
-			
+
 			You can also rename using  "docker tag %s <Docker Hub username>/%s && docker rmi %s" if you have
 			already imported the function.`, functionName, functionName, functionName, functionName, functionName, functionName, functionName, functionName))
 			}
@@ -135,7 +135,7 @@ that has the same name as the Lambda function. About ARN - (http://docs.aws.amaz
 
 			err = lambda.CreateImage(opts, files...)
 			if err != nil {
-				return err
+				return fmt.Errorf(common.Red("Error creating image: %v"), err)
 			}
 
 			return nil

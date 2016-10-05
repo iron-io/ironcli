@@ -54,11 +54,11 @@ func (l LambdaPublishFunction) GetCmd() cli.Command {
 func (l *LambdaPublishFunction) Action() error {
 	exists, err := lambda.ImageExists(l.FunctionName)
 	if err != nil {
-		return err
+		return fmt.Errorf(common.Red("Error communicating with Docker daemon: %v"), err)
 	}
 
 	if !exists {
-		return fmt.Errorf("Function %s does not exist:", l.FunctionName)
+		return fmt.Errorf(common.Red("Function %s does not exist."), l.FunctionName)
 	}
 
 	if !hubPushableName(l.FunctionName) {
@@ -74,12 +74,12 @@ func (l *LambdaPublishFunction) Action() error {
 		RawJSONStream: true,
 	})
 	if err != nil {
-		return err
+		return fmt.Errorf(common.Red("Error pushing image: %v"), err)
 	}
 
 	err = lambda.RegisterWithIron(l.FunctionName)
 	if err != nil {
-		return err
+		return fmt.Errorf(common.Red("Error registering with IronWorker: %v"), err)
 	}
 
 	return nil
