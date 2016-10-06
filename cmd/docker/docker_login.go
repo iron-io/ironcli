@@ -14,15 +14,12 @@ import (
 )
 
 type DockerLogin struct {
-	Email      string
-	Password   string
-	Url        string
-	Username   string
-	TestAuth   string `json:"-"`
-	RemoteAuth string `json:"-"`
-	Auth       string `json:"auth"`
+	Email         string `json:"email"`
+	Username      string `json:"username"`
+	Password      string `json:"password"`
+	ServerAddress string `json:"serveraddress"`
 
-	cli.Command
+	cli.Command `json:"-"`
 }
 
 func NewDockerLogin(settings *common.Settings) *DockerLogin {
@@ -44,8 +41,8 @@ func NewDockerLogin(settings *common.Settings) *DockerLogin {
 			},
 			cli.StringFlag{
 				Name:        "url",
-				Usage:       "docker repo url, if you're using custom repo",
-				Destination: &dockerLogin.Url,
+				Usage:       "docker repo url, if you're using custom repo, e.g. https://registry.hub.docker.com",
+				Destination: &dockerLogin.ServerAddress,
 			},
 			cli.StringFlag{
 				Name:        "username",
@@ -75,36 +72,6 @@ func NewDockerLogin(settings *common.Settings) *DockerLogin {
 
 func (d DockerLogin) GetCmd() cli.Command {
 	return d.Command
-}
-
-func (d *DockerLogin) login() error {
-	if d.Url == "" {
-		defaultUrl := "https://index.docker.io/v1/"
-		d.Url = defaultUrl
-	}
-
-	auth := base64.StdEncoding.EncodeToString([]byte(d.Username + ":" + d.Password))
-	d.TestAuth = auth
-
-	bytes, _ := json.Marshal(*d)
-	authString := base64.StdEncoding.EncodeToString(bytes)
-	d.RemoteAuth = authString
-
-	req, err := http.NewRequest("GET", d.Url+"users/", nil)
-	if err != nil {
-		return fmt.Errorf("error authenticating docker login: %v", err)
-	}
-
-	req.Header.Set("Accept", "application/json")
-	req.Header.Set("Authorization", "Basic "+d.TestAuth)
-	req.Header.Set("Content-Type", "application/json")
-
-	res, err := http.DefaultClient.Do(req)
-	if err != nil || res.StatusCode != 200 {
-		return fmt.Errorf("Docker repo auth failed: %v", err)
-	}
-
-	return nil
 }
 
 func (d *DockerLogin) Execute(settings *config.Settings, args *map[string]string) (msg string, err error) {
@@ -140,13 +107,14 @@ func (d *DockerLogin) Execute(settings *config.Settings, args *map[string]string
 }
 
 func (d *DockerLogin) Action(settings *common.Settings) error {
-	err := d.login()
+	bytes, err := json.Marshal(*d)
 	if err != nil {
 		return err
 	}
+	authString := base64.StdEncoding.EncodeToString(bytes)
 
 	auth := map[string]string{
-		"auth": d.RemoteAuth,
+		"auth": authString,
 	}
 
 	msg, err := d.Execute(&settings.Worker, &auth)
