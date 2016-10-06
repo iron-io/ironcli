@@ -23,6 +23,7 @@ type Run struct {
 	Zip             string
 	host            string
 	codes           worker.Code
+	envVars         []string
 	CodeID          string
 
 	cli.Command
@@ -85,6 +86,10 @@ func NewRun(settings *common.Settings) *Run {
 				Usage:       "paas host",
 				Destination: &run.host,
 			},
+			cli.StringSliceFlag{
+				Name:  "e",
+				Usage: "optional: specify environment variable for your code in format 'ENVNAME=value'",
+			},
 		},
 		Before: func(c *cli.Context) error {
 			settings.Product = "iron_worker"
@@ -95,6 +100,10 @@ func NewRun(settings *common.Settings) *Run {
 			return nil
 		},
 		Action: func(c *cli.Context) error {
+			if c.StringSlice("e") != nil {
+				run.envVars = c.StringSlice("e")
+			}
+
 			err := run.Action(c.Args().First(), c.Args().Tail(), settings)
 			if err != nil {
 				return err
@@ -152,6 +161,16 @@ func (r *Run) Execute(cmd []string, image string) error {
 			return err
 		}
 		r.codes.Config = string(pload)
+	}
+
+	if r.envVars != nil {
+		envVarsMap := make(map[string]string, len(r.envVars))
+		for _, envItem := range r.envVars {
+			splitEnv := strings.Split(envItem, "=")
+
+			envVarsMap[splitEnv[0]] = splitEnv[1]
+		}
+		r.codes.EnvVars = envVarsMap
 	}
 
 	return nil

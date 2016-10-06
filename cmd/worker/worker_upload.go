@@ -23,6 +23,7 @@ type WorkerUpload struct {
 	Zip             string
 	host            string
 	codes           worker.Code
+	envVars         []string
 	WorkerID        string
 
 	cli.Command
@@ -84,6 +85,10 @@ func NewWorkerUpload(settings *common.Settings) *WorkerUpload {
 				Usage:       "paas host",
 				Destination: &workerUpload.host,
 			},
+			cli.StringSliceFlag{
+				Name:  "e",
+				Usage: "optional: specify environment variable for your code in format 'ENVNAME=value'",
+			},
 		},
 		Before: func(c *cli.Context) error {
 			if err := common.SetSettings(settings); err != nil {
@@ -93,6 +98,10 @@ func NewWorkerUpload(settings *common.Settings) *WorkerUpload {
 			return nil
 		},
 		Action: func(c *cli.Context) error {
+			if c.StringSlice("e") != nil {
+				workerUpload.envVars = c.StringSlice("e")
+			}
+
 			err := workerUpload.Action(c.Args().First(), c.Args().Tail(), settings)
 			if err != nil {
 				return err
@@ -152,6 +161,16 @@ func (w *WorkerUpload) Execute(cmd []string, image string) error {
 		w.codes.Config = string(pload)
 	}
 
+	if w.envVars != nil {
+		envVarsMap := make(map[string]string, len(w.envVars))
+		for _, envItem := range w.envVars {
+			splitEnv := strings.Split(envItem, "=")
+
+			envVarsMap[splitEnv[0]] = splitEnv[1]
+		}
+		w.codes.EnvVars = envVarsMap
+	}
+
 	return nil
 }
 
@@ -171,8 +190,6 @@ func (w *WorkerUpload) Action(image string, cmd []string, settings *common.Setti
 	if err != nil {
 		return err
 	}
-
-	fmt.Println(code)
 
 	if code.Host != "" {
 		fmt.Println(common.BLANKS, common.Green(`Hosted at: '`+code.Host+`'`))
