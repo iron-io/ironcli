@@ -30,12 +30,12 @@ func NewDockerLogin(settings *common.Settings) *DockerLogin {
 		ArgsUsage: "[args]",
 		Flags: []cli.Flag{
 			cli.StringFlag{
-				Name:        "e",
+				Name:        "email, e",
 				Usage:       "docker repo user email",
 				Destination: &dockerLogin.Email,
 			},
 			cli.StringFlag{
-				Name:        "p",
+				Name:        "password, p",
 				Usage:       "docker repo password",
 				Destination: &dockerLogin.Password,
 			},
@@ -45,7 +45,7 @@ func NewDockerLogin(settings *common.Settings) *DockerLogin {
 				Destination: &dockerLogin.ServerAddress,
 			},
 			cli.StringFlag{
-				Name:        "u",
+				Name:        "username, u",
 				Usage:       "docker repo user name",
 				Destination: &dockerLogin.Username,
 			},
