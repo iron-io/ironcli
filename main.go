@@ -58,6 +58,9 @@ var (
 			"publish-function": new(LambdaPublishCmd),
 			"aws-import":       new(LambdaImportCmd),
 		},
+		"function": mapper{
+			"create-function": new(FunctionCreateCmd),
+		},
 	}
 )
 
@@ -80,6 +83,7 @@ where [product] is one of:
   register
   run
   lambda
+  function
 
 run '`+os.Args[0], `[product] -help for a list of commands.
 run '`+os.Args[0], `[product] [command] -help' for [command]'s flags/args.
