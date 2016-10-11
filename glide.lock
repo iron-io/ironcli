@@ -1,30 +1,30 @@
-hash: de06abde94dcdadf0107169eae4579473c883d35caf1d2bbb8288210932a6c12
-updated: 2016-04-11T15:04:00.881036036-07:00
+hash: 7e085e5bc43175f37a3a2d02c3f8785971eb9dd3156806890f1fca7599471b50
+updated: 2016-10-11T23:33:13.729511892+04:00
 imports:
 - name: github.com/aws/aws-sdk-go
-  version: 188bbc645efb550a8d59d343b23e2b9a9b87a2f9
+  version: 8f2725740345a0561fa09669f5f75f905404ef8b
   subpackages:
-  - aws/credentials
   - aws
-  - aws/session
-  - services/lambda
-  - service/lambda
   - aws/awserr
-  - aws/client
-  - aws/corehandlers
-  - aws/defaults
-  - aws/request
-  - private/endpoints
   - aws/awsutil
+  - aws/client
   - aws/client/metadata
-  - private/protocol
-  - private/protocol/restjson
-  - private/signer/v4
+  - aws/corehandlers
+  - aws/credentials
   - aws/credentials/ec2rolecreds
+  - aws/defaults
   - aws/ec2metadata
+  - aws/request
+  - aws/session
+  - private/endpoints
+  - private/protocol
+  - private/protocol/json/jsonutil
   - private/protocol/jsonrpc
   - private/protocol/rest
-  - private/protocol/json/jsonutil
+  - private/protocol/restjson
+  - private/signer/v4
+  - service/lambda
+  - services/lambda
 - name: github.com/Azure/go-ansiterm
   version: 70b2c90b260171e829f1ebd7c17f600c11858dbe
   subpackages:
@@ -32,10 +32,10 @@ imports:
 - name: github.com/docker/docker
   version: 65370be888d940899593a001024f53d6b83b4bb0
   subpackages:
-  - pkg/jsonmessage
   - pkg/jsonlog
-  - pkg/term
+  - pkg/jsonmessage
   - pkg/system
+  - pkg/term
   - pkg/term/windows
 - name: github.com/docker/go-units
   version: 5d2041e26a699eaca682e2ea41c8f891e1060444
@@ -44,27 +44,27 @@ imports:
 - name: github.com/fsouza/go-dockerclient
   version: 98829062f36e94bc8c31a1c9a8b087b90f9d2d9c
   subpackages:
+  - external/github.com/Sirupsen/logrus
   - external/github.com/docker/docker/opts
   - external/github.com/docker/docker/pkg/archive
   - external/github.com/docker/docker/pkg/fileutils
   - external/github.com/docker/docker/pkg/homedir
-  - external/github.com/docker/docker/pkg/stdcopy
-  - external/github.com/docker/go-units
-  - external/github.com/hashicorp/go-cleanhttp
-  - external/github.com/Sirupsen/logrus
   - external/github.com/docker/docker/pkg/idtools
   - external/github.com/docker/docker/pkg/ioutils
+  - external/github.com/docker/docker/pkg/longpath
   - external/github.com/docker/docker/pkg/pools
   - external/github.com/docker/docker/pkg/promise
+  - external/github.com/docker/docker/pkg/stdcopy
   - external/github.com/docker/docker/pkg/system
-  - external/github.com/docker/docker/pkg/longpath
+  - external/github.com/docker/go-units
+  - external/github.com/hashicorp/go-cleanhttp
   - external/github.com/opencontainers/runc/libcontainer/user
-  - external/golang.org/x/sys/unix
   - external/golang.org/x/net/context
+  - external/golang.org/x/sys/unix
 - name: github.com/go-ini/ini
   version: 12f418cc7edc5a618a51407b7ac1f1f512139df3
 - name: github.com/iron-io/iron_go3
-  version: d1197926301489b15e418c49a0b17a9c42817acd
+  version: cd9cc95ce2d2bb25d2e4e10cd62fff1d97ad1906
   subpackages:
   - api
   - config
@@ -90,4 +90,4 @@ imports:
   version: 9eef40adf05b951699605195b829612bd7b69952
   subpackages:
   - unix
-devImports: []
+testImports: []
