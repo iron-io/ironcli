@@ -1,22 +1,43 @@
 package mq
 
 import (
-	"github.com/iron-io/ironcli/commands"
-	"github.com/iron-io/ironcli/helpers"
-	"github.com/spf13/cobra"
+	"github.com/iron-io/ironcli/common"
+	"github.com/urfave/cli"
 )
 
-var commandName = "mq"
-
-var RootCmd = &cobra.Command{
-	Use: commandName,
+type Mq struct {
+	cli.Command
 }
 
-// TODO: Convert old commands to cobra and put it here
+func NewMq(settings *common.Settings) *Mq {
+	mq := &Mq{
+		Command: cli.Command{
+			Name:      "mq",
+			Usage:     "manage queues",
+			ArgsUsage: "[command]",
+			Before: func(c *cli.Context) error {
+				settings.Product = "iron_mq"
 
-func init() {
-	commands := commands.Commands[commandName].(commands.Mapper)
-	for name := range commands {
-		RootCmd.AddCommand(&cobra.Command{Use: name, Run: helpers.OldCommands})
+				return nil
+			},
+			Subcommands: cli.Commands{
+				NewMqPush(settings).GetCmd(),
+				NewMqClear(settings).GetCmd(),
+				NewMqCreate(settings).GetCmd(),
+				NewMqDelete(settings).GetCmd(),
+				NewMqInfo(settings).GetCmd(),
+				NewMqList(settings).GetCmd(),
+				NewMqPeek(settings).GetCmd(),
+				NewMqPop(settings).GetCmd(),
+				NewMqReserve(settings).GetCmd(),
+				NewMqRm(settings).GetCmd(),
+			},
+		},
 	}
+
+	return mq
+}
+
+func (r Mq) GetCmd() cli.Command {
+	return r.Command
 }

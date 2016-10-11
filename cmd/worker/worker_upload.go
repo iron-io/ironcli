@@ -1,4 +1,4 @@
-package cmd
+package worker
 
 import (
 	"errors"
@@ -12,7 +12,7 @@ import (
 	"github.com/urfave/cli"
 )
 
-type Run struct {
+type WorkerUpload struct {
 	name            string
 	config          string
 	configFile      string
@@ -24,67 +24,66 @@ type Run struct {
 	host            string
 	codes           worker.Code
 	envVars         []string
-	CodeID          string
+	WorkerID        string
 
 	cli.Command
 }
 
-func NewRun(settings *common.Settings) *Run {
-	run := &Run{}
-
-	run.Command = cli.Command{
-		Name:      "run",
-		Usage:     "run a new task.",
-		ArgsUsage: "[image] [command]",
+func NewWorkerUpload(settings *common.Settings) *WorkerUpload {
+	workerUpload := &WorkerUpload{}
+	workerUpload.Command = cli.Command{
+		Name:      "upload",
+		Usage:     "upload a new code package to IronWorker.",
+		ArgsUsage: "[image]",
 		Flags: []cli.Flag{
 			cli.StringFlag{
 				Name:        "name",
 				Usage:       "override code package name",
-				Destination: &run.name,
+				Destination: &workerUpload.name,
 			},
 			cli.StringFlag{
 				Name:        "config",
 				Usage:       "provide config string (re: JSON/YAML) that will be available in file on upload",
-				Destination: &run.config,
+				Destination: &workerUpload.config,
 			},
 			cli.StringFlag{
 				Name:        "config-file",
 				Usage:       "upload file for worker config",
-				Destination: &run.configFile,
+				Destination: &workerUpload.configFile,
 			},
 			cli.IntFlag{
 				Name:        "max-conc",
 				Usage:       "max workers to run in parallel. default is no limit",
 				Value:       -1,
-				Destination: &run.maxConc,
+				Destination: &workerUpload.maxConc,
 			},
 			cli.IntFlag{
 				Name:        "retries",
 				Usage:       "max times to retry failed task, max 10, default 0",
 				Value:       0,
-				Destination: &run.retries,
+				Destination: &workerUpload.retries,
 			},
 			cli.IntFlag{
 				Name:        "retries-delay",
 				Usage:       "time between retries, in seconds. default 0",
 				Value:       0,
-				Destination: &run.retriesDelay,
+				Destination: &workerUpload.retriesDelay,
 			},
 			cli.IntFlag{
 				Name:        "default-priority",
 				Usage:       "0(default), 1 or 2",
 				Value:       -3,
-				Destination: &run.defaultPriority,
+				Destination: &workerUpload.defaultPriority,
 			},
 			cli.StringFlag{
 				Name:        "zip",
 				Usage:       "optional: name of zip file where code resides",
-				Destination: &run.Zip,
+				Destination: &workerUpload.Zip,
 			},
 			cli.StringFlag{
 				Name:        "host",
 				Usage:       "paas host",
-				Destination: &run.host,
+				Destination: &workerUpload.host,
 			},
 			cli.StringSliceFlag{
 				Name:  "e",
@@ -92,7 +91,6 @@ func NewRun(settings *common.Settings) *Run {
 			},
 		},
 		Before: func(c *cli.Context) error {
-			settings.Product = "iron_worker"
 			if err := common.SetSettings(settings); err != nil {
 				return err
 			}
@@ -101,10 +99,10 @@ func NewRun(settings *common.Settings) *Run {
 		},
 		Action: func(c *cli.Context) error {
 			if c.StringSlice("e") != nil {
-				run.envVars = c.StringSlice("e")
+				workerUpload.envVars = c.StringSlice("e")
 			}
 
-			err := run.Action(c.Args().First(), c.Args().Tail(), settings)
+			err := workerUpload.Action(c.Args().First(), c.Args().Tail(), settings)
 			if err != nil {
 				return err
 			}
@@ -113,82 +111,82 @@ func NewRun(settings *common.Settings) *Run {
 		},
 	}
 
-	return run
+	return workerUpload
 }
 
-func (r Run) GetCmd() cli.Command {
-	return r.Command
+func (w WorkerUpload) GetCmd() cli.Command {
+	return w.Command
 }
 
-func (r *Run) Execute(cmd []string, image string) error {
-	r.codes.Command = strings.TrimSpace(strings.Join(cmd, " "))
-	r.codes.Image = image
-	r.codes.Name = image
+func (w *WorkerUpload) Execute(cmd []string, image string) error {
+	w.codes.Command = strings.TrimSpace(strings.Join(cmd, " "))
+	w.codes.Image = image
+	w.codes.Name = image
 
-	if r.name != "" {
-		r.codes.Name = r.name
+	if w.name != "" {
+		w.codes.Name = w.name
 	} else {
-		r.codes.Name = r.codes.Image
-		if strings.ContainsRune(r.codes.Name, ':') {
-			arr := strings.SplitN(r.codes.Name, ":", 2)
-			r.codes.Name = arr[0]
+		w.codes.Name = w.codes.Image
+		if strings.ContainsRune(w.codes.Name, ':') {
+			arr := strings.SplitN(w.codes.Name, ":", 2)
+			w.codes.Name = arr[0]
 		}
 	}
 
-	if r.Zip != "" {
-		if !strings.HasSuffix(r.Zip, ".zip") {
-			return errors.New("file extension must be .zip, got: " + r.Zip)
+	if w.Zip != "" {
+		if !strings.HasSuffix(w.Zip, ".zip") {
+			return errors.New("file extension must be .zip, got: " + w.Zip)
 		}
 
-		if _, err := os.Stat(r.Zip); err != nil {
+		if _, err := os.Stat(w.Zip); err != nil {
 			return err
 		}
 	}
 
-	r.codes.MaxConcurrency = r.maxConc
-	r.codes.Retries = r.retries
-	r.codes.RetriesDelay = r.retriesDelay
-	r.codes.Config = r.config
-	r.codes.DefaultPriority = r.defaultPriority
+	w.codes.MaxConcurrency = w.maxConc
+	w.codes.Retries = w.retries
+	w.codes.RetriesDelay = w.retriesDelay
+	w.codes.Config = w.config
+	w.codes.DefaultPriority = w.defaultPriority
 
-	if r.host != "" {
-		r.codes.Host = r.host
+	if w.host != "" {
+		w.codes.Host = w.host
 	}
 
-	if r.configFile != "" {
-		pload, err := ioutil.ReadFile(r.configFile)
+	if w.configFile != "" {
+		pload, err := ioutil.ReadFile(w.configFile)
 		if err != nil {
 			return err
 		}
-		r.codes.Config = string(pload)
+		w.codes.Config = string(pload)
 	}
 
-	if r.envVars != nil {
-		envVarsMap := make(map[string]string, len(r.envVars))
-		for _, envItem := range r.envVars {
+	if w.envVars != nil {
+		envVarsMap := make(map[string]string, len(w.envVars))
+		for _, envItem := range w.envVars {
 			splitEnv := strings.Split(envItem, "=")
 
 			envVarsMap[splitEnv[0]] = splitEnv[1]
 		}
-		r.codes.EnvVars = envVarsMap
+		w.codes.EnvVars = envVarsMap
 	}
 
 	return nil
 }
 
-func (r *Run) Action(image string, cmd []string, settings *common.Settings) error {
-	err := r.Execute(cmd, image)
+func (w *WorkerUpload) Action(image string, cmd []string, settings *common.Settings) error {
+	err := w.Execute(cmd, image)
 	if err != nil {
 		return err
 	}
 
-	if r.codes.Host != "" {
-		fmt.Println(common.LINES, `Spinning up '`+r.codes.Name+`'`)
+	if w.codes.Host != "" {
+		fmt.Println(common.LINES, `Spinning up '`+w.codes.Name+`'`)
 	} else {
-		fmt.Println(common.LINES, `Uploading worker '`+r.codes.Name+`'`)
+		fmt.Println(common.LINES, `Uploading worker '`+w.codes.Name+`'`)
 	}
 
-	code, err := common.PushCodes(r.Zip, &settings.Worker, r.codes)
+	code, err := common.PushCodes(w.Zip, &settings.Worker, w.codes)
 	if err != nil {
 		return err
 	}
@@ -201,7 +199,7 @@ func (r *Run) Action(image string, cmd []string, settings *common.Settings) erro
 
 	fmt.Println(common.BLANKS, common.Green(settings.HUDUrlStr+"codes/"+code.Id+common.INFO))
 
-	r.CodeID = code.Id
+	w.WorkerID = code.Id
 
 	return nil
 }

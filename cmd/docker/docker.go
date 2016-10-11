@@ -1,22 +1,33 @@
 package docker
 
 import (
-	"github.com/iron-io/ironcli/commands"
-	"github.com/iron-io/ironcli/helpers"
-	"github.com/spf13/cobra"
+	"github.com/iron-io/ironcli/common"
+	"github.com/urfave/cli"
 )
 
-var commandName = "docker"
-
-var RootCmd = &cobra.Command{
-	Use: commandName,
+type Docker struct {
+	cli.Command
 }
 
-// TODO: Convert old commands to cobra and put it here
+func NewDocker(settings *common.Settings) *Docker {
+	docker := &Docker{
+		Command: cli.Command{
+			Name:  "docker",
+			Usage: "manage Docker credentials.",
+			Before: func(c *cli.Context) error {
+				settings.Product = "iron_worker"
 
-func init() {
-	commands := commands.Commands[commandName].(commands.Mapper)
-	for name := range commands {
-		RootCmd.AddCommand(&cobra.Command{Use: name, Run: helpers.OldCommands})
+				return nil
+			},
+			Subcommands: cli.Commands{
+				NewDockerLogin(settings).GetCmd(),
+			},
+		},
 	}
+
+	return docker
+}
+
+func (r Docker) GetCmd() cli.Command {
+	return r.Command
 }
