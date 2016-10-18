@@ -1,4 +1,4 @@
-package main
+package commands
 
 import (
 	"bufio"
@@ -28,14 +28,14 @@ type mqCmd struct {
 }
 
 func (mc *mqCmd) Config() error {
-	mc.settings = config.ConfigWithEnv("iron_mq", *envFlag)
+	mc.settings = config.ConfigWithEnv("iron_mq", *EnvFlag)
 
-	if *projectIDFlag != "" {
-		mc.settings.ProjectId = *projectIDFlag
+	if *ProjectIDFlag != "" {
+		mc.settings.ProjectId = *ProjectIDFlag
 	}
 
-	if *tokenFlag != "" {
-		mc.settings.Token = *tokenFlag
+	if *TokenFlag != "" {
+		mc.settings.Token = *TokenFlag
 	}
 
 	if mc.settings.ProjectId == "" {

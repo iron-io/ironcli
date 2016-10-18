@@ -1,4 +1,4 @@
-package main
+package commands
 
 // Contains each command and its configuration
 
@@ -8,19 +8,80 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"errors"
+	"flag"
 	"fmt"
 	"io/ioutil"
 	"math/big"
 	"net/http"
 	"os"
+	"runtime"
 	"strings"
 	"time"
 
+	"github.com/fatih/color"
 	"github.com/iron-io/iron_go3/config"
 	"github.com/iron-io/iron_go3/worker"
 )
 
 // TODO(reed): default flags for everybody
+var (
+	Commands = map[string]Commander{
+		"run": Runner{},
+		"docker": Mapper{
+			"login": new(DockerLoginCmd),
+		},
+		"register": Registrar{},
+		"worker": Mapper{
+			"upload":   new(UploadCmd),
+			"queue":    new(QueueCmd),
+			"schedule": new(SchedCmd),
+			"status":   new(StatusCmd),
+			"log":      new(LogCmd),
+		},
+		"mq": Mapper{
+			"push":    new(PushCmd),
+			"pop":     new(PopCmd),
+			"reserve": new(ReserveCmd),
+			"delete":  new(DeleteCmd),
+			"peek":    new(PeekCmd),
+			"clear":   new(ClearCmd),
+			"list":    new(ListCmd),
+			"create":  new(CreateCmd),
+			"rm":      new(RmCmd),
+			"info":    new(InfoCmd),
+		},
+		"lambda": Mapper{
+			"create-function":  new(LambdaCreateCmd),
+			"test-function":    new(LambdaTestFunctionCmd),
+			"publish-function": new(LambdaPublishCmd),
+			"aws-import":       new(LambdaImportCmd),
+		},
+	}
+
+	TokenFlag     = flag.String("token", "", "provide OAuth token")
+	ProjectIDFlag = flag.String("project-id", "", "provide project ID")
+	EnvFlag       = flag.String("env", "", "provide specific dev environment")
+
+	red, yellow, green func(a ...interface{}) string
+)
+
+const (
+	LINES  = "-----> "
+	BLANKS = "       "
+	INFO   = " for more info"
+)
+
+func init() {
+	if runtime.GOOS == "windows" {
+		red = fmt.Sprint
+		yellow = fmt.Sprint
+		green = fmt.Sprint
+	} else {
+		red = color.New(color.FgRed).SprintFunc()
+		yellow = color.New(color.FgYellow).SprintFunc()
+		green = color.New(color.FgGreen).SprintFunc()
+	}
+}
 
 // The idea is:
 //     parse flags -- if help, Usage() && quit
@@ -48,12 +109,12 @@ type command struct {
 
 // All Commands will do similar configuration
 func (bc *command) Config() error {
-	bc.wrkr.Settings = config.ConfigWithEnv("iron_worker", *envFlag)
-	if *projectIDFlag != "" {
-		bc.wrkr.Settings.ProjectId = *projectIDFlag
+	bc.wrkr.Settings = config.ConfigWithEnv("iron_worker", *EnvFlag)
+	if *ProjectIDFlag != "" {
+		bc.wrkr.Settings.ProjectId = *ProjectIDFlag
 	}
-	if *tokenFlag != "" {
-		bc.wrkr.Settings.Token = *tokenFlag
+	if *TokenFlag != "" {
+		bc.wrkr.Settings.Token = *TokenFlag
 	}
 
 	if bc.wrkr.Settings.ProjectId == "" {
@@ -152,7 +213,6 @@ type QueueCmd struct {
 	label             *string
 	encryptionKey     *string
 	encryptionKeyFile *string
-	n                 *int
 
 	// payload
 	task worker.Task
@@ -254,10 +314,10 @@ func (s *SchedCmd) Args() error {
 		t, _ := time.Parse(time.RFC3339, *s.startAt)
 		s.sched.StartAt = &t
 	}
-	if *s.maxConc != unset {
+	if *s.maxConc > 0 {
 		s.sched.MaxConcurrency = s.maxConc
 	}
-	if *s.runEvery != unset {
+	if *s.runEvery > 0 {
 		s.sched.RunEvery = s.runEvery
 	}
 
@@ -296,7 +356,6 @@ func (q *QueueCmd) Flags(args ...string) error {
 	q.label = q.flags.label()
 	q.encryptionKey = q.flags.encryptionKey()
 	q.encryptionKeyFile = q.flags.encryptionKeyFile()
-	q.n = q.flags.n()
 
 	err := q.flags.Parse(args)
 	if err != nil {
@@ -337,9 +396,12 @@ func (q *QueueCmd) Args() error {
 			return err
 		}
 	}
-
-	if *q.n < 1 {
-		*q.n = 1
+	if len(encryptionKey) > 0 {
+		var err error
+		payload, err = rsaEncrypt(encryptionKey, payload)
+		if err != nil {
+			return err
+		}
 	}
 
 	q.task = worker.Task{
@@ -350,14 +412,6 @@ func (q *QueueCmd) Args() error {
 		Delay:    &delay,
 		Cluster:  *q.cluster,
 		Label:    *q.label,
-	}
-
-	if len(encryptionKey) > 0 {
-		tasks, err := worker.EncryptPayloads(encryptionKey, q.task)
-		if err != nil {
-			return err
-		}
-		q.task = tasks[0]
 	}
 
 	return nil
@@ -371,12 +425,7 @@ func (q *QueueCmd) Usage() {
 func (q *QueueCmd) Run() {
 	fmt.Println(LINES, "Queueing task '"+q.task.CodeName+"'")
 
-	tasks := make([]worker.Task, *q.n)
-	for i := 0; i < *q.n; i++ {
-		tasks[i] = q.task
-	}
-
-	ids, err := q.wrkr.TaskQueue(tasks...)
+	ids, err := q.wrkr.TaskQueue(q.task)
 	if err != nil {
 		fmt.Println(BLANKS, err)
 		return
@@ -392,8 +441,7 @@ func (q *QueueCmd) Run() {
 		done := make(chan struct{})
 		go runWatch(done, "queued")
 		q.waitForRunning(id)
-		done <- struct{}{}
-		<-done // await pong (to print things well)
+		close(done)
 
 		// TODO print actual queued time?
 		fmt.Println(LINES, yellow("Task running, waiting for completion"))
@@ -401,8 +449,7 @@ func (q *QueueCmd) Run() {
 		done = make(chan struct{})
 		go runWatch(done, "running")
 		ti := <-q.wrkr.WaitForTask(id)
-		done <- struct{}{}
-		<-done // wait for pong
+		close(done)
 		if ti.Msg != "" {
 			fmt.Fprintln(os.Stderr, "error running task:", ti.Msg)
 			return
@@ -437,7 +484,7 @@ func (q *QueueCmd) waitForRunning(taskId string) {
 	}
 }
 
-func runWatch(done chan struct{}, state string) {
+func runWatch(done <-chan struct{}, state string) {
 	start := time.Now()
 	var elapsed time.Duration
 	var h, m, s, ms int64
@@ -446,7 +493,6 @@ func runWatch(done chan struct{}, state string) {
 		case <-time.After(time.Millisecond):
 		case <-done:
 			fmt.Fprintln(os.Stdout, LINES, state+":", fmt.Sprintf("%v:%v:%v:%v\r", h, m, s, ms))
-			done <- struct{}{} // pong
 			return
 		}
 		elapsed = time.Since(start)
@@ -646,21 +692,11 @@ func (u *UploadCmd) Args() error {
 			return err
 		}
 	}
-
-	if *u.retries != unset {
-		u.codes.Retries = u.retries
-	}
-	if *u.retriesDelay != unset {
-		u.codes.RetriesDelay = u.retriesDelay
-	}
-
-	if *u.maxConc != unset {
-		u.codes.MaxConcurrency = *u.maxConc
-	}
+	u.codes.MaxConcurrency = *u.maxConc
+	u.codes.Retries = u.retries
+	u.codes.RetriesDelay = u.retriesDelay
 	u.codes.Config = *u.config
-	if *u.defaultPriority != unset {
-		u.codes.DefaultPriority = *u.defaultPriority
-	}
+	u.codes.DefaultPriority = *u.defaultPriority
 
 	if u.host != nil && *u.host != "" {
 		u.codes.Host = *u.host
@@ -698,7 +734,7 @@ func (u *UploadCmd) Run() {
 	} else {
 		fmt.Println(LINES, `Uploading worker '`+u.codes.Name+`'`)
 	}
-	code, err := u.wrkr.CodePackageZipUpload(*u.zip, u.codes)
+	code, err := pushCodes(*u.zip, &u.wrkr, u.codes)
 	if err != nil {
 		fmt.Println(err)
 		return
@@ -748,14 +784,9 @@ func (u *RegisterCmd) Args() error {
 		}
 	}
 
-	if *u.retries != unset {
-		u.codes.Retries = u.retries
-	}
-	if *u.retriesDelay != unset {
-		u.codes.RetriesDelay = u.retriesDelay
-	}
-
 	u.codes.MaxConcurrency = *u.maxConc
+	u.codes.Retries = u.retries
+	u.codes.RetriesDelay = u.retriesDelay
 	u.codes.Config = *u.config
 	u.codes.DefaultPriority = *u.defaultPriority
 
@@ -795,7 +826,7 @@ func (u *RegisterCmd) Run() {
 	} else {
 		fmt.Println(LINES, `Registering worker '`+u.codes.Name+`'`)
 	}
-	code, err := u.wrkr.CodePackageUpload(u.codes)
+	code, err := pushCodes("", &u.wrkr, u.codes)
 	if err != nil {
 		fmt.Println(err)
 		return
@@ -806,4 +837,60 @@ func (u *RegisterCmd) Run() {
 		fmt.Println(BLANKS, green(`Registered code package with id='`+code.Id+`'`))
 	}
 	fmt.Println(BLANKS, green(u.hud_URL_str+"code/"+code.Id+INFO))
+}
+
+type Commander interface {
+	// Given a full set of command line args, call Args and Flags with
+	// whatever position needed to be sufficiently rad.
+	Command(args ...string) (Command, error)
+	Commands() []string
+}
+
+type (
+	// mapper expects > 0 args, calls flags after first arg
+	Mapper map[string]Command
+	// Runner calls flags on first (zeroeth) arg
+	Runner struct{}
+	// registrar calls flags on first (zeroeth) arg, using RegisterCmd
+	Registrar struct{}
+)
+
+func (r Runner) Commands() []string { return []string{"just run!"} } // --help handled in Flags()
+func (r Runner) Command(args ...string) (Command, error) {
+	run := new(RunCmd)
+	err := run.Flags(args[0:]...)
+	if err == nil {
+		err = run.Args()
+	}
+	return run, err
+}
+
+func (r Registrar) Commands() []string { return []string{"just register!"} } // --help handled in Flags()
+func (r Registrar) Command(args ...string) (Command, error) {
+	run := new(RegisterCmd)
+	err := run.Flags(args[0:]...)
+	if err == nil {
+		err = run.Args()
+	}
+	return run, err
+}
+
+func (m Mapper) Commands() []string {
+	var c []string
+	for cmd := range m {
+		c = append(c, cmd)
+	}
+	return c
+}
+
+func (m Mapper) Command(args ...string) (Command, error) {
+	c, ok := m[args[0]]
+	if !ok {
+		return nil, fmt.Errorf("command not found: %s", args[0])
+	}
+	err := c.Flags(args[1:]...)
+	if err == nil {
+		err = c.Args()
+	}
+	return c, err
 }
