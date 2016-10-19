@@ -202,9 +202,14 @@ func main() {
 		case "-h", "help", "--help", "-help":
 			pusage(product)
 		default:
-			fmt.Fprintln(os.Stderr, red(err))
+			if err != flag.ErrHelp {
+				fmt.Fprintln(os.Stderr, red(err))
+				os.Exit(1)
+			}
+
+			// Help requested, we can stop.
+			return
 		}
-		os.Exit(1)
 	}
 
 	err = cmd.Config()
