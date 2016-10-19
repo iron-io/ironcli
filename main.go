@@ -106,7 +106,6 @@ func pusage(p string) {
 			fmt.Fprintln(os.Stderr, "\t", cmd)
 		}
 	}
-	os.Exit(0)
 }
 
 type commander interface {
@@ -180,26 +179,31 @@ func main() {
 	cmds, ok := commands[product]
 	if !ok || flag.NArg() < 2 {
 		pusage(product)
+		os.Exit(0)
 	}
 
 	cmdName := flag.Arg(1)
 	cmd, err := cmds.Command(flag.Args()[1:]...)
 
 	if err != nil {
-		if err == flag.ErrHelp && cmd != nil {
-			cmd.Usage()
-		}
-		switch strings.TrimSpace(cmdName) {
-		case "-h", "help", "--help", "-help":
-			pusage(product)
-		default:
-			if err != flag.ErrHelp {
-				fmt.Fprintln(os.Stderr, red(err))
-				os.Exit(1)
+		// A single command or mapper subcommand will fail with ErrHelp.
+		if err == flag.ErrHelp {
+			if cmd != nil {
+				cmd.Usage()
+			}
+			os.Exit(0)
+		} else {
+			// A mapper top level command with -h as the 'subcommand' will not fail
+			// with ErrHelp, but complain about invalid flags, so we need to handle
+			// it separately.
+			switch strings.TrimSpace(cmdName) {
+			case "-h", "help", "--help", "-help":
+				pusage(product)
+				os.Exit(0)
 			}
 
-			// Help requested, we can stop.
-			return
+			fmt.Fprintln(os.Stderr, red(err))
+			os.Exit(1)
 		}
 	}
 
