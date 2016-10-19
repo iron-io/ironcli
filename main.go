@@ -74,12 +74,12 @@ func usage() {
 
 where [product] is one of:
 
-  mq
-  worker
-  docker
-  register
-  run
-  lambda
+  mq - Commands to manage messages and queues on IronMQ.
+  worker - Commands to queue and view IronWorker tasks.
+  docker - Login to Docker Registry.
+  register - Register an image or code package with IronWorker.
+	run - TODO: We should hide this or differentiate it from register/upload/queue. Dunno how to explain this.
+  lambda - Commands to convert AWS Lambda functions to Docker containers.
 
 run '`+os.Args[0], `[product] -help for a list of commands.
 run '`+os.Args[0], `[product] [command] -help' for [command]'s flags/args.
