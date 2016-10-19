@@ -46,9 +46,26 @@ type command struct {
 	projectID   *string
 }
 
+// Deal with panics from iron_go3.
+func loadConfig(product, env string) (settings config.Settings, err error) {
+	defer func() {
+		if r := recover(); r != nil {
+			settings = config.Settings{}
+			err = errors.New(r.(string))
+		}
+	}()
+
+	return config.ConfigWithEnv(product, env), nil
+}
+
 // All Commands will do similar configuration
 func (bc *command) Config() error {
-	bc.wrkr.Settings = config.ConfigWithEnv("iron_worker", *envFlag)
+	var err error
+	bc.wrkr.Settings, err = loadConfig("iron_worker", *envFlag)
+	if err != nil {
+		return err
+	}
+
 	if *projectIDFlag != "" {
 		bc.wrkr.Settings.ProjectId = *projectIDFlag
 	}
