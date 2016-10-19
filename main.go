@@ -28,11 +28,16 @@ var (
 	// i.e. worker: { commands... }
 	//      mq:     { commands... }
 	commands = map[string]commander{
-		"run": runner{},
+		"run": single{
+			new(RunCmd),
+		},
+
 		"docker": mapper{
 			"login": new(DockerLoginCmd),
 		},
-		"register": registrar{},
+		"register": single{
+			new(RegisterCmd),
+		},
 		"worker": mapper{
 			"upload":   new(UploadCmd),
 			"queue":    new(QueueCmd),
@@ -116,29 +121,16 @@ type (
 	// mapper expects > 0 args, calls flags after first arg
 	mapper map[string]Command
 	// runner calls flags on first (zeroeth) arg
-	runner struct{}
-	// registrar calls flags on first (zeroeth) arg, using RegisterCmd
-	registrar struct{}
+	single struct{ cmd Command }
 )
 
-func (r runner) Commands() []string { return []string{} } // --help handled in Flags()
-func (r runner) Command(args ...string) (Command, error) {
-	run := new(RunCmd)
-	err := run.Flags(args[0:]...)
+func (s single) Commands() []string { return []string{} } // --help handled in Flags()
+func (s single) Command(args ...string) (Command, error) {
+	err := s.cmd.Flags(args[0:]...)
 	if err == nil {
-		err = run.Args()
+		err = s.cmd.Args()
 	}
-	return run, err
-}
-
-func (r registrar) Commands() []string { return []string{} } // --help handled in Flags()
-func (r registrar) Command(args ...string) (Command, error) {
-	run := new(RegisterCmd)
-	err := run.Flags(args[0:]...)
-	if err == nil {
-		err = run.Args()
-	}
-	return run, err
+	return s.cmd, err
 }
 
 func (m mapper) Commands() []string {
