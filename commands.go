@@ -55,7 +55,7 @@ func loadConfig(product, env string) (settings config.Settings, err error) {
 		}
 	}()
 
-	return config.ConfigWithEnv(product, env), nil
+	return config.ConfigWithEnv(product, env), err
 }
 
 // All Commands will do similar configuration
