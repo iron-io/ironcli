@@ -95,9 +95,12 @@ func pusage(p string) {
 		fmt.Fprintln(os.Stderr, red("invalid product ", `"`+p+`", `, "see -help"))
 		os.Exit(1)
 	}
-	fmt.Fprintln(os.Stderr, p, "commands:")
-	for _, cmd := range prod.Commands() {
-		fmt.Fprintln(os.Stderr, "\t", cmd)
+	subs := prod.Commands()
+	if len(subs) > 0 {
+		fmt.Fprintln(os.Stderr, p, "commands:")
+		for _, cmd := range subs {
+			fmt.Fprintln(os.Stderr, "\t", cmd)
+		}
 	}
 	os.Exit(0)
 }
@@ -118,7 +121,7 @@ type (
 	registrar struct{}
 )
 
-func (r runner) Commands() []string { return []string{"just run!"} } // --help handled in Flags()
+func (r runner) Commands() []string { return []string{} } // --help handled in Flags()
 func (r runner) Command(args ...string) (Command, error) {
 	run := new(RunCmd)
 	err := run.Flags(args[0:]...)
@@ -128,7 +131,7 @@ func (r runner) Command(args ...string) (Command, error) {
 	return run, err
 }
 
-func (r registrar) Commands() []string { return []string{"just register!"} } // --help handled in Flags()
+func (r registrar) Commands() []string { return []string{} } // --help handled in Flags()
 func (r registrar) Command(args ...string) (Command, error) {
 	run := new(RegisterCmd)
 	err := run.Flags(args[0:]...)
