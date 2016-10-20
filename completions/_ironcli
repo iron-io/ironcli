@@ -27,7 +27,7 @@ case "$words[1]" in
       '-payload''[payload to pass to task]' \
       '-payload-file''[payload from file to pass to task]' \
       '-priority''[0(default), 1 or 2 priority queue to use]' \
-      '-timeout''[0-3600(default) max runtime in seconds for task]' \
+      '-timeout''[0(default) up to user allowed max runtime for task in seconds; 0 = max allowed timeout]' \
       '-delay''[seconds to delay before queueing task]' \
       '-wait''[wait for task to complete and print log]' \
     )
@@ -37,7 +37,7 @@ case "$words[1]" in
       '-payload''[payload to pass to task]' \
       '-payload-file''[payload from file to pass to task]' \
       '-priority''[0(default), 1 or 2 priority queue to use]' \
-      '-timeout''[0-3600(default) max runtime in seconds for task]' \
+      '-timeout''[0(default) up to user allowed max runtime for task in seconds; 0 = max allowed timeout]' \
       '-delay''[seconds to delay before queueing task]' \
       '-max-concurrency''[maximum allowed concurrency]' \
       '-run-every''[time between runs in sec (>=60)]' \
@@ -51,4 +51,3 @@ case "$words[1]" in
 _arguments \
   $_command_args \
   && return 0
-
