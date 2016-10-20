@@ -28,11 +28,16 @@ var (
 	// i.e. worker: { commands... }
 	//      mq:     { commands... }
 	commands = map[string]commander{
-		"run": runner{},
+		"run": single{
+			new(RunCmd),
+		},
+
 		"docker": mapper{
 			"login": new(DockerLoginCmd),
 		},
-		"register": registrar{},
+		"register": single{
+			new(RegisterCmd),
+		},
 		"worker": mapper{
 			"upload":   new(UploadCmd),
 			"queue":    new(QueueCmd),
@@ -74,12 +79,11 @@ func usage() {
 
 where [product] is one of:
 
-  mq
-  worker
-  docker
-  register
-  run
-  lambda
+  mq         Commands to manage messages and queues on IronMQ.
+  worker     Commands to queue and view IronWorker tasks.
+  docker     Login to Docker Registry.
+  register   Register an image or code package with IronWorker.
+  lambda     Commands to convert AWS Lambda functions to Docker containers.
 
 run '`+os.Args[0], `[product] -help for a list of commands.
 run '`+os.Args[0], `[product] [command] -help' for [command]'s flags/args.
@@ -95,11 +99,13 @@ func pusage(p string) {
 		fmt.Fprintln(os.Stderr, red("invalid product ", `"`+p+`", `, "see -help"))
 		os.Exit(1)
 	}
-	fmt.Fprintln(os.Stderr, p, "commands:")
-	for _, cmd := range prod.Commands() {
-		fmt.Fprintln(os.Stderr, "\t", cmd)
+	subs := prod.Commands()
+	if len(subs) > 0 {
+		fmt.Fprintln(os.Stderr, p, "commands:")
+		for _, cmd := range subs {
+			fmt.Fprintln(os.Stderr, "\t", cmd)
+		}
 	}
-	os.Exit(0)
 }
 
 type commander interface {
@@ -113,29 +119,16 @@ type (
 	// mapper expects > 0 args, calls flags after first arg
 	mapper map[string]Command
 	// runner calls flags on first (zeroeth) arg
-	runner struct{}
-	// registrar calls flags on first (zeroeth) arg, using RegisterCmd
-	registrar struct{}
+	single struct{ cmd Command }
 )
 
-func (r runner) Commands() []string { return []string{"just run!"} } // --help handled in Flags()
-func (r runner) Command(args ...string) (Command, error) {
-	run := new(RunCmd)
-	err := run.Flags(args[0:]...)
+func (s single) Commands() []string { return []string{} } // --help handled in Flags()
+func (s single) Command(args ...string) (Command, error) {
+	err := s.cmd.Flags(args[0:]...)
 	if err == nil {
-		err = run.Args()
+		err = s.cmd.Args()
 	}
-	return run, err
-}
-
-func (r registrar) Commands() []string { return []string{"just register!"} } // --help handled in Flags()
-func (r registrar) Command(args ...string) (Command, error) {
-	run := new(RegisterCmd)
-	err := run.Flags(args[0:]...)
-	if err == nil {
-		err = run.Args()
-	}
-	return run, err
+	return s.cmd, err
 }
 
 func (m mapper) Commands() []string {
@@ -186,22 +179,32 @@ func main() {
 	cmds, ok := commands[product]
 	if !ok || flag.NArg() < 2 {
 		pusage(product)
+		os.Exit(0)
 	}
 
 	cmdName := flag.Arg(1)
 	cmd, err := cmds.Command(flag.Args()[1:]...)
 
 	if err != nil {
-		if err == flag.ErrHelp && cmd != nil {
-			cmd.Usage()
-		}
-		switch strings.TrimSpace(cmdName) {
-		case "-h", "help", "--help", "-help":
-			pusage(product)
-		default:
+		// A single command or mapper subcommand will fail with ErrHelp.
+		if err == flag.ErrHelp {
+			if cmd != nil {
+				cmd.Usage()
+			}
+			os.Exit(0)
+		} else {
+			// A mapper top level command with -h as the 'subcommand' will not fail
+			// with ErrHelp, but complain about invalid flags, so we need to handle
+			// it separately.
+			switch strings.TrimSpace(cmdName) {
+			case "-h", "help", "--help", "-help":
+				pusage(product)
+				os.Exit(0)
+			}
+
 			fmt.Fprintln(os.Stderr, red(err))
+			os.Exit(1)
 		}
-		os.Exit(1)
 	}
 
 	err = cmd.Config()

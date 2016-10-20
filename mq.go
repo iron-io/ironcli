@@ -28,7 +28,11 @@ type mqCmd struct {
 }
 
 func (mc *mqCmd) Config() error {
-	mc.settings = config.ConfigWithEnv("iron_mq", *envFlag)
+	var err error
+	mc.settings, err = loadConfig("iron_mq", *envFlag)
+	if err != nil {
+		return err
+	}
 
 	if *projectIDFlag != "" {
 		mc.settings.ProjectId = *projectIDFlag
