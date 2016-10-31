@@ -64,7 +64,7 @@ func (wf *WorkerFlags) defaultPriority() *int {
 }
 
 func (wf *WorkerFlags) timeout() *int {
-	return wf.Int("timeout", 3600, "0-3600(default) max runtime for task in seconds")
+	return wf.Int("timeout", 0, "0(default) up to user allowed max runtime for task in seconds; 0 = max allowed timeout")
 }
 
 func (wf *WorkerFlags) delay() *int {
