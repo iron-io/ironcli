@@ -23,8 +23,9 @@ if [ -z "${GH_DEPLOY_USER}" ]; then
   exit 1
 fi
 
+git fetch --all
 git checkout master
-git pull origin master
+git reset --hard origin/master
 
 # CircleCI has these set in the project
 name=${GH_DEPLOY_USER}
