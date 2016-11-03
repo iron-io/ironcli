@@ -1,5 +1,5 @@
-hash: 3d959a9b594e8f62f593ef8e28178beedda95c5db61541684a4e2a3d6742a297
-updated: 2016-09-22T01:40:20.029535+04:00
+hash: 7e085e5bc43175f37a3a2d02c3f8785971eb9dd3156806890f1fca7599471b50
+updated: 2016-10-11T23:33:13.729511892+04:00
 imports:
 - name: github.com/aws/aws-sdk-go
   version: 8f2725740345a0561fa09669f5f75f905404ef8b
@@ -61,12 +61,10 @@ imports:
   - external/github.com/opencontainers/runc/libcontainer/user
   - external/golang.org/x/net/context
   - external/golang.org/x/sys/unix
-- name: github.com/giantswarm/semver-bump
-  version: 88e6c9f2fe390c48839eaba32490fd09cb3b581c
 - name: github.com/go-ini/ini
   version: 12f418cc7edc5a618a51407b7ac1f1f512139df3
 - name: github.com/iron-io/iron_go3
-  version: d1197926301489b15e418c49a0b17a9c42817acd
+  version: cd9cc95ce2d2bb25d2e4e10cd62fff1d97ad1906
   subpackages:
   - api
   - config
@@ -88,10 +86,6 @@ imports:
   version: f9ab0dce87d815821e221626b772e3475a0d2749
 - name: github.com/Sirupsen/logrus
   version: 4b6ea7319e214d98c938f12692336f7ca9348d6b
-- name: github.com/spf13/cobra
-  version: 1f4717172e07e12150feb061b2ab847c3054f53f
-- name: github.com/urfave/cli
-  version: 1efa31f08b9333f1bd4882d61f9d668a70cd902e
 - name: golang.org/x/sys
   version: 9eef40adf05b951699605195b829612bd7b69952
   subpackages:

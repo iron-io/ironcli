@@ -1,4 +1,4 @@
-package common
+package main
 
 import (
 	"bufio"
@@ -12,27 +12,27 @@ import (
 	"github.com/iron-io/iron_go3/mq"
 )
 
-func PrintMessages(msgs []mq.Message) {
+func printMessages(msgs []mq.Message) {
 	for _, msg := range msgs {
 		fmt.Printf("%s %q\n", msg.Id, msg.Body)
 	}
 }
 
-func PrintReservedMessages(msgs []mq.Message) {
+func printReservedMessages(msgs []mq.Message) {
 	for _, msg := range msgs {
 		fmt.Printf("%s %s %q\n", msg.Id, msg.ReservationId, msg.Body)
 	}
 }
 
 // BLANKS name: url.com/endpoint
-func PrintSubscribers(info mq.QueueInfo) {
+func printSubscribers(info mq.QueueInfo) {
 	for _, subscriber := range info.Push.Subscribers {
 		fmt.Printf("%s%s\n", BLANKS, subscriber.URL)
 	}
 }
 
 // This is based on the format of func printMessages([]*mq.Message)
-func ReadIds() ([]string, error) {
+func readIds() ([]string, error) {
 	var ids []string
 	scanner := bufio.NewScanner(os.Stdin)
 	for scanner.Scan() {
@@ -46,12 +46,12 @@ func ReadIds() ([]string, error) {
 }
 
 // Check if stdout is being piped
-func IsPipedOut() bool {
+func isPipedOut() bool {
 	fi, _ := os.Stdout.Stat()
 	return (fi.Mode() & os.ModeNamedPipe) == os.ModeNamedPipe
 }
 
-func IsPipedIn() bool {
+func isPipedIn() bool {
 	fi, _ := os.Stdin.Stat()
 	return (fi.Mode() & os.ModeNamedPipe) == os.ModeNamedPipe
 }
@@ -60,7 +60,7 @@ func IsPipedIn() bool {
 // seriously though
 // this is super duper hacky
 // it only works with the public cluster mq-aws-us-east-1-1
-func GetHudTag(settings config.Settings) (string, error) {
+func getHudTag(settings config.Settings) (string, error) {
 	res, err := http.Get("https://auth.iron.io/1/clusters?oauth=" + settings.Token)
 	if err != nil {
 		return "", err
@@ -91,8 +91,8 @@ func GetHudTag(settings config.Settings) (string, error) {
 	return "", fmt.Errorf("no hud tags found")
 }
 
-func PrintQueueHudURL(prefix string, q mq.Queue) {
-	if tag, err := GetHudTag(q.Settings); err == nil {
+func printQueueHudURL(prefix string, q mq.Queue) {
+	if tag, err := getHudTag(q.Settings); err == nil {
 		fmt.Printf("%sVisit hud-e.iron.io/mq/%s/projects/%s/queues/%s for more info.\n", prefix,
 			tag,
 			q.Settings.ProjectId,
@@ -100,7 +100,7 @@ func PrintQueueHudURL(prefix string, q mq.Queue) {
 	}
 }
 
-func MqProjectName(settings config.Settings) (string, error) {
+func mqProjectName(settings config.Settings) (string, error) {
 	res, err := http.Get("https://auth.iron.io/1/projects/" + settings.ProjectId + "?oauth=" + settings.Token)
 	if err != nil {
 		return "", err

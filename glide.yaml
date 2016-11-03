@@ -3,7 +3,7 @@ import:
 - package: github.com/fatih/color
   version: 533cd7fd8a85905f67a1753afb4deddc85ea174f
 - package: github.com/iron-io/iron_go3
-  version: d1197926301489b15e418c49a0b17a9c42817acd
+  version: cd9cc95ce2d2bb25d2e4e10cd62fff1d97ad1906
   subpackages:
   - api
   - config
@@ -24,8 +24,3 @@ import:
   version: 65370be888d940899593a001024f53d6b83b4bb0
   subpackages:
   - pkg/jsonmessage
-- package: github.com/giantswarm/semver-bump
-  version: 1.1.1
-- package: github.com/spf13/cobra
-- package: github.com/urfave/cli
-  version: v1.18.0

@@ -18,12 +18,11 @@ checkout:
 
 dependencies:
   pre:
-    # install go1.7
-    - wget https://storage.googleapis.com/golang/go1.7.linux-amd64.tar.gz
-    - tar -C $HOME -xvzf go1.7.linux-amd64.tar.gz
-    # install glide 0.12.0
-    - wget https://github.com/Masterminds/glide/releases/download/v0.12.0/glide-v0.12.0-linux-amd64.tar.gz
-    - tar -C $HOME/bin -xvzf glide-v0.12.0-linux-amd64.tar.gz --strip=1
+    # install go1.5
+    - wget https://storage.googleapis.com/golang/go1.5.linux-amd64.tar.gz
+    - tar -C $HOME -xvzf go1.5.linux-amd64.tar.gz
+    - wget https://github.com/Masterminds/glide/releases/download/v0.12.3/glide-v0.12.3-linux-amd64.tar.gz
+    - tar -C $HOME/bin -xvzf glide-v0.12.3-linux-amd64.tar.gz --strip=1
   override:
     # this was being dumb, don't want it to auto detect we are a go repo b/c vendoring
     - which go
@@ -31,20 +30,9 @@ dependencies:
 
 test:
   pre:
-    - echo $TEST_DOCKER_HUB_CREDS > $HOME/.dockercfg
-    - glide install:
+    - glide install -v:
         pwd: $GO_PROJECT/$CIRCLE_PROJECT_REPONAME
   override:
-    - make test_docker:
-        pwd: $GO_PROJECT/$CIRCLE_PROJECT_REPONAME
-    - make test_lambda:
-        pwd: $GO_PROJECT/$CIRCLE_PROJECT_REPONAME
-    - make test_base:
-        pwd: $GO_PROJECT/$CIRCLE_PROJECT_REPONAME
-    - make test_mq:
-        pwd: $GO_PROJECT/$CIRCLE_PROJECT_REPONAME
-    - make test_worker:
-        pwd: $GO_PROJECT/$CIRCLE_PROJECT_REPONAME
     - go build .:
         pwd: $GO_PROJECT/$CIRCLE_PROJECT_REPONAME
 
@@ -55,7 +43,7 @@ deployment:
       - echo $DOCKER_HUB_CREDS > $HOME/.dockercfg
       - git config --global user.name "Tony Stark"
       - git config --global user.email "deploys@iron.io"
-      - cd $GH_IRON/$CIRCLE_PROJECT_REPONAME && glide install
+      - cd $GH_IRON/$CIRCLE_PROJECT_REPONAME && glide install -v
       - cd $GH_IRON/$CIRCLE_PROJECT_REPONAME && ./build-release.sh
       - cd $GH_IRON/$CIRCLE_PROJECT_REPONAME && go build
       - docker build -t iron/cli:latest $GH_IRON/$CIRCLE_PROJECT_REPONAME

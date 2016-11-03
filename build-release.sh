@@ -52,7 +52,7 @@ echo "uploading exe..."
 GOOS=windows  GOARCH=amd64 go build -o bin/ironcli.exe
 curl --progress-bar --data-binary "@bin/ironcli.exe"    -H "Content-Type: application/octet-stream" -u $name:$tok $upload_url\?name\=ironcli.exe >/dev/null
 echo "uploading elf..."
-GOOS=linux    GOARCH=amd64 go build -o bin/ironcli_linux
+CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o bin/ironcli_linux
 curl --progress-bar --data-binary "@bin/ironcli_linux"  -H "Content-Type: application/octet-stream" -u $name:$tok $upload_url\?name\=ironcli_linux >/dev/null
 echo "uploading mach-o..."
 GOOS=darwin   GOARCH=amd64 go build -o bin/ironcli_mac
