@@ -9,9 +9,8 @@ import (
 	"github.com/iron-io/iron_go3/worker"
 )
 
-// TODO remove this after it's moved into swapi
+// TODO move this into iron_go3?
 func dockerLogin(w *worker.Worker, args *map[string]string) (msg string, err error) {
-
 	data, err := json.Marshal(args)
 	reader := bytes.NewReader(data)
 
@@ -41,5 +40,4 @@ func dockerLogin(w *worker.Worker, args *map[string]string) (msg string, err err
 
 	err = json.NewDecoder(response.Body).Decode(&res)
 	return res.Msg, err
-
 }
