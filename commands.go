@@ -398,7 +398,7 @@ func (q *QueueCmd) Run() {
 	id := ids[0]
 
 	fmt.Printf("%s Queued task with id='%s'\n", BLANKS, id)
-	fmt.Println(BLANKS, q.hud_URL_str+"jobs/"+id+INFO)
+	fmt.Println(BLANKS, q.hud_URL_str+"tasks/"+id+INFO)
 
 	if *q.wait {
 		fmt.Println(LINES, yellow("Waiting for task to start running"))
