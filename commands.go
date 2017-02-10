@@ -80,7 +80,7 @@ func (bc *command) Config() error {
 		return errors.New("did not find token in any config files or env variables")
 	}
 
-	bc.hud_URL_str = `Check https://hud.iron.io/tq/projects/` + bc.wrkr.Settings.ProjectId + "/"
+	bc.hud_URL_str = `Check https://hud-e.iron.io/worker/projects/` + bc.wrkr.Settings.ProjectId + "/"
 
 	fmt.Println(LINES, `Configuring client`)
 
@@ -398,14 +398,14 @@ func (q *QueueCmd) Run() {
 	id := ids[0]
 
 	fmt.Printf("%s Queued task with id='%s'\n", BLANKS, id)
-	fmt.Println(BLANKS, q.hud_URL_str+"jobs/"+id+INFO)
+	fmt.Println(BLANKS, q.hud_URL_str+"tasks/"+id+INFO)
 
 	if *q.wait {
 		fmt.Println(LINES, yellow("Waiting for task to start running"))
 
 		done := make(chan struct{})
 		go runWatch(done, "queued")
-		q.waitForRunning(id)
+		q.waitForStatusChange(id, "queued")
 		done <- struct{}{}
 		<-done // await pong (to print things well)
 
@@ -414,7 +414,7 @@ func (q *QueueCmd) Run() {
 
 		done = make(chan struct{})
 		go runWatch(done, "running")
-		ti := <-q.wrkr.WaitForTask(id)
+		ti := q.waitForStatusChange(id, "running", "preparing")
 		done <- struct{}{}
 		<-done // wait for pong
 		if ti.Msg != "" {
@@ -435,19 +435,23 @@ func (q *QueueCmd) Run() {
 	}
 }
 
-func (q *QueueCmd) waitForRunning(taskId string) {
+func (q *QueueCmd) waitForStatusChange(taskId string, status ...string) worker.TaskInfo {
+outer:
 	for {
 		info, err := q.wrkr.TaskInfo(taskId)
 		if err != nil {
 			fmt.Fprintln(os.Stderr, "error getting task info:", err)
-			return
+			return info
 		}
 
-		if info.Status == "queued" {
-			time.Sleep(100 * time.Millisecond)
-		} else {
-			return
+		for _, s := range status {
+			if info.Status == s {
+				time.Sleep(100 * time.Millisecond)
+				continue outer
+			}
 		}
+
+		return info
 	}
 }
 
