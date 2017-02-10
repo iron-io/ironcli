@@ -405,7 +405,7 @@ func (q *QueueCmd) Run() {
 
 		done := make(chan struct{})
 		go runWatch(done, "queued")
-		q.waitForRunning(id)
+		q.waitForStatusChange(id, "queued")
 		done <- struct{}{}
 		<-done // await pong (to print things well)
 
@@ -414,7 +414,7 @@ func (q *QueueCmd) Run() {
 
 		done = make(chan struct{})
 		go runWatch(done, "running")
-		ti := <-q.wrkr.WaitForTask(id)
+		ti := q.waitForStatusChange(id, "running", "preparing")
 		done <- struct{}{}
 		<-done // wait for pong
 		if ti.Msg != "" {
@@ -435,19 +435,23 @@ func (q *QueueCmd) Run() {
 	}
 }
 
-func (q *QueueCmd) waitForRunning(taskId string) {
+func (q *QueueCmd) waitForStatusChange(taskId string, status ...string) worker.TaskInfo {
+outer:
 	for {
 		info, err := q.wrkr.TaskInfo(taskId)
 		if err != nil {
 			fmt.Fprintln(os.Stderr, "error getting task info:", err)
-			return
+			return info
 		}
 
-		if info.Status == "queued" {
-			time.Sleep(100 * time.Millisecond)
-		} else {
-			return
+		for _, s := range status {
+			if info.Status == s {
+				time.Sleep(100 * time.Millisecond)
+				continue outer
+			}
 		}
+
+		return info
 	}
 }
 
