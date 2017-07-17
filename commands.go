@@ -705,7 +705,7 @@ func (u *UploadCmd) Run() {
 	} else {
 		fmt.Println(BLANKS, green(`Uploaded code package with id='`+code.Id+`'`))
 	}
-	fmt.Println(BLANKS, green(u.hud_URL_str+"code/"+code.Id+INFO))
+	fmt.Println(BLANKS, green(u.hud_URL_str+"codes/"+code.Id+INFO))
 }
 
 func (u *RegisterCmd) Flags(args ...string) error {
@@ -802,5 +802,5 @@ func (u *RegisterCmd) Run() {
 	} else {
 		fmt.Println(BLANKS, green(`Registered code package with id='`+code.Id+`'`))
 	}
-	fmt.Println(BLANKS, green(u.hud_URL_str+"code/"+code.Id+INFO))
+	fmt.Println(BLANKS, green(u.hud_URL_str+"codes/"+code.Id+INFO))
 }
