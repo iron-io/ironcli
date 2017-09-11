@@ -93,3 +93,9 @@ And then use `-e` flags with the docker run command:
 docker run --rm -it -e IRON_TOKEN -e IRON_PROJECT_ID -v "$PWD":/app -w /app iron/cli ...
 ```
 
+on OSX with [HomeBrew](https://brew.sh):
+
+```sh
+brew install ironcli
+```
+
