@@ -5,7 +5,7 @@
   branch = "master"
   name = "github.com/Azure/go-ansiterm"
   packages = [".","winterm"]
-  revision = "d6e3b3328b783f23731bc4d058875b0371ff8109"
+  revision = "70b2c90b260171e829f1ebd7c17f600c11858dbe"
 
 [[projects]]
   name = "github.com/Sirupsen/logrus"

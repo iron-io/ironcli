@@ -40,3 +40,7 @@
 [[constraint]]
   name = "github.com/iron-io/lambda"
   version = "0.1.0"
+
+[[constraint]]
+  name = "github.com/go-ini/ini"
+  version = "1.30.3"
