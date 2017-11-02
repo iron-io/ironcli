@@ -27,10 +27,10 @@ dependencies:
 test:
   pre:
     - dep ensure:
-        pwd: $GO_PROJECT/$CIRCLE_PROJECT_REPONAME
+        pwd: $GO_PROJECT
   override:
     - go build .:
-        pwd: $GO_PROJECT/$CIRCLE_PROJECT_REPONAME
+        pwd: $GO_PROJECT
 
 deployment:
   this:
@@ -39,9 +39,9 @@ deployment:
       - echo $DOCKER_HUB_CREDS > $HOME/.dockercfg
       - git config --global user.name "Tony Stark"
       - git config --global user.email "deploys@iron.io"
-      - cd $GH_IRON/$CIRCLE_PROJECT_REPONAME && dep ensure
-      - cd $GH_IRON/$CIRCLE_PROJECT_REPONAME && ./build-release.sh
-      - cd $GH_IRON/$CIRCLE_PROJECT_REPONAME && go build
-      - docker build -t iron/cli:latest $GH_IRON/$CIRCLE_PROJECT_REPONAME
-      - docker tag iron/cli:latest iron/cli:$(grep -Eo "[0-9]+\.[0-9]+\.[0-9]+" $GH_IRON/$CIRCLE_PROJECT_REPONAME/install.sh)
+      - dep ensure
+      - ./build-release.sh
+      - go build
+      - docker build -t iron/cli:latest $GO_PROJECT
+      - docker tag iron/cli:latest iron/cli:$(grep -Eo "[0-9]+\.[0-9]+\.[0-9]+" $GO_PROJECT/install.sh)
       - docker push iron/cli
