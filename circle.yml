@@ -40,9 +40,9 @@ deployment:
       - echo $DOCKER_HUB_CREDS > $HOME/.dockercfg
       - git config --global user.name "Tony Stark"
       - git config --global user.email "deploys@iron.io"
-      - dep ensure
-      - ./build-release.sh
-      - go build
+      - cd $GO_PROJECT && dep ensure
+      - cd $GO_PROJECT && ./build-release.sh
+      - cd $GO_PROJECT && go build
       - docker build -t iron/cli:latest $GO_PROJECT
       - docker tag iron/cli:latest iron/cli:$(grep -Eo "[0-9]+\.[0-9]+\.[0-9]+" $GO_PROJECT/install.sh)
       - docker push iron/cli
