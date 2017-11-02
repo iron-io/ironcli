@@ -54,11 +54,10 @@ Since go1.5, we are lab rats in the go1.5 vendoring experiment. This eliminates
 the need to modify import paths and depend on package maintainers not to break things.
 For more info, see: <https://golang.org/s/go15vendor>.
 
-We use [glide](http://glide.sh) to manage the vendoring. To build ironcli:
+We use [dep](https://github.com/golang/dep) to manage the vendoring. To build ironcli:
 
 ```sh
-export GO15VENDOREXPERIMENT=1
-glide install
+dep ensure
 go build
 ```
 
