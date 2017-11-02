@@ -23,7 +23,7 @@ dependencies:
   override:
     # this was being dumb, don't want it to auto detect we are a go repo b/c vendoring
     - which go && go version
-    - dep ensure
+    - cd $GO_PROJECT && dep ensure
 
 test:
   pre:
