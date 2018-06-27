@@ -751,8 +751,9 @@ func (u *RegisterCmd) Args() error {
 	if *u.retriesDelay != unset {
 		u.codes.RetriesDelay = u.retriesDelay
 	}
-
-	u.codes.MaxConcurrency = *u.maxConc
+	if *u.maxConc != unset {
+		u.codes.MaxConcurrency = *u.maxConc
+	}
 	u.codes.Config = *u.config
 	u.codes.DefaultPriority = *u.defaultPriority
 
