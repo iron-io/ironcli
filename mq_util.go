@@ -93,7 +93,7 @@ func getHudTag(settings config.Settings) (string, error) {
 
 func printQueueHudURL(prefix string, q mq.Queue) {
 	if tag, err := getHudTag(q.Settings); err == nil {
-		fmt.Printf("%sVisit hud-e.iron.io/mq/%s/projects/%s/queues/%s for more info.\n", prefix,
+		fmt.Printf("%sVisit <hud-e>/mq/%s/projects/%s/queues/%s for more info.\n", prefix,
 			tag,
 			q.Settings.ProjectId,
 			q.Name)

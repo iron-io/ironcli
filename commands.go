@@ -80,7 +80,7 @@ func (bc *command) Config() error {
 		return errors.New("did not find token in any config files or env variables")
 	}
 
-	bc.hud_URL_str = `Check https://hud-e.iron.io/worker/projects/` + bc.wrkr.Settings.ProjectId + "/"
+	bc.hud_URL_str = `Check <hud-e>/worker/projects/` + bc.wrkr.Settings.ProjectId + "/"
 
 	fmt.Println(LINES, `Configuring client`)
 

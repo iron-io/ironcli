@@ -356,7 +356,7 @@ func (l *ListCmd) Run() {
 			fmt.Println(BLANKS, "*", q.Name)
 		}
 		if tag, err := getHudTag(l.settings); err == nil {
-			fmt.Printf("%s Go to hud-e.iron.io/mq/%s/projects/%s/queues for more info",
+			fmt.Printf("%s Go to <hud-e>/mq/%s/projects/%s/queues for more info",
 				BLANKS,
 				tag,
 				l.settings.ProjectId)
