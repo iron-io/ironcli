@@ -335,6 +335,10 @@ func (q *QueueCmd) Args() error {
 		payload = string(pload)
 	}
 
+	if *q.cluster == "" {
+		return errors.New("error: cluster parameter is required. You should set cluster (-cluster <cluster_id>) parameter.")
+	}
+
 	delay := time.Duration(*q.delay) * time.Second
 	timeout := time.Duration(*q.timeout) * time.Second
 
