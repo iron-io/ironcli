@@ -230,6 +230,7 @@ func (s *SchedCmd) Args() error {
 	}
 
 	delay := time.Duration(*s.delay) * time.Second
+	timeout := time.Duration(*s.timeout) * time.Second
 
 	var priority *int
 	if *s.priority > -3 && *s.priority < 3 {
@@ -239,6 +240,7 @@ func (s *SchedCmd) Args() error {
 	s.sched = worker.Schedule{
 		CodeName: s.flags.Arg(0),
 		Delay:    &delay,
+		Timeout:  &timeout,
 		Priority: priority,
 		RunTimes: s.runTimes,
 		Cluster:  *s.cluster,

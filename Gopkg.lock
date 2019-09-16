@@ -50,7 +50,7 @@
 [[projects]]
   name = "github.com/iron-io/iron_go3"
   packages = ["api","config","mq","worker"]
-  revision = "cd9cc95ce2d2bb25d2e4e10cd62fff1d97ad1906"
+  revision = "a4a7f74b73ac79e9ae1e5db51f7ef18cadaf4a20"
 
 [[projects]]
   name = "github.com/iron-io/lambda"
