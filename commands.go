@@ -162,6 +162,7 @@ type QueueCmd struct {
 	timeout           *int
 	delay             *int
 	wait              *bool
+	sync              *bool
 	cluster           *string
 	label             *string
 	encryptionKey     *string
@@ -308,6 +309,7 @@ func (q *QueueCmd) Flags(args ...string) error {
 	q.timeout = q.flags.timeout()
 	q.delay = q.flags.delay()
 	q.wait = q.flags.wait()
+	q.sync = q.flags.sync()
 	q.cluster = q.flags.cluster()
 	q.label = q.flags.label()
 	q.encryptionKey = q.flags.encryptionKey()
@@ -384,9 +386,18 @@ func (q *QueueCmd) Usage() {
 	q.flags.PrintDefaults()
 }
 
+func sleepBetweenRetries(previousDuration time.Duration) time.Duration {
+	if previousDuration >= 60*time.Second {
+		return previousDuration
+	}
+	return previousDuration + previousDuration
+}
+
 func (q *QueueCmd) Run() {
 	fmt.Println(LINES, "Queueing task '"+q.task.CodeName+"'")
-
+	if *q.sync {
+		q.task.Sync = true
+	}
 	tasks := make([]worker.Task, *q.n)
 	for i := 0; i < *q.n; i++ {
 		tasks[i] = q.task
@@ -402,7 +413,7 @@ func (q *QueueCmd) Run() {
 	fmt.Printf("%s Queued task with id='%s'\n", BLANKS, id)
 	fmt.Println(BLANKS, q.hud_URL_str+"tasks/"+id+INFO)
 
-	if *q.wait {
+	if *q.wait || *q.sync {
 		fmt.Println(LINES, yellow("Waiting for task to start running"))
 
 		done := make(chan struct{})
@@ -423,16 +434,27 @@ func (q *QueueCmd) Run() {
 			fmt.Fprintln(os.Stderr, "error running task:", ti.Msg)
 			return
 		}
+		// wait for log
+		end := time.After(15 * time.Second)
+		logFunc := q.wrkr.WaitForTaskLog
+		title := "log"
+		if q.task.Sync {
+			logFunc = q.wrkr.WaitForTaskOutLog
+			title = "stdout"
+		}
 
-		log, err := q.wrkr.TaskLog(id)
-		if err != nil {
-			fmt.Fprintln(os.Stderr, "error getting log:", err)
+		var log []byte
+		select {
+		case ironLog := <-logFunc(id):
+			log = ironLog
+		case <-end:
+			fmt.Printf("Task timed out to get task %s or the %s is empty %s", title, title, id)
 			return
 		}
 
 		// TODO print actual run time?
 		fmt.Println(LINES, green("Done"))
-		fmt.Println(LINES, "Printing Log:")
+		fmt.Printf(LINES+" Printing %s:\n", title)
 		fmt.Printf("%s", string(log))
 	}
 }

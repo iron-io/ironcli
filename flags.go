@@ -75,6 +75,10 @@ func (wf *WorkerFlags) wait() *bool {
 	return wf.Bool("wait", false, "wait for task to complete and print log")
 }
 
+func (wf *WorkerFlags) sync() *bool {
+	return wf.Bool("sync", false, "run task synchronously and print stdout")
+}
+
 func (wf *WorkerFlags) maxConc() *int {
 	return wf.Int("max-concurrency", unset, "max workers to run in parallel. default is no limit")
 }
